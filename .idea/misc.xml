@@ -5,7 +5,20 @@
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/pom.xml" />
+        <option value="$PROJECT_DIR$/backoffice/pom.xml" />
+        <option value="$PROJECT_DIR$/marketplace/pom.xml" />
+        <option value="$PROJECT_DIR$/exona_tech/pom.xml" />
+        <option value="$PROJECT_DIR$/media/pom.xml" />
       </list>
+    </option>
+    <option name="ignoredFiles">
+      <set>
+        <option value="$PROJECT_DIR$/build-app/pom.xml" />
+        <option value="$PROJECT_DIR$/commom/pom.xml" />
+        <option value="$PROJECT_DIR$/runapp/pom.xml" />
+        <option value="$PROJECT_DIR$/shop/pom.xml" />
+        <option value="$PROJECT_DIR$/shop_electronics/pom.xml" />
+      </set>
     </option>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_17" default="true" project-jdk-name="17" project-jdk-type="JavaSDK" />
