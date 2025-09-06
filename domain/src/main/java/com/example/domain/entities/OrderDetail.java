@@ -1,4 +1,4 @@
-package com.example.domain.entities;
+ package com.example.domain.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
@@ -14,7 +14,7 @@ public class OrderDetail {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id ;
+    private Integer id ;
 
     @ManyToOne
     @JoinColumn(name = "order_id")

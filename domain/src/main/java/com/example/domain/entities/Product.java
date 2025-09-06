@@ -19,12 +19,12 @@ public class Product extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id ;
+    private Integer id ;
 
-    @Column(name = "name" , length =255)
+    @Column(name = "name" ,columnDefinition = "NVARCHAR(255)", length =255)
     private String name ;
 
-    @Column(name = "description" , length =255)
+    @Column(name = "description" ,columnDefinition = "NVARCHAR(255)", length =255)
     private String description ;
 
     @Column(name = "price")
@@ -37,17 +37,20 @@ public class Product extends BaseEntity{
     @JoinColumn(name = "category_id", nullable = false)
     private Category category ;
 
-    @Column(name = "brand")
+    @Column(name = "brand",columnDefinition = "NVARCHAR(255)")
     private String brand;
+
+    @Column(name = "color")
+    private String color ;
 
     @Column(name = "average_rating" , columnDefinition = "FLOAT DEFAULT 0")
     private Float averageRating;
 
     @ManyToOne
-    @JoinColumn(name="supplier_id" , nullable = false)
+    @JoinColumn(name="supplier_id" , nullable = true)
     private Supplier supplier ;
 
-    @Column(name = "thumbnail")
+    @Column(name = "thumbnail",columnDefinition = "NVARCHAR(255)")
     private String thumbnail ;
 
     private Long views ;

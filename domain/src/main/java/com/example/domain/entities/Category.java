@@ -12,11 +12,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Category {
+public class Category extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id ;
+    private Integer id ;
 
-    @Column(name = "name" , length = 255 , unique = true)
+    @Column(name = "name" ,columnDefinition = "NVARCHAR(255)" , length = 255 , unique = true)
     private String name ;
 }

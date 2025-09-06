@@ -13,21 +13,21 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Supplier {
+public class Supplier extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id ;
+    private Integer id ;
 
-    @Column(name = "name" , length = 255)
+    @Column(name = "name" , columnDefinition = "NVARCHAR(255)")
     private String name ;
 
     @Column(name = "phone_number" , length = 20)
     private String phoneNumber ;
 
-    @Column(name = "email" , length = 255)
+    @Column(name = "email" , columnDefinition = "NVARCHAR(255)")
     private String email ;
 
-    @Column(name = "address" , length = 255)
+    @Column(name = "address" , columnDefinition = "NVARCHAR(255)")
     private String address;
 
 }

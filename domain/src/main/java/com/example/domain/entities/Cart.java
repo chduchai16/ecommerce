@@ -17,7 +17,7 @@ import java.util.List;
 public class Cart extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id ;
+    private Integer id ;
 
     @OneToOne
     @JoinColumn(name = "user_id")

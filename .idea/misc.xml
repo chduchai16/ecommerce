@@ -16,6 +16,7 @@
         <option value="$PROJECT_DIR$/build-app/pom.xml" />
         <option value="$PROJECT_DIR$/commom/pom.xml" />
         <option value="$PROJECT_DIR$/runapp/pom.xml" />
+        <option value="$PROJECT_DIR$/shared/pom.xml" />
         <option value="$PROJECT_DIR$/shop/pom.xml" />
         <option value="$PROJECT_DIR$/shop_electronics/pom.xml" />
       </set>

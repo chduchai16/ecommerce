@@ -12,10 +12,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Rating {
+public class Rating extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id ;
+    private Integer id ;
 
     @ManyToOne
     @JoinColumn(name = "product_id" , nullable = false)
@@ -28,6 +28,6 @@ public class Rating {
     @Column(name = "rate")
     private int rate ;
 
-    @Column(name = "comment" , length = 100)
+    @Column(name = "comment" ,columnDefinition = "NVARCHAR(255)")
     private String comment ;
 }

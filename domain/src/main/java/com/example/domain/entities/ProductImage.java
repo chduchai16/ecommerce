@@ -10,10 +10,10 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductImage {
+public class ProductImage extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id ;
+    private Integer id ;
 
     @ManyToOne
     @JoinColumn(name = "product_id" , nullable = false)
@@ -21,6 +21,6 @@ public class ProductImage {
     @JsonBackReference
     private Product product ;
 
-    @Column(name = "image_name" , length = 255)
+    @Column(name = "image_name",columnDefinition = "NVARCHAR(255)" , length = 255)
     private String imageName ;
 }

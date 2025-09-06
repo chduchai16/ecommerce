@@ -1,0 +1,84 @@
+package com.example.exona_tech.mappers;
+
+import com.example.domain.dtos.requests.CartDTO;
+import com.example.domain.dtos.resposnes.CartItemResponse;
+import com.example.domain.dtos.resposnes.CartResponse;
+import com.example.domain.entities.Cart;
+import com.example.domain.entities.CartItem;
+import com.example.domain.entities.User;
+import com.example.domain.repositories.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeMap;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+
+@Component
+@RequiredArgsConstructor
+public class CartMapper {
+    private final UserRepository userRepository ;
+    private final ModelMapper modelMapper ;
+    private final CartItemMapper cartItemMapper ;
+
+    private TypeMap<CartDTO , Cart> fromRequestToEntityTypeMap ;
+    private TypeMap<Cart , CartResponse> fromEntityToResponseTypeMap ;
+
+    public Cart fromRequestToEntity (CartDTO cartDTO) {
+        if(cartDTO == null) return null ;
+        if(fromRequestToEntityTypeMap == null) {
+            fromRequestToEntityTypeMap = this.modelMapper.createTypeMap(CartDTO.class , Cart.class);
+            fromRequestToEntityTypeMap.getMappings().clear();
+            fromRequestToEntityTypeMap.addMappings(mapper -> {
+                mapper.skip( Cart :: setCartItems);
+                mapper.skip(Cart :: setUser);
+            });
+            fromRequestToEntityTypeMap.implicitMappings();
+        }
+
+        Cart cart = fromRequestToEntityTypeMap.map(cartDTO);
+
+        // map cart items
+        if(cartDTO.getCartItemDTOs() != null && cartDTO.getCartItemDTOs().size() > 0) {
+            List<CartItem> cartItems = cartDTO.getCartItemDTOs().stream().map(dto -> this.cartItemMapper.fromRequestToEntity(dto)).toList();
+            cart.setCartItems(cartItems);
+        }
+
+        // map user
+        if(cartDTO.getUserId() != null) {
+            User user = this.userRepository.findById(cartDTO.getUserId()).orElseThrow(()-> new EntityNotFoundException("This user does not exist"));
+            cart.setUser(user);
+        }
+
+        return cart ;
+    }
+
+    public CartResponse fromEntityToResponse (Cart cart){
+        if(cart == null) return null ;
+        if(fromEntityToResponseTypeMap == null) {
+            fromEntityToResponseTypeMap = this.modelMapper.createTypeMap(Cart.class , CartResponse.class);
+            fromEntityToResponseTypeMap.getMappings().clear();
+            fromEntityToResponseTypeMap.addMappings(mapper -> {
+                mapper.skip(CartResponse :: setUserId);
+                mapper.skip(CartResponse :: setUsername);
+                mapper.skip(CartResponse :: setCartItemResponses);
+            });
+            fromEntityToResponseTypeMap.implicitMappings();
+        }
+        CartResponse cartResponse = fromEntityToResponseTypeMap.map(cart) ;
+
+        // map user id
+        if(cart.getUser() != null){
+            cartResponse.setUserId(cart.getUser().getId());
+            cartResponse.setUsername(cart.getUser().getUsername());
+        }
+        // map cart items
+        if(cart.getCartItems() != null && cart.getCartItems().size() > 0) {
+            List<CartItemResponse> cartItemResponses = cart.getCartItems().stream().map(item -> this.cartItemMapper.fromEntityToResponse(item)).toList();
+            cartResponse.setCartItemResponses(cartItemResponses);
+        }
+
+        return cartResponse ;
+    }
+}

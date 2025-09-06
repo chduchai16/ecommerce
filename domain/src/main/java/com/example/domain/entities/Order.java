@@ -17,7 +17,7 @@ public class Order extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id ;
+    private Integer id ;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -26,28 +26,28 @@ public class Order extends BaseEntity{
     @Column(name = "total_price")
     private Float totalPrice ;
 
-    @Column(name = "status" , length = 20)
+    @Column(name = "status" ,columnDefinition = "NVARCHAR(255)", length = 20)
     private String status ;
 
-    @Column(name = "shipping_address" , length = 255)
+    @Column(name = "shipping_address" ,columnDefinition = "NVARCHAR(255)", length = 255)
     private String shippingAddress ;
 
-    @Column(name = "payment_method", length = 255)
+    @Column(name = "payment_method",columnDefinition = "NVARCHAR(255)", length = 255)
     private String paymentMethod ;
 
-    @Column(name = "shipping_method" , length = 255)
+    @Column(name = "shipping_method",columnDefinition = "NVARCHAR(255)" , length = 255)
     private String shippingMethod ;
 
-    @Column(name = "fullname" , length =255)
+    @Column(name = "fullname",columnDefinition = "NVARCHAR(255)" , length =255)
     private String fullName ;
 
     @Column(name = "phone_number" , length=20)
     private String phoneNumber ;
 
-    @Column(name = "email" , length=255)
+    @Column(name = "email",columnDefinition = "NVARCHAR(255)" , length=255)
     private String email ;
 
-    @Column(name = "note")
+    @Column(name = "note" ,columnDefinition = "NVARCHAR(255)")
     private String note ;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
