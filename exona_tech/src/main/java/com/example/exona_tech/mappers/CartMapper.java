@@ -40,8 +40,8 @@ public class CartMapper {
         Cart cart = fromRequestToEntityTypeMap.map(cartDTO);
 
         // map cart items
-        if(cartDTO.getCartItemDTOs() != null && cartDTO.getCartItemDTOs().size() > 0) {
-            List<CartItem> cartItems = cartDTO.getCartItemDTOs().stream().map(dto -> this.cartItemMapper.fromRequestToEntity(dto)).toList();
+        if(cartDTO.getCartItemDTOs() != null && !cartDTO.getCartItemDTOs().isEmpty()) {
+            List<CartItem> cartItems = cartDTO.getCartItemDTOs().stream().map(this.cartItemMapper::fromRequestToEntity).toList();
             cart.setCartItems(cartItems);
         }
 

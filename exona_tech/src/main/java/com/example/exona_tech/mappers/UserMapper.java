@@ -2,6 +2,7 @@ package com.example.exona_tech.mappers;
 
 import com.example.domain.dtos.requests.UserDTO;
 import com.example.domain.dtos.resposnes.RoleResponse;
+import com.example.domain.dtos.resposnes.UserResponse;
 import com.example.domain.entities.Role;
 import com.example.domain.entities.User;
 import com.example.domain.repositories.RoleRepository;
@@ -17,9 +18,10 @@ import org.springframework.stereotype.Component;
 public class UserMapper {
     private final ModelMapper modelMapper ;
     private final RoleRepository roleRepository ;
-    private final PasswordEncoder passwordEncoder ;
+    private final RoleMapper roleMapper;
 
     private TypeMap<UserDTO , User>  fromRequestToResponseTypeMap ;
+    private TypeMap<User , UserResponse> fromEntityToResponseTypeMap ;
 
     public User fromRequestToEntity(UserDTO userDTO) throws Exception {
         if(userDTO == null) return null ;
@@ -48,5 +50,32 @@ public class UserMapper {
         }
 
         return user ;
+    }
+
+    public UserResponse fromEntityToResponse (User user){
+        if(user == null) return null ;
+        if(fromEntityToResponseTypeMap == null) {
+            fromEntityToResponseTypeMap = modelMapper.createTypeMap(User.class , UserResponse.class);
+            fromEntityToResponseTypeMap.getMappings().clear();
+            fromEntityToResponseTypeMap.addMappings(mapper -> {
+                mapper.skip(UserResponse :: setRole);
+                mapper.skip(UserResponse :: setCartId);
+            });
+            fromEntityToResponseTypeMap.implicitMappings();
+        }
+        UserResponse userResponse = fromEntityToResponseTypeMap.map(user) ;
+
+        // map role
+        if(user.getRole() != null){
+            RoleResponse roleResponse = roleMapper.fromEntityToResponse(user.getRole());
+            userResponse.setRole(roleResponse);
+        }
+
+        // map cart id
+        if(user.getCart() != null){
+            userResponse.setCartId(user.getCart().getId());
+        }
+
+        return userResponse ;
     }
 }

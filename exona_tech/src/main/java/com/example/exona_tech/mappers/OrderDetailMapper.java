@@ -1,6 +1,7 @@
 package com.example.exona_tech.mappers;
 
 import com.example.domain.dtos.requests.OrderDetailDTO;
+import com.example.domain.dtos.resposnes.OrderDetailResponse;
 import com.example.domain.entities.Order;
 import com.example.domain.entities.OrderDetail;
 import com.example.domain.entities.Product;
@@ -19,8 +20,9 @@ public class OrderDetailMapper {
     private final ProductRepository productRepository ;
     private final OrderRepository orderRepository ;
     private final ModelMapper modelMapper ;
-
+    private final ProductMapper productMapper ;
     private TypeMap<OrderDetailDTO , OrderDetail> fromRequestToEntityTypeMap;
+    private TypeMap<OrderDetail , OrderDetailResponse> fromEntityToResponseTypeMap ;
 
     public OrderDetail fromRequestToEntity (OrderDetailDTO orderDetailDTO) {
         if(orderDetailDTO == null) return null ;
@@ -48,5 +50,31 @@ public class OrderDetailMapper {
         }
 
         return orderDetail ;
+    }
+
+    public OrderDetailResponse fromEntityToResponse (OrderDetail orderDetail){
+        if(orderDetail == null) return null ;
+        if(fromEntityToResponseTypeMap == null){
+            fromEntityToResponseTypeMap = modelMapper.createTypeMap(OrderDetail.class , OrderDetailResponse.class);
+            fromEntityToResponseTypeMap.getMappings().clear();
+            fromEntityToResponseTypeMap.addMappings(mapper -> {
+                mapper.skip(OrderDetailResponse :: setProductResponse);
+                mapper.skip(OrderDetailResponse :: setOrderId);
+            });
+            fromEntityToResponseTypeMap.implicitMappings();
+        }
+
+        OrderDetailResponse orderDetailResponse = fromEntityToResponseTypeMap.map(orderDetail);
+        // map product response
+        if(orderDetail.getProduct() != null) {
+            orderDetailResponse.setProductResponse(productMapper.fromEntityToResponse(orderDetail.getProduct()));
+        }
+
+        // map order id
+        if(orderDetail.getOrder() != null) {
+            orderDetailResponse.setOrderId(orderDetail.getOrder().getId());
+        }
+
+        return orderDetailResponse ;
     }
 }
