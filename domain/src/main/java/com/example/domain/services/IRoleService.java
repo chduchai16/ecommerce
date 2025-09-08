@@ -1,6 +1,5 @@
 package com.example.domain.services;
 
-import com.example.domain.dtos.requests.RoleDTO;
 import com.example.domain.entities.Role;
 
 import java.util.List;

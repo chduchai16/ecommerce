@@ -71,7 +71,7 @@ public class ProductMapper {
             fromEntityToResponseTypeMap = modelMapper.createTypeMap(Product.class , ProductResponse.class);
             fromEntityToResponseTypeMap.getMappings().clear();
             fromEntityToResponseTypeMap.addMappings(mapper -> {
-                mapper.skip(ProductResponse :: setCategoryResponse);
+                mapper.skip(ProductResponse :: setCategoryName);
                 mapper.skip(ProductResponse :: setProductImageResponses);
             });
             fromEntityToResponseTypeMap.implicitMappings();
@@ -81,8 +81,7 @@ public class ProductMapper {
 
         // map category
         if (product.getCategory() != null) {
-            CategoryResponse categoryResponse = categoryMapper.fromEntityToResponse(product.getCategory());
-            productResponse.setCategoryResponse(categoryResponse);
+            productResponse.setCategoryName(product.getCategory().getName());
         }
 
         // map images

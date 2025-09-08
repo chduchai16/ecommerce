@@ -1,0 +1,15 @@
+E:\Java\ecommerce\domain\src\main\java\com\example\domain\entities\BaseEntity.java
+E:\Java\ecommerce\domain\src\main\java\com\example\domain\entities\Cart.java
+E:\Java\ecommerce\domain\src\main\java\com\example\domain\entities\CartItem.java
+E:\Java\ecommerce\domain\src\main\java\com\example\domain\entities\Category.java
+E:\Java\ecommerce\domain\src\main\java\com\example\domain\entities\Coupon.java
+E:\Java\ecommerce\domain\src\main\java\com\example\domain\entities\Order.java
+E:\Java\ecommerce\domain\src\main\java\com\example\domain\entities\OrderDetail.java
+E:\Java\ecommerce\domain\src\main\java\com\example\domain\entities\OrderStatus.java
+E:\Java\ecommerce\domain\src\main\java\com\example\domain\entities\Product.java
+E:\Java\ecommerce\domain\src\main\java\com\example\domain\entities\ProductImage.java
+E:\Java\ecommerce\domain\src\main\java\com\example\domain\entities\Rating.java
+E:\Java\ecommerce\domain\src\main\java\com\example\domain\entities\Role.java
+E:\Java\ecommerce\domain\src\main\java\com\example\domain\entities\Supplier.java
+E:\Java\ecommerce\domain\src\main\java\com\example\domain\entities\User.java
+E:\Java\ecommerce\domain\src\main\java\com\example\domain\Main.java
