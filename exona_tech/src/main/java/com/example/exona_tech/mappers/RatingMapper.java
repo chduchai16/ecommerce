@@ -1,8 +1,7 @@
 package com.example.exona_tech.mappers;
 
-import com.example.domain.dtos.requests.ProductDTO;
-import com.example.domain.dtos.requests.RatingDTO;
-import com.example.domain.dtos.resposnes.RatingResponse;
+import com.example.exona_tech.dtos.requests.RatingDTO;
+import com.example.exona_tech.dtos.resposnes.RatingResponse;
 import com.example.domain.entities.Product;
 import com.example.domain.entities.Rating;
 import com.example.domain.entities.User;

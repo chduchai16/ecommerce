@@ -1,8 +1,8 @@
 package com.example.exona_tech.mappers;
 
-import com.example.domain.dtos.requests.UserDTO;
-import com.example.domain.dtos.resposnes.RoleResponse;
-import com.example.domain.dtos.resposnes.UserResponse;
+import com.example.exona_tech.dtos.requests.UserDTO;
+import com.example.exona_tech.dtos.resposnes.RoleResponse;
+import com.example.exona_tech.dtos.resposnes.UserResponse;
 import com.example.domain.entities.Role;
 import com.example.domain.entities.User;
 import com.example.domain.repositories.RoleRepository;
@@ -10,7 +10,6 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeMap;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component

@@ -1,8 +1,8 @@
 package com.example.exona_tech.mappers;
 
-import com.example.domain.dtos.requests.CartItemDTO;
-import com.example.domain.dtos.resposnes.CartItemResponse;
-import com.example.domain.dtos.resposnes.ProductResponse;
+import com.example.exona_tech.dtos.requests.CartItemDTO;
+import com.example.exona_tech.dtos.resposnes.CartItemResponse;
+import com.example.exona_tech.dtos.resposnes.ProductResponse;
 import com.example.domain.entities.Cart;
 import com.example.domain.entities.CartItem;
 import com.example.domain.entities.Product;

@@ -1,9 +1,9 @@
 package com.example.exona_tech.mappers;
 
-import com.example.domain.dtos.requests.ProductDTO;
-import com.example.domain.dtos.resposnes.CategoryResponse;
-import com.example.domain.dtos.resposnes.ProductImageResponse;
-import com.example.domain.dtos.resposnes.ProductResponse;
+import com.example.exona_tech.dtos.requests.ProductDTO;
+import com.example.exona_tech.dtos.resposnes.CategoryResponse;
+import com.example.exona_tech.dtos.resposnes.ProductImageResponse;
+import com.example.exona_tech.dtos.resposnes.ProductResponse;
 import com.example.domain.entities.*;
 import com.example.domain.repositories.*;
 import jakarta.persistence.EntityNotFoundException;
@@ -28,7 +28,7 @@ public class ProductMapper {
     private TypeMap<ProductDTO , Product> fromRequestToEntityTypeMap;
     private TypeMap<Product , ProductResponse> fromEntityToResponseTypeMap ;
 
-    public Product fromRequestToEntityTypeMap( ProductDTO productDTO ){
+    public Product fromRequestToEntity( ProductDTO productDTO ){
         if(productDTO == null) return null ;
         if(fromRequestToEntityTypeMap == null) {
             fromRequestToEntityTypeMap = this.modelMapper.createTypeMap(ProductDTO.class , Product.class);

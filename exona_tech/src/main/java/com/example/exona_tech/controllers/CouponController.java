@@ -1,11 +1,12 @@
 package com.example.exona_tech.controllers;
 
-import com.example.domain.dtos.requests.CouponDTO;
-import com.example.domain.dtos.resposnes.BaseResponse;
-import com.example.domain.dtos.resposnes.CouponResponse;
-import com.example.domain.dtos.resposnes.PagedResponse;
+import com.example.exona_tech.dtos.requests.CouponDTO;
+import com.example.exona_tech.dtos.resposnes.BaseResponse;
+import com.example.exona_tech.dtos.resposnes.CouponResponse;
+import com.example.exona_tech.dtos.resposnes.PagedResponse;
 import com.example.domain.entities.Coupon;
-import com.example.domain.pojos.PaginationInfo;
+import com.example.exona_tech.mappers.CouponMapper;
+import com.example.exona_tech.pojos.PaginationInfo;
 import com.example.domain.services.ICouponService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -28,6 +29,7 @@ import java.util.List;
 public class CouponController {
 
     private final ICouponService couponService ;
+    private final CouponMapper couponMapper ;
 
     @PostMapping("/apply")
     public ResponseEntity<?> applyCoupon(
@@ -35,7 +37,7 @@ public class CouponController {
     ){
         try{
             Coupon coupon = couponService.applyCoupon(code);
-            CouponResponse couponResponse = CouponResponse.convertFromCoupon(coupon) ;
+            CouponResponse couponResponse = couponMapper.fromEntityToResponse(coupon) ;
             BaseResponse baseResponse = BaseResponse.buildResponse("200", "Apply coupon successfully" , couponResponse) ;
             return ResponseEntity.ok(baseResponse) ;
         }
@@ -62,7 +64,10 @@ public class CouponController {
                     coupons.getTotalPages() ,
                     coupons.getTotalElements()
             );
-            List<CouponResponse> couponResponses = coupons.stream().map(CouponResponse::convertFromCoupon).toList() ;
+            List<CouponResponse> couponResponses = coupons
+                    .stream()
+                    .map(couponMapper :: fromEntityToResponse)
+                    .toList() ;
             PagedResponse pagedCouponsResponse = new PagedResponse(couponResponses , paginationInfo) ;
             BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Get coupons successfully." , pagedCouponsResponse) ;
             return ResponseEntity.ok(baseResponse) ;
@@ -79,7 +84,8 @@ public class CouponController {
     public ResponseEntity<?> getCouponWithId(@PathVariable("id") int couponId){
         try {
             Coupon coupon = couponService.getCouponById(couponId) ;
-            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Get coupon successfully." , CouponResponse.convertFromCoupon(coupon)) ;
+            CouponResponse couponResponse = couponMapper.fromEntityToResponse(coupon) ;
+            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Get coupon successfully." ,couponResponse) ;
             return ResponseEntity.ok(baseResponse) ;
         }
         catch (Exception e) {
@@ -108,8 +114,9 @@ public class CouponController {
                 BaseResponse baseResponse = BaseResponse.buildResponse("400" , "Invalid data.") ;
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse) ;
             }
-            Coupon coupon = couponService.createCoupon(couponDTO);
-            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Create coupon successfully." , CouponResponse.convertFromCoupon(coupon)) ;
+            Coupon coupon = couponService.createCoupon(couponMapper.fromRequestToEntity(couponDTO));
+            CouponResponse couponResponse = couponMapper.fromEntityToResponse(coupon) ;
+            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Create coupon successfully." ,couponResponse) ;
             return ResponseEntity.ok(baseResponse) ;
         }
         catch (Exception e) {
@@ -120,11 +127,10 @@ public class CouponController {
     }
 
     // cập nật coupon
-    @PutMapping("/{id}")
+    @PutMapping()
     public ResponseEntity<?> updateCoupon(
             @RequestBody @Valid CouponDTO couponDTO ,
-            BindingResult result,
-            @PathVariable ("id") int couponId
+            BindingResult result
     ){
         try {
             if(result.hasErrors()) {
@@ -139,8 +145,9 @@ public class CouponController {
                 BaseResponse baseResponse = BaseResponse.buildResponse("400" , "Invalid data.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse) ;
             }
-            Coupon coupon = couponService.updateCoupon(couponId , couponDTO);
-            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Update coupon successfully." , CouponResponse.convertFromCoupon(coupon));
+            Coupon coupon = couponService.updateCoupon(couponMapper.fromRequestToEntity(couponDTO));
+            CouponResponse couponResponse = couponMapper.fromEntityToResponse(coupon) ;
+            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Update coupon successfully." , couponResponse);
             return ResponseEntity.ok(baseResponse) ;
         }
         catch (Exception e) {

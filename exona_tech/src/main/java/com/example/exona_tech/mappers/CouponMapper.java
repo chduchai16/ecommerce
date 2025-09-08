@@ -1,7 +1,7 @@
 package com.example.exona_tech.mappers;
 
-import com.example.domain.dtos.requests.CouponDTO;
-import com.example.domain.dtos.resposnes.CouponResponse;
+import com.example.exona_tech.dtos.requests.CouponDTO;
+import com.example.exona_tech.dtos.resposnes.CouponResponse;
 import com.example.domain.entities.Coupon;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;

@@ -1,8 +1,6 @@
 package com.example.exona_tech.imp_services;
 
 
-import com.example.domain.dtos.requests.CartDTO;
-import com.example.domain.dtos.requests.CartItemDTO;
 import com.example.domain.entities.Cart;
 import com.example.domain.entities.CartItem;
 import com.example.domain.entities.Product;

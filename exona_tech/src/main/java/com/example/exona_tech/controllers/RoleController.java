@@ -1,10 +1,11 @@
 package com.example.exona_tech.controllers;
 
-import com.example.domain.dtos.requests.RoleDTO;
-import com.example.domain.dtos.resposnes.BaseResponse;
-import com.example.domain.dtos.resposnes.RoleResponse;
+import com.example.exona_tech.dtos.requests.RoleDTO;
+import com.example.exona_tech.dtos.resposnes.BaseResponse;
+import com.example.exona_tech.dtos.resposnes.RoleResponse;
 import com.example.domain.entities.Role;
 import com.example.domain.services.IRoleService;
+import com.example.exona_tech.mappers.RoleMapper;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,17 +25,21 @@ import java.util.List;
 public class RoleController {
 
     private final IRoleService roleService;
+    private final RoleMapper roleMapper ;
 
     @GetMapping()
     public ResponseEntity<?> getAllRoles() {
         try {
             List<Role> roles = roleService.getAllRoles();
-            List<RoleResponse> roleResponses = roles.stream().map(RoleResponse::convertFromRole).toList();
+            List<RoleResponse> roleResponses = roles
+                    .stream()
+                    .map(roleMapper :: fromEntityToResponse)
+                    .toList();
             BaseResponse baseResponse = BaseResponse.buildResponse("200", "Get roles successfully.", roleResponses);
             return ResponseEntity.ok(baseResponse);
         } catch (Exception e) {
             System.out.println("Error getting roles: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Get roles failed.");
+            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Get roles failed: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -57,12 +62,13 @@ public class RoleController {
                 BaseResponse baseResponse = BaseResponse.buildResponse("400", "Invalid role data.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse);
             }
-            Role role = roleService.createRole(roleDTO);
-            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Create role successfully.", RoleResponse.convertFromRole(role));
+            Role role = roleService.createRole(roleMapper.fromRequestToEntity(roleDTO));
+            RoleResponse roleResponse = roleMapper.fromEntityToResponse(role) ;
+            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Create role successfully.",roleResponse);
             return ResponseEntity.ok(baseResponse);
         } catch (Exception e) {
             System.out.println("Error creating role: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Create role failed.");
+            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Create role failed: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }

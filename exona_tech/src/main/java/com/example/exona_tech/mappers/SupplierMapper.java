@@ -1,7 +1,7 @@
 package com.example.exona_tech.mappers;
 
-import com.example.domain.dtos.requests.SupplierDTO;
-import com.example.domain.dtos.resposnes.SupplierResponse;
+import com.example.exona_tech.dtos.requests.SupplierDTO;
+import com.example.exona_tech.dtos.resposnes.SupplierResponse;
 import com.example.domain.entities.Supplier;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;

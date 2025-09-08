@@ -1,11 +1,12 @@
 package com.example.exona_tech.controllers;
 
-import com.example.domain.dtos.requests.OrderDTO;
-import com.example.domain.dtos.resposnes.BaseResponse;
-import com.example.domain.dtos.resposnes.OrderResponse;
-import com.example.domain.dtos.resposnes.PagedResponse;
+import com.example.exona_tech.dtos.requests.OrderDTO;
+import com.example.exona_tech.dtos.resposnes.BaseResponse;
+import com.example.exona_tech.dtos.resposnes.OrderResponse;
+import com.example.exona_tech.dtos.resposnes.PagedResponse;
 import com.example.domain.entities.Order;
-import com.example.domain.pojos.PaginationInfo;
+import com.example.exona_tech.mappers.OrderMapper;
+import com.example.exona_tech.pojos.PaginationInfo;
 import com.example.domain.services.IOrderService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -29,18 +30,20 @@ import java.util.List;
 public class OrderController {
 
     private final IOrderService orderService ;
+    private final OrderMapper orderMapper ;
 
     // xem đơn hàng
     @GetMapping("/{id}")
     public ResponseEntity<?> getOrder(@PathVariable("id") int orderId){
         try {
             Order order = orderService.getOrderById(orderId);
-            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Get order successfully." , OrderResponse.convertFromOrder(order));
+            OrderResponse orderResponse = orderMapper.fromEntityToResponse(order);
+            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Get order successfully." , orderResponse);
             return ResponseEntity.ok(baseResponse);
         }
         catch(Exception e) {
             System.out.println(String.format("Error getting order(%s): %s", orderId, e.getMessage() ));
-            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Get order failed.");
+            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Get order failed: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse) ;
         }
     }
@@ -55,7 +58,10 @@ public class OrderController {
             PageRequest pageRequest = PageRequest.of(page , limit );
             Page<Order> orders = orderService.getAllOrders(pageRequest);
 
-            List<OrderResponse> orderResponses = orders.getContent().stream().map(OrderResponse::convertFromOrder).toList() ;
+            List<OrderResponse> orderResponses = orders.getContent()
+                    .stream()
+                    .map(orderMapper :: fromEntityToResponse)
+                    .toList() ;
 
             PaginationInfo paginationInfo = new PaginationInfo(
                     orders.getNumber() ,
@@ -71,7 +77,7 @@ public class OrderController {
         }
         catch (Exception e){
             System.out.println("Error getting orders: " + e.getMessage());
-            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Get orders failed.");
+            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Get orders failed: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -86,7 +92,10 @@ public class OrderController {
         try {
             PageRequest pageRequest = PageRequest.of(page, limit, Sort.by(Sort.Direction.DESC, "createdAt"));
             Page<Order> orders = orderService.getOrdersByUserId(userId, pageRequest) ;
-            List<OrderResponse> orderResponses = orders.getContent().stream().map(OrderResponse::convertFromOrder).toList() ;
+            List<OrderResponse> orderResponses = orders.getContent()
+                    .stream()
+                    .map(orderMapper :: fromEntityToResponse)
+                    .toList() ;
 
             PaginationInfo paginationInfo = new PaginationInfo(
                     orders.getNumber() ,
@@ -102,7 +111,7 @@ public class OrderController {
         }
         catch (Exception e ) {
             System.out.println("Error getting orders: " + e.getMessage());
-            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Get orders failed.");
+            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Get orders failed: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -126,50 +135,51 @@ public class OrderController {
                 BaseResponse baseResponse = BaseResponse.buildResponse("400" , "Create order failed.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse) ;
             }
-            Order order = orderService.createOrder(orderDTO);
-            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Create order successfully." , OrderResponse.convertFromOrder(order));
+            Order order = orderService.createOrder(orderMapper.fromRequestToEntity(orderDTO));
+            OrderResponse orderResponse = orderMapper.fromEntityToResponse(order);
+            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Create order successfully." , orderResponse);
             return ResponseEntity.ok(baseResponse);
         }
         catch (Exception e ) {
             System.out.println("Error creating order: " + e.getMessage());
-            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Create order successfully.");
+            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Create order failed: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse) ;
         }
     }
 
-    // đặt hàng
-    @PostMapping("/place")
-    public ResponseEntity<?> placeOrder (
-            @RequestBody @Valid OrderDTO orderDTO,
-            BindingResult result
-    ){
-        try {
-            if(result.hasErrors()){
-                StringBuilder stringBuilder = new StringBuilder();
-                for(FieldError fieldError : result.getFieldErrors()){
-                    stringBuilder.append(fieldError).append("\n");
-                }
-                BaseResponse baseResponse = BaseResponse.buildResponse("400" , "Invalid data") ;
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse) ;
-            }
-            Order order = orderService.placeOrder(orderDTO) ;
-            OrderResponse orderResponse = OrderResponse.convertFromOrder(order);
-            BaseResponse baseResponse = BaseResponse.buildResponse("200","Place order successfully", orderResponse) ;
-            return ResponseEntity.status(HttpStatus.OK).body(baseResponse) ;
-
-        } catch (Exception exception) {
-            System.out.println("Error placing order: " + exception.getMessage());
-            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Place order failed: " + exception.getMessage()) ;
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse) ;
-        }
-    }
+    // xem lại sau
+//    // đặt hàng
+//    @PostMapping("/place")
+//    public ResponseEntity<?> placeOrder (
+//            @RequestBody @Valid OrderDTO orderDTO,
+//            BindingResult result
+//    ){
+//        try {
+//            if(result.hasErrors()){
+//                StringBuilder stringBuilder = new StringBuilder();
+//                for(FieldError fieldError : result.getFieldErrors()){
+//                    stringBuilder.append(fieldError).append("\n");
+//                }
+//                BaseResponse baseResponse = BaseResponse.buildResponse("400" , "Invalid data") ;
+//                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse) ;
+//            }
+//            Order order = orderService.placeOrder(orderDTO) ;
+//            OrderResponse orderResponse = OrderResponse.convertFromOrder(order);
+//            BaseResponse baseResponse = BaseResponse.buildResponse("200","Place order successfully", orderResponse) ;
+//            return ResponseEntity.status(HttpStatus.OK).body(baseResponse) ;
+//
+//        } catch (Exception exception) {
+//            System.out.println("Error placing order: " + exception.getMessage());
+//            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Place order failed: " + exception.getMessage()) ;
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse) ;
+//        }
+//    }
 
     // cạp nhật đơn hàng
-    @PutMapping("/{id}")
+    @PutMapping()
     public ResponseEntity<?> updateOrder(
             @RequestBody @Valid OrderDTO orderDTO,
-            BindingResult result,
-            @PathVariable("id") int orderId
+            BindingResult result
     ){
         try {
             if (result.hasErrors()){
@@ -184,13 +194,14 @@ public class OrderController {
                 BaseResponse baseResponse = BaseResponse.buildResponse("400" , "Invalid data.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse) ;
             }
-            Order order = orderService.updateOrder(orderId,orderDTO);
-            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Update order successfully." , OrderResponse.convertFromOrder(order));
+            Order order = orderService.updateOrder(orderMapper.fromRequestToEntity(orderDTO));
+            OrderResponse orderResponse  = orderMapper.fromEntityToResponse(order) ;
+            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Update order successfully." , orderResponse);
             return ResponseEntity.ok(baseResponse);
         }
         catch (Exception e ) {
             System.out.println("Error updating order: " + e.getMessage());
-            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Update order failed.");
+            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Update order failed: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse) ;
         }
     }
@@ -207,7 +218,7 @@ public class OrderController {
         }
         catch (Exception e) {
             System.out.println(String.format("Error deleting order(%s): %s" , orderId,e.getMessage()));
-            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Delete order failed.");
+            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Delete order failed: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse) ;
         }
     }

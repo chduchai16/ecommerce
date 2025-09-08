@@ -1,14 +1,10 @@
 package com.example.exona_tech.imp_services;
 
-import com.example.domain.dtos.requests.RatingDTO;
-import com.example.domain.entities.Product;
 import com.example.domain.entities.Rating;
-import com.example.domain.entities.User;
 import com.example.domain.repositories.ProductRepository;
 import com.example.domain.repositories.RatingRepository;
 import com.example.domain.repositories.UserRepository;
 import com.example.domain.services.IRatingService;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

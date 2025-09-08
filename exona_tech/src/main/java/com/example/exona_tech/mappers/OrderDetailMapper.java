@@ -1,13 +1,12 @@
 package com.example.exona_tech.mappers;
 
-import com.example.domain.dtos.requests.OrderDetailDTO;
-import com.example.domain.dtos.resposnes.OrderDetailResponse;
+import com.example.exona_tech.dtos.requests.OrderDetailDTO;
+import com.example.exona_tech.dtos.resposnes.OrderDetailResponse;
 import com.example.domain.entities.Order;
 import com.example.domain.entities.OrderDetail;
 import com.example.domain.entities.Product;
 import com.example.domain.repositories.OrderRepository;
 import com.example.domain.repositories.ProductRepository;
-import jakarta.persistence.Entity;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;

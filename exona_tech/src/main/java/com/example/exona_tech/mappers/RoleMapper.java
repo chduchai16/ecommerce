@@ -1,7 +1,7 @@
 package com.example.exona_tech.mappers;
 
-import com.example.domain.dtos.requests.RoleDTO;
-import com.example.domain.dtos.resposnes.RoleResponse;
+import com.example.exona_tech.dtos.requests.RoleDTO;
+import com.example.exona_tech.dtos.resposnes.RoleResponse;
 import com.example.domain.entities.Role;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;

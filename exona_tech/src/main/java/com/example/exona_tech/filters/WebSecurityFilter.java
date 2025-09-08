@@ -34,19 +34,19 @@ public class WebSecurityFilter {
                 .authorizeHttpRequests(auth -> auth
 
                         // auth
-                        .requestMatchers(HttpMethod.POST , apiPrefix + "/auth/login**").permitAll()
-                        .requestMatchers(HttpMethod.POST , apiPrefix + "/auth/register**").permitAll()
+                        .requestMatchers(HttpMethod.POST , apiPrefix + "/auth/sign-in**").permitAll()
+                        .requestMatchers(HttpMethod.POST , apiPrefix + "/auth/sign-up**").permitAll()
 
                         // users (chỉ admin quản lý user)
                         .requestMatchers(HttpMethod.GET , apiPrefix + "/users/**").hasRole(ADMIN)
                         .requestMatchers(HttpMethod.POST , apiPrefix + "/users/**").hasRole(ADMIN)
-                        .requestMatchers(HttpMethod.PUT , apiPrefix + "/users/**").hasRole(ADMIN)
+                        .requestMatchers(HttpMethod.PUT , apiPrefix + "/users**").hasRole(ADMIN)
                         .requestMatchers(HttpMethod.DELETE , apiPrefix + "/users/**").hasRole(ADMIN)
 
                         // categories (ai cũng xem được, chỉ admin quản lý)
                         .requestMatchers(HttpMethod.GET , apiPrefix + "/categories**").permitAll()
                         .requestMatchers(HttpMethod.POST , apiPrefix + "/categories**").hasRole(ADMIN)
-                        .requestMatchers(HttpMethod.PUT , apiPrefix + "/categories/**").hasRole(ADMIN)
+                        .requestMatchers(HttpMethod.PUT , apiPrefix + "/categories**").hasRole(ADMIN)
                         .requestMatchers(HttpMethod.DELETE , apiPrefix + "/categories/**").hasRole(ADMIN)
 
                         // products
@@ -55,13 +55,13 @@ public class WebSecurityFilter {
                         // seller được quản lý sản phẩm của họ, admin thì toàn quyền
                         .requestMatchers(HttpMethod.POST , apiPrefix + "/products**").hasAnyRole(SELLER, ADMIN)
                         .requestMatchers(HttpMethod.POST , apiPrefix + "/products/many").hasAnyRole(SELLER , ADMIN)
-                        .requestMatchers(HttpMethod.PUT , apiPrefix + "/products/**").hasAnyRole(SELLER, ADMIN)
+                        .requestMatchers(HttpMethod.PUT , apiPrefix + "/products**").hasAnyRole(SELLER, ADMIN)
                         .requestMatchers(HttpMethod.DELETE , apiPrefix + "/products/**").hasAnyRole(SELLER, ADMIN)
 
                         // orders
                         .requestMatchers(HttpMethod.GET , apiPrefix + "/orders/user**").hasRole(CUSTOMER) // customer xem đơn của mình
                         .requestMatchers(HttpMethod.POST , apiPrefix + "/orders/place**").hasRole(CUSTOMER) // customer đặt đơn
-                        .requestMatchers(HttpMethod.PUT , apiPrefix + "/orders/**").hasAnyRole(CUSTOMER, SELLER, ADMIN)
+                        .requestMatchers(HttpMethod.PUT , apiPrefix + "/orders**").hasAnyRole(CUSTOMER, SELLER, ADMIN)
                         .requestMatchers(HttpMethod.GET , apiPrefix + "/orders/seller**").hasRole(SELLER) // seller xem đơn liên quan sản phẩm mình
                         .requestMatchers(HttpMethod.GET , apiPrefix + "/orders**").hasRole(ADMIN) // admin xem tất cả
 
@@ -70,7 +70,7 @@ public class WebSecurityFilter {
 
                         // ratings
                         .requestMatchers(HttpMethod.POST , apiPrefix + "/ratings**").hasRole(CUSTOMER)
-                        .requestMatchers(HttpMethod.PUT , apiPrefix + "/ratings/**").hasRole(CUSTOMER)
+                        .requestMatchers(HttpMethod.PUT , apiPrefix + "/ratings**").hasRole(CUSTOMER)
                         .requestMatchers(HttpMethod.DELETE , apiPrefix + "/ratings/**").hasRole(CUSTOMER)
                         .requestMatchers(HttpMethod.GET , apiPrefix + "/ratings/product**").hasAnyRole(SELLER, ADMIN)
                         .requestMatchers(HttpMethod.GET , apiPrefix + "/ratings/user-product**").hasRole(CUSTOMER)
@@ -79,13 +79,13 @@ public class WebSecurityFilter {
                         .requestMatchers(HttpMethod.POST , apiPrefix + "/coupons/apply**").hasRole(CUSTOMER)
                         .requestMatchers(HttpMethod.GET , apiPrefix + "/coupons**").hasRole(ADMIN)
                         .requestMatchers(HttpMethod.POST , apiPrefix + "/coupons**").hasRole(ADMIN)
-                        .requestMatchers(HttpMethod.PUT , apiPrefix + "/coupons/**").hasRole(ADMIN)
+                        .requestMatchers(HttpMethod.PUT , apiPrefix + "/coupons**").hasRole(ADMIN)
                         .requestMatchers(HttpMethod.DELETE , apiPrefix + "/coupons/**").hasRole(ADMIN)
 
                         // suppliers (seller quản lý supplier của họ, admin toàn quyền)
                         .requestMatchers(HttpMethod.GET , apiPrefix + "/suppliers**").hasAnyRole(SELLER, ADMIN)
                         .requestMatchers(HttpMethod.POST , apiPrefix + "/suppliers**").hasAnyRole(SELLER, ADMIN)
-                        .requestMatchers(HttpMethod.PUT , apiPrefix + "/suppliers/**").hasAnyRole(SELLER, ADMIN)
+                        .requestMatchers(HttpMethod.PUT , apiPrefix + "/suppliers**").hasAnyRole(SELLER, ADMIN)
                         .requestMatchers(HttpMethod.DELETE , apiPrefix + "/suppliers/**").hasRole(ADMIN)
 
                         // roles (chỉ admin)

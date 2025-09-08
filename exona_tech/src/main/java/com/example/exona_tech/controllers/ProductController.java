@@ -1,12 +1,13 @@
 package com.example.exona_tech.controllers;
 
-import com.example.domain.dtos.requests.ProductDTO;
-import com.example.domain.dtos.resposnes.BaseResponse;
-import com.example.domain.dtos.resposnes.PagedResponse;
-import com.example.domain.dtos.resposnes.ProductResponse;
+import com.example.exona_tech.dtos.requests.ProductDTO;
+import com.example.exona_tech.dtos.resposnes.BaseResponse;
+import com.example.exona_tech.dtos.resposnes.PagedResponse;
+import com.example.exona_tech.dtos.resposnes.ProductResponse;
 import com.example.domain.entities.Product;
 import com.example.domain.helpers.FileHelper;
-import com.example.domain.pojos.PaginationInfo;
+import com.example.exona_tech.mappers.ProductMapper;
+import com.example.exona_tech.pojos.PaginationInfo;
 import com.example.domain.services.IProductService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -38,6 +39,7 @@ import java.util.List;
 public class ProductController {
 
     private final IProductService productService;
+    private final ProductMapper productMapper ;
     private final FileHelper fileHelper;
 
     // tìm kiêm product theo keyword
@@ -53,7 +55,7 @@ public class ProductController {
 
             List<ProductResponse> productResponses = products.getContent()
                     .stream()
-                    .map(ProductResponse::convertFromProduct)
+                    .map(productMapper :: fromEntityToResponse)
                     .toList();
 
             PaginationInfo paginationInfo = new PaginationInfo(
@@ -69,7 +71,7 @@ public class ProductController {
             return ResponseEntity.ok(baseResponse);
         } catch (Exception e) {
             System.err.println("Error searching products: " + e.getMessage());
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Search products failed.");
+            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Search products failed: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -84,7 +86,10 @@ public class ProductController {
         try{
             PageRequest pageRequest = PageRequest.of(page , limit ) ;
             Page<Product> products = productService.getProductsByCategory(categoryId , pageRequest) ;
-            List<ProductResponse> productResponses = products.getContent().stream().map(ProductResponse::convertFromProduct).toList();
+            List<ProductResponse> productResponses = products.getContent()
+                    .stream()
+                    .map(productMapper :: fromEntityToResponse)
+                    .toList();
 
             PaginationInfo paginationInfo = new PaginationInfo(
                     products.getNumber() ,
@@ -99,7 +104,7 @@ public class ProductController {
         }
         catch (Exception e) {
             System.err.println("Error getting products: " + e.getMessage());
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "getting products failed.");
+            BaseResponse baseResponse = BaseResponse.buildResponse("500", "getting products failed: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -109,11 +114,12 @@ public class ProductController {
     public ResponseEntity<?> getProductWithProductId(@PathVariable("id") int productId) {
         try {
             Product product = productService.getProductById(productId);
-            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Get product successfully.", ProductResponse.convertFromProduct(product));
+            ProductResponse productResponse = productMapper.fromEntityToResponse(product) ;
+            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Get product successfully.", productResponse);
             return ResponseEntity.ok(baseResponse);
         } catch (Exception e) {
             System.out.println("Error getting product: " + e.getMessage());
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Get product failed.");
+            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Get product failed: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -138,8 +144,9 @@ public class ProductController {
                     products.getTotalElements()
             );
 
-            List<ProductResponse> productResponses = shuffled.stream()
-                    .map(ProductResponse::convertFromProduct)
+            List<ProductResponse> productResponses = shuffled
+                    .stream()
+                    .map(productMapper :: fromEntityToResponse)
                     .toList();
 
             PagedResponse<ProductResponse> pagedProductResponse = new PagedResponse<>(productResponses , paginationInfo) ;
@@ -149,7 +156,7 @@ public class ProductController {
 
         } catch (Exception e) {
             System.out.println("Error getting all products: " + e.getMessage());
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Get all products failed.");
+            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Get all products failed: " +e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -160,7 +167,10 @@ public class ProductController {
     ){
         try{
            List<Product> products = productService.getHotProducts(limit) ;
-           List<ProductResponse> productResponses = products.stream().map(ProductResponse::convertFromProduct).toList() ;
+           List<ProductResponse> productResponses = products
+                   .stream()
+                   .map(productMapper :: fromEntityToResponse)
+                   .toList() ;
            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Get hot products successfully" , productResponses) ;
            return ResponseEntity.ok(baseResponse) ;
         }
@@ -205,12 +215,13 @@ public class ProductController {
                 BaseResponse baseResponse = BaseResponse.buildResponse("400", "Invalid data.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse);
             }
-            Product product = productService.createProduct(productDTO);
-            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Create product successfully.", ProductResponse.convertFromProduct(product));
+            Product product = productService.createProduct(productMapper.fromRequestToEntity(productDTO));
+            ProductResponse productResponse = productMapper.fromEntityToResponse(product) ;
+            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Create product successfully.", productResponse);
             return ResponseEntity.ok(baseResponse);
         } catch (Exception e) {
             System.out.println("Error creating product: " + e.getMessage());
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Create product failed.");
+            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Create product failed: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -235,16 +246,21 @@ public class ProductController {
                 BaseResponse baseResponse = BaseResponse.buildResponse("400", "Invalid data.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse);
             }
-
-            List<Product> products = productService.createProducts(productDTOs);
-            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Create products successfully.",
-                    products.stream().map(ProductResponse::convertFromProduct).toList()
-            );
+            List<Product> convertedProducts = productDTOs
+                    .stream()
+                    .map(productMapper :: fromRequestToEntity)
+                    .toList() ;
+            List<Product> products = productService.createProducts(convertedProducts);
+            List<ProductResponse> productResponses = products
+                    .stream()
+                    .map(productMapper :: fromEntityToResponse)
+                    .toList();
+            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Create products successfully.",productResponses );
             return ResponseEntity.ok(baseResponse);
 
         } catch (Exception e) {
             System.out.println("Error creating products: " + e.getMessage());
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Create products failed.");
+            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Create products failed: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -320,17 +336,16 @@ public class ProductController {
         }
         catch (Exception e) {
             System.out.println("Error uploading product images: " + e.getMessage());
-            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Upload product images failed.") ;
+            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Upload product images failed: " +e.getMessage()) ;
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse) ;
         }
     }
 
     //  cập nhật sản phẩm
-    @PutMapping("/{id}")
+    @PutMapping()
     public ResponseEntity<?> updateProduct(
             @RequestBody @Valid ProductDTO productDTO,
-            BindingResult result,
-            @PathVariable("id") int productId
+            BindingResult result
     ) {
         try {
             if (result.hasErrors()) {
@@ -345,12 +360,13 @@ public class ProductController {
                 BaseResponse baseResponse = BaseResponse.buildResponse("400", "Invalid data.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse);
             }
-            Product product = productService.updateProduct(productId, productDTO);
-            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Update product successfully.", ProductResponse.convertFromProduct(product));
+            Product product = productService.updateProduct(productMapper.fromRequestToEntity(productDTO));
+            ProductResponse productResponse = productMapper.fromEntityToResponse(product) ;
+            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Update product successfully.", productResponse);
             return ResponseEntity.ok(baseResponse);
         } catch (Exception e) {
             System.out.println("Error updating product: " + e.getMessage());
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Update product failed.");
+            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Update product failed: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -374,14 +390,14 @@ public class ProductController {
             List<Product> products = productService.getTop10BestSellingProducts() ;
             List<ProductResponse> productResponses = products
                     .stream()
-                    .map(product -> ProductResponse.convertFromProduct(product))
+                    .map(productMapper :: fromEntityToResponse)
                     .toList();
             BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Get top 10 hotest product successfully." , productResponses) ;
             return ResponseEntity.ok(baseResponse) ;
         }
         catch(Exception exception) {
             System.out.println("Error get top 10 hotest products: " + exception.getMessage());
-            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Get products failed.") ;
+            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Get products failed: " + exception.getMessage()) ;
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse) ;
         }
     }

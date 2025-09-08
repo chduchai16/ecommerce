@@ -1,11 +1,12 @@
 package com.example.exona_tech.controllers;
 
-import com.example.domain.dtos.requests.SupplierDTO;
-import com.example.domain.dtos.resposnes.BaseResponse;
-import com.example.domain.dtos.resposnes.PagedResponse;
-import com.example.domain.dtos.resposnes.SupplierResponse;
+import com.example.exona_tech.dtos.requests.SupplierDTO;
+import com.example.exona_tech.dtos.resposnes.BaseResponse;
+import com.example.exona_tech.dtos.resposnes.PagedResponse;
+import com.example.exona_tech.dtos.resposnes.SupplierResponse;
 import com.example.domain.entities.Supplier;
-import com.example.domain.pojos.PaginationInfo;
+import com.example.exona_tech.mappers.SupplierMapper;
+import com.example.exona_tech.pojos.PaginationInfo;
 import com.example.domain.services.ISupplierService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -28,6 +29,7 @@ import java.util.List;
 public class SupplierController {
 
     private final ISupplierService supplierService;
+    private final SupplierMapper supplierMapper ;
 
     @GetMapping()
     public ResponseEntity<?> getAllSuppliers(
@@ -37,7 +39,11 @@ public class SupplierController {
         try {
             PageRequest pageRequest = PageRequest.of(page , limit) ;
             Page<Supplier> suppliers = supplierService.getAllSuppliers(pageRequest);
-            List<SupplierResponse> supplierResponses = suppliers.stream().map(SupplierResponse::convertFromSupplier).toList();
+            List<SupplierResponse> supplierResponses = suppliers
+                    .stream()
+                    .map(supplierMapper :: fromEntityToResponse)
+                    .toList();
+
             PaginationInfo paginationInfo = new PaginationInfo(
                     suppliers.getNumber() ,
                     suppliers.getSize() ,
@@ -50,7 +56,7 @@ public class SupplierController {
             return ResponseEntity.ok(baseResponse);
         } catch (Exception e) {
             System.out.println("Error getting suppliers: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Get suppliers failed.");
+            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Get suppliers failed: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -59,11 +65,12 @@ public class SupplierController {
     public ResponseEntity<?> getSupplier(@PathVariable("id") int supplierId) {
         try {
             Supplier supplier = supplierService.getSupplierById(supplierId);
-            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Get supplier successfully.", SupplierResponse.convertFromSupplier(supplier));
+            SupplierResponse supplierResponse = supplierMapper.fromEntityToResponse(supplier) ;
+            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Get supplier successfully.",supplierResponse);
             return ResponseEntity.ok(baseResponse);
         } catch (Exception e) {
             System.out.println("Error getting supplier: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Get supplier failed.");
+            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Get supplier failed: " +e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -86,21 +93,21 @@ public class SupplierController {
                 BaseResponse baseResponse = BaseResponse.buildResponse("400", "Invalid supplier data.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse);
             }
-            Supplier supplier = supplierService.createSupplier(supplierDTO);
-            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Create supplier successfully.", SupplierResponse.convertFromSupplier(supplier));
+            Supplier supplier = supplierService.createSupplier(supplierMapper.fromRequestToEntity(supplierDTO));
+            SupplierResponse supplierResponse = supplierMapper.fromEntityToResponse(supplier) ;
+            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Create supplier successfully.", supplierResponse);
             return ResponseEntity.ok(baseResponse);
         } catch (Exception e) {
             System.out.println("Error creating supplier: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Create supplier failed.");
+            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Create supplier failed: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
 
-    @PutMapping("/{id}")
+    @PutMapping()
     public ResponseEntity<?> updateSupplier(
             @RequestBody @Valid SupplierDTO supplierDTO,
-            BindingResult result,
-            @PathVariable("id") int supplierId
+            BindingResult result
     ) {
         try {
             if (result.hasErrors()) {
@@ -115,12 +122,13 @@ public class SupplierController {
                 BaseResponse baseResponse = BaseResponse.buildResponse("400", "Invalid supplier data.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse);
             }
-            Supplier supplier = supplierService.updateSupplier(supplierId, supplierDTO);
-            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Update supplier successfully.", SupplierResponse.convertFromSupplier(supplier));
+            Supplier supplier = supplierService.updateSupplier(supplierMapper.fromRequestToEntity(supplierDTO));
+            SupplierResponse supplierResponse = supplierMapper.fromEntityToResponse(supplier) ;
+            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Update supplier successfully.", supplierResponse);
             return ResponseEntity.ok(baseResponse);
         } catch (Exception e) {
             System.out.println("Error updating supplier: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Update supplier failed.");
+            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Update supplier failed: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -133,7 +141,7 @@ public class SupplierController {
             return ResponseEntity.ok(baseResponse);
         } catch (Exception e) {
             System.out.println("Error deleting supplier: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Delete supplier failed.");
+            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Delete supplier failed: " + e.getMessage() );
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }

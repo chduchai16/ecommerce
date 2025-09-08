@@ -1,7 +1,7 @@
 package com.example.exona_tech.mappers;
 
-import com.example.domain.dtos.requests.CategoryDTO;
-import com.example.domain.dtos.resposnes.CategoryResponse;
+import com.example.exona_tech.dtos.requests.CategoryDTO;
+import com.example.exona_tech.dtos.resposnes.CategoryResponse;
 import com.example.domain.entities.Category;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;

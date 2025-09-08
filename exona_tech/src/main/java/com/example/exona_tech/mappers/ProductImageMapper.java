@@ -1,7 +1,7 @@
 package com.example.exona_tech.mappers;
 
-import com.example.domain.dtos.requests.ProductImageDTO;
-import com.example.domain.dtos.resposnes.ProductImageResponse;
+import com.example.exona_tech.dtos.requests.ProductImageDTO;
+import com.example.exona_tech.dtos.resposnes.ProductImageResponse;
 import com.example.domain.entities.Product;
 import com.example.domain.entities.ProductImage;
 import com.example.domain.repositories.ProductRepository;

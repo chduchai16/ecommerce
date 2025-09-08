@@ -1,9 +1,6 @@
 package com.example.exona_tech.imp_services;
 
-import com.example.domain.dtos.requests.ProductDTO;
-import com.example.domain.entities.Category;
 import com.example.domain.entities.Product;
-import com.example.domain.entities.Supplier;
 import com.example.domain.repositories.CategoryRepository;
 import com.example.domain.repositories.ProductRepository;
 import com.example.domain.repositories.SupplierRepository;

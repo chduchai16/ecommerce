@@ -1,12 +1,13 @@
 package com.example.exona_tech.controllers;
 
-import com.example.domain.dtos.requests.UserDTO;
-import com.example.domain.dtos.requests.UserUpdateDTO;
-import com.example.domain.dtos.resposnes.BaseResponse;
-import com.example.domain.dtos.resposnes.PagedResponse;
-import com.example.domain.dtos.resposnes.UserResponse;
+import com.example.exona_tech.dtos.requests.UserDTO;
+import com.example.exona_tech.dtos.requests.UserUpdateDTO;
+import com.example.exona_tech.dtos.resposnes.BaseResponse;
+import com.example.exona_tech.dtos.resposnes.PagedResponse;
+import com.example.exona_tech.dtos.resposnes.UserResponse;
 import com.example.domain.entities.User;
-import com.example.domain.pojos.PaginationInfo;
+import com.example.exona_tech.mappers.UserMapper;
+import com.example.exona_tech.pojos.PaginationInfo;
 import com.example.domain.services.IUserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -28,6 +29,7 @@ import java.util.List;
 public class UserController {
 
     private final IUserService userService;
+    private final UserMapper userMapper ;
 
     // tìm kiếm user
     @GetMapping("/search")
@@ -39,8 +41,9 @@ public class UserController {
         try {
             PageRequest pageRequest = PageRequest.of(page, limit);
             Page<User> users = userService.searchUsers(keyword, pageRequest);
-            List<UserResponse> userResponses = users.getContent().stream()
-                    .map(UserResponse::convertFromUser)
+            List<UserResponse> userResponses = users.getContent()
+                    .stream()
+                    .map(userMapper :: fromEntityToResponse)
                     .toList();
 
             PaginationInfo paginationInfo = new PaginationInfo(
@@ -56,7 +59,7 @@ public class UserController {
             return ResponseEntity.ok(baseResponse);
         } catch (Exception e) {
             System.out.println("Error searching users: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Search users failed.");
+            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Search users failed: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -70,8 +73,9 @@ public class UserController {
         try {
             PageRequest pageRequest = PageRequest.of(page, limit);
             Page<User> users = userService.getAllUsers(pageRequest);
-            List<UserResponse> userResponses = users.getContent().stream()
-                    .map(UserResponse::convertFromUser)
+            List<UserResponse> userResponses = users.getContent()
+                    .stream()
+                    .map(userMapper :: fromEntityToResponse)
                     .toList();
 
             PaginationInfo paginationInfo = new PaginationInfo(
@@ -96,12 +100,12 @@ public class UserController {
     public ResponseEntity<?> getUserWithId(@PathVariable("id") int userId) {
         try {
             User user = userService.getUserById(userId);
-            UserResponse userResponse = UserResponse.convertFromUser(user);
+            UserResponse userResponse = userMapper.fromEntityToResponse(user);
             BaseResponse baseResponse = BaseResponse.buildResponse("200", "Get user successfully.", userResponse);
             return ResponseEntity.ok(baseResponse);
         } catch (Exception e) {
             System.out.println("Error getting user: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Get user failed.");
+            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Get user failed: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -110,13 +114,13 @@ public class UserController {
     public ResponseEntity<?> getUserWithPhoneNumber (@PathVariable("phone_number") String phoneNumber) {
         try{
             User user = userService.getUserByPhoneNumber(phoneNumber) ;
-            UserResponse userResponse = UserResponse.convertFromUser(user) ;
+            UserResponse userResponse = userMapper.fromEntityToResponse(user) ;
             BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Get user successfully." , userResponse) ;
             return ResponseEntity.ok(baseResponse) ;
         }
         catch (Exception e ) {
             System.out.println("Error getting user: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Get user failed.");
+            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Get user failed: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -139,20 +143,20 @@ public class UserController {
                 BaseResponse baseResponse = BaseResponse.buildResponse("400", "Invalid data.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse);
             }
-            User user = userService.createUser(userDTO);
-            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Create user successfully.", UserResponse.convertFromUser(user));
+            User user = userService.createUser(userMapper.fromRequestToEntity(userDTO));
+            UserResponse userResponse = userMapper.fromEntityToResponse(user);
+            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Create user successfully.",userResponse);
             return ResponseEntity.ok(baseResponse);
         } catch (Exception e) {
             System.out.println("Error register: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Create user failed.");
+            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Create user failed: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
 
-    @PutMapping("/{id}")
+    @PutMapping()
     public ResponseEntity<?> updateUser (
-            @PathVariable("id") int userId,
-            @RequestBody @Valid UserUpdateDTO userUpdateDTO ,
+            @RequestBody @Valid UserDTO userDTO ,
             BindingResult result
     ){
         try {
@@ -168,14 +172,14 @@ public class UserController {
                 BaseResponse baseResponse = BaseResponse.buildResponse("400", "Invalid data.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse);
             }
-            User user = userService.updateUser(userId , userUpdateDTO) ;
-            UserResponse userResponse = UserResponse.convertFromUser(user) ;
+            User user = userService.updateUser(userMapper.fromRequestToEntity(userDTO)) ;
+            UserResponse userResponse = userMapper.fromEntityToResponse(user);
             BaseResponse baseResponse = new BaseResponse("200" , "Update successfully." , userResponse);
             return ResponseEntity.ok(baseResponse) ;
         }
         catch (Exception e) {
             System.out.println("Error update user: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Update user failed.");
+            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Update user failed: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }

@@ -1,12 +1,15 @@
 package com.example.exona_tech.controllers;
 
-import com.example.domain.dtos.requests.CartDTO;
-import com.example.domain.dtos.requests.CartItemDTO;
-import com.example.domain.dtos.resposnes.BaseResponse;
-import com.example.domain.dtos.resposnes.CartResponse;
+import com.example.domain.entities.CartItem;
+import com.example.exona_tech.dtos.requests.CartDTO;
+import com.example.exona_tech.dtos.requests.CartItemDTO;
+import com.example.exona_tech.dtos.resposnes.BaseResponse;
+import com.example.exona_tech.dtos.resposnes.CartResponse;
 import com.example.domain.entities.Cart;
 import com.example.domain.services.ICartItemService;
 import com.example.domain.services.ICartService;
+import com.example.exona_tech.mappers.CartItemMapper;
+import com.example.exona_tech.mappers.CartMapper;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +28,8 @@ public class CartController {
 
     private final ICartService cartService ;
     private final ICartItemService cartItemService ;
+    private final CartMapper cartMapper ;
+    private final CartItemMapper cartItemMapper ;
 
     // lấy thông tin cart cho người dunng
     @GetMapping("/user/{id}")
@@ -33,7 +38,7 @@ public class CartController {
     ){
         try{
             Cart cart = cartService.getCartByUserId(userId) ;
-            CartResponse cartResponse = CartResponse.convertFromCart(cart) ;
+            CartResponse cartResponse =  cartMapper.fromEntityToResponse(cart);
             BaseResponse baseResponse = BaseResponse.buildResponse("200","Get cart successfully" , cartResponse);
             return ResponseEntity.ok(baseResponse) ;
         }
@@ -61,8 +66,9 @@ public class CartController {
                 BaseResponse baseResponse = BaseResponse.buildResponse("400" , "Invalid data.") ;
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse);
             }
-            Cart cart = cartService.addCartItemIntoCart(userId,cartItemDTO) ;
-            CartResponse cartResponse = CartResponse.convertFromCart(cart) ;
+            CartItem cartItem = cartItemMapper.fromRequestToEntity(cartItemDTO) ;
+            Cart cart = cartService.addCartItemIntoCart(userId,cartItem) ;
+            CartResponse cartResponse = cartMapper.fromEntityToResponse(cart) ;
             System.out.println("Add item into cart successfully");
             BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Add item into cart successfully", cartResponse) ;
             return ResponseEntity.ok(baseResponse) ;
@@ -70,13 +76,13 @@ public class CartController {
         }
         catch (Exception e) {
             System.out.println("Error add item into cart");
-            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Get cart failed.");
+            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Get cart failed: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
 
-    // cập nhật cart theo id
-    @PutMapping("/{id}")
+    // cập nhật cart
+    @PutMapping()
     public ResponseEntity<?> updateCart(
             @RequestBody @Valid CartDTO cartDTO,
             BindingResult result
@@ -91,14 +97,14 @@ public class CartController {
                 BaseResponse baseResponse = BaseResponse.buildResponse("400" , "Invalid data" , error) ;
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse) ;
             }
-            Cart cart = cartService.updateCart(cartDTO) ;
-            CartResponse cartResponse = CartResponse.convertFromCart(cart) ;
+            Cart cart = cartService.updateCart(cartMapper.fromRequestToEntity(cartDTO)) ;
+            CartResponse cartResponse = cartMapper.fromEntityToResponse(cart) ;
             BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Update cart successfully.",cartResponse) ;
             return ResponseEntity.ok(baseResponse) ;
         }
         catch(Exception exception){
             System.out.println("Error updating cart.");
-            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Update cart failed.");
+            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Update cart failed: " + exception.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }

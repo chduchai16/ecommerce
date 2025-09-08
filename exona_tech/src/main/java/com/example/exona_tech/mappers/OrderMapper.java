@@ -1,8 +1,8 @@
 package com.example.exona_tech.mappers;
 
-import com.example.domain.dtos.requests.OrderDTO;
-import com.example.domain.dtos.resposnes.OrderDetailResponse;
-import com.example.domain.dtos.resposnes.OrderResponse;
+import com.example.exona_tech.dtos.requests.OrderDTO;
+import com.example.exona_tech.dtos.resposnes.OrderDetailResponse;
+import com.example.exona_tech.dtos.resposnes.OrderResponse;
 import com.example.domain.entities.Order;
 import com.example.domain.entities.OrderDetail;
 import com.example.domain.entities.User;

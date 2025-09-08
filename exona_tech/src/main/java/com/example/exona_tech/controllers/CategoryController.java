@@ -1,10 +1,11 @@
 package com.example.exona_tech.controllers;
 
-import com.example.domain.dtos.requests.CategoryDTO;
-import com.example.domain.dtos.resposnes.BaseResponse;
-import com.example.domain.dtos.resposnes.CategoryResponse;
+import com.example.exona_tech.dtos.requests.CategoryDTO;
+import com.example.exona_tech.dtos.resposnes.BaseResponse;
+import com.example.exona_tech.dtos.resposnes.CategoryResponse;
 import com.example.domain.entities.Category;
 import com.example.domain.services.ICategoryService;
+import com.example.exona_tech.mappers.CategoryMapper;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,18 +24,22 @@ import java.util.List;
 
 public class CategoryController {
     private final ICategoryService categoryService ;
+    private final CategoryMapper categoryMapper ;
 
     @GetMapping()
     public ResponseEntity<?> getAllCategories(){
         try{
             List<Category> categories = categoryService.getAllCategories();
-            List<CategoryResponse> categoryResponses = categories.stream().map(CategoryResponse::convertFromCategory).toList();
+            List<CategoryResponse> categoryResponses = categories
+                    .stream()
+                    .map(categoryMapper :: fromEntityToResponse)
+                    .toList();
             BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Create category successfully." ,categoryResponses);
             return ResponseEntity.ok(baseResponse) ;
         }
         catch (Exception e){
             System.out.println("Error get all category: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Get category successfully.");
+            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Get category failed: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -43,12 +48,13 @@ public class CategoryController {
     public ResponseEntity<?> getCategory(@PathVariable("id") int categoryId){
         try{
             Category category = categoryService.getCategoryById(categoryId);
-            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Get category successfully." , CategoryResponse.convertFromCategory(category));
+            CategoryResponse categoryResponse = categoryMapper.fromEntityToResponse(category) ;
+            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Get category successfully.",categoryResponse);
             return ResponseEntity.ok(baseResponse);
         }
         catch (Exception e){
             System.out.println("Error get category: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Get category failed.");
+            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Get category failed: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -72,22 +78,22 @@ public class CategoryController {
                 BaseResponse baseResponse = BaseResponse.buildResponse("400" , "Invalid data.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse) ;
             }
-            Category category = categoryService.createCategory(categoryDTO) ;
-            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Create category successfully." , CategoryResponse.convertFromCategory(category));
+            Category category = categoryService.createCategory(categoryMapper.fromRequestToEntity(categoryDTO));
+            CategoryResponse categoryResponse = categoryMapper.fromEntityToResponse(category) ;
+            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Create category successfully.",categoryResponse);
             return ResponseEntity.ok(baseResponse) ;
         }
         catch(Exception e) {
             System.err.println("Error creating category: " + e.getMessage());
-            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Create category failed.");
+            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Create category failed: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
 
     // cập nật category
-    @PutMapping("/{id}")
+    @PutMapping()
     public ResponseEntity<?> updateCategory (
             @RequestBody @Valid CategoryDTO categoryDTO,
-            @PathVariable("id") int categoryId ,
             BindingResult result
     ){
         try{
@@ -103,13 +109,14 @@ public class CategoryController {
                 BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Invalid data.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse) ;
             }
-            Category category = categoryService.updateCategory(categoryId ,categoryDTO) ;
-            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Update category successfully." , CategoryResponse.convertFromCategory(category));
+            Category category = categoryService.updateCategory(categoryMapper.fromRequestToEntity(categoryDTO)) ;
+            CategoryResponse categoryResponse = categoryMapper.fromEntityToResponse(category) ;
+            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Update category successfully." ,categoryResponse);
             return ResponseEntity.ok(baseResponse) ;
         }
         catch(Exception e) {
             System.err.println("Error updating category: " + e.getMessage());
-            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Create category failed.");
+            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Create category failed: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }

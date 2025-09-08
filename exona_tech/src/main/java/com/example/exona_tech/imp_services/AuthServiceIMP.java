@@ -1,13 +1,13 @@
 package com.example.exona_tech.imp_services;
 
 import com.example.domain.configurations.JwtConfiguration;
-import com.example.domain.dtos.requests.UserDTO;
 import com.example.domain.entities.Role;
 import com.example.domain.entities.User;
 import com.example.domain.repositories.RoleRepository;
 import com.example.domain.repositories.UserRepository;
 import com.example.domain.services.IAuthService;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,12 +20,12 @@ import java.util.UUID;
 public class AuthServiceIMP implements IAuthService {
 
     private final UserRepository userRepository ;
-    private final RoleRepository roleRepository ;
     private final PasswordEncoder passwordEncoder ;
     private final JwtConfiguration jwtConfiguration ;
+    private final RoleRepository roleRepository ;
 
     @Override
-    public String login(String phoneNumber , String password) throws Exception {
+    public String signIn(String phoneNumber , String password) throws Exception {
         User user = userRepository.findByPhoneNumber(phoneNumber).orElseThrow(()->new Exception("Wrong phone number or password"));
         if (passwordEncoder.matches(password , user.getPassword())){
             String token = jwtConfiguration.generateToken(user) ;
@@ -38,25 +38,22 @@ public class AuthServiceIMP implements IAuthService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public User registerUser(UserDTO userDTO) throws Exception {
-        if (!userRepository.findByPhoneNumber(userDTO.getPhoneNumber()).isEmpty()){
-            throw new Exception("This phone number exist.");
+    public User signUp(User user) throws Exception {
+        if(userRepository.findByPhoneNumber(user.getPhoneNumber()).isEmpty()) {
+            String encodedPassword = passwordEncoder.encode(user.getPassword()) ;
+            user.setPassword(encodedPassword);
+            // mặc định là role customer
+            Role role = roleRepository.findById(2).orElseThrow(()-> new EntityNotFoundException( "This role does not exist"));
+            user.setRole(role);
+            if(user.getUsername() == null) {
+                String uuid = UUID.randomUUID().toString().substring(0,10);
+                String name = "user_" + uuid ;
+                user.setFullName(name);
+            }
+            return userRepository.save(user);
         }
         else {
-            User user = new User() ;
-            String randomName = "user_" + UUID.randomUUID().toString().substring(0,12) ;
-            user.setFullName(randomName);
-            user.setPhoneNumber(userDTO.getPhoneNumber());
-            if (!userDTO.getPassword().equals(userDTO.getRetypePassword())){
-                throw new Exception("Password does not match");
-            }
-            String encodedPassword = passwordEncoder.encode(userDTO.getPassword()) ;
-            user.setPassword(encodedPassword);
-            user.setIsActive(true);
-            user.setCart(null);
-            Role role = roleRepository.findById(2).orElseThrow(()->new Exception("Role does not exist"));
-            user.setRole(role);
-            return userRepository.save(user);
+            throw new Exception("This phone number exist.");
         }
     }
 }

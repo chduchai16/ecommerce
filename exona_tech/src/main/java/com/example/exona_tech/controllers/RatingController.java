@@ -1,11 +1,12 @@
 package com.example.exona_tech.controllers;
 
-import com.example.domain.dtos.requests.RatingDTO;
-import com.example.domain.dtos.resposnes.BaseResponse;
-import com.example.domain.dtos.resposnes.PagedResponse;
-import com.example.domain.dtos.resposnes.RatingResponse;
+import com.example.exona_tech.dtos.requests.RatingDTO;
+import com.example.exona_tech.dtos.resposnes.BaseResponse;
+import com.example.exona_tech.dtos.resposnes.PagedResponse;
+import com.example.exona_tech.dtos.resposnes.RatingResponse;
 import com.example.domain.entities.Rating;
-import com.example.domain.pojos.PaginationInfo;
+import com.example.exona_tech.mappers.RatingMapper;
+import com.example.exona_tech.pojos.PaginationInfo;
 import com.example.domain.services.IProductService;
 import com.example.domain.services.IRatingService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,6 +31,7 @@ public class RatingController {
 
     private final IRatingService ratingService;
     private final IProductService productService;
+    private final RatingMapper ratingMapper ;
 
     // lấy danh sách phân trang nhưgnx đánh giá theo id sản phẩm
     @GetMapping("/product")
@@ -41,7 +43,10 @@ public class RatingController {
         try {
             PageRequest pageRequest = PageRequest.of(page, limit);
             Page<Rating> ratings = ratingService.getRatingsByProductId(productId, pageRequest);
-            List<RatingResponse> ratingResponses = ratings.getContent().stream().map(RatingResponse::convertFromRating).toList();
+            List<RatingResponse> ratingResponses = ratings.getContent()
+                    .stream()
+                    .map(ratingMapper :: fromEntityToResponse)
+                    .toList();
 
             PaginationInfo paginationInfo = new PaginationInfo(
                     ratings.getNumber() ,
@@ -55,7 +60,7 @@ public class RatingController {
             return ResponseEntity.ok(baseResponse);
         } catch (Exception e) {
             System.out.println("Error getting ratings: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Get ratings failed.");
+            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Get ratings failed: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -67,11 +72,12 @@ public class RatingController {
     ) {
         try {
             Rating rating = ratingService.getRatingByProductIdAndUserId(productId, userId);
-            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Get rating successfully.", RatingResponse.convertFromRating(rating));
+            RatingResponse ratingResponse = ratingMapper.fromEntityToResponse(rating) ;
+            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Get rating successfully.",ratingResponse);
             return ResponseEntity.ok(baseResponse);
         } catch (Exception e) {
             System.out.println("Error getting rating: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Get rating failed.");
+            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Get rating failed: " +e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -94,21 +100,21 @@ public class RatingController {
                 BaseResponse baseResponse = BaseResponse.buildResponse("400", "Invalid rating.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse);
             }
-            Rating rating = ratingService.createRating(ratingDTO);
-            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Create rating successfully.", RatingResponse.convertFromRating(rating));
+            Rating rating = ratingService.createRating(ratingMapper.fromRequestToEntity(ratingDTO));
+            RatingResponse ratingResponse = ratingMapper.fromEntityToResponse(rating) ;
+            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Create rating successfully.",ratingResponse);
             return ResponseEntity.ok(baseResponse);
         } catch (Exception e) {
             System.out.println("Error creating rating: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Create rating failed.");
+            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Create rating failed: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
 
-    @PutMapping("/{id}")
+    @PutMapping()
     public ResponseEntity<?> updateRating(
             @RequestBody @Valid RatingDTO ratingDTO,
-            BindingResult result,
-            @PathVariable("id") int ratingId
+            BindingResult result
     ) {
         try {
             if (result.hasErrors()) {
@@ -123,12 +129,13 @@ public class RatingController {
                 BaseResponse baseResponse = BaseResponse.buildResponse("400", "Invalid rating.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse);
             }
-            Rating rating = ratingService.updateRating(ratingId, ratingDTO);
-            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Update rating successfully.", RatingResponse.convertFromRating(rating));
+            Rating rating = ratingService.updateRating(ratingMapper.fromRequestToEntity(ratingDTO));
+            RatingResponse ratingResponse = ratingMapper.fromEntityToResponse(rating) ;
+            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Update rating successfully.",ratingResponse);
             return ResponseEntity.ok(baseResponse);
         } catch (Exception e) {
             System.out.println("Error updating rating: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Update rating failed.");
+            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Update rating failed: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -143,7 +150,7 @@ public class RatingController {
             return ResponseEntity.ok(baseResponse);
         } catch (Exception e) {
             System.out.println("Error deleting rating: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Delete rating failed.");
+            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Delete rating failed: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }

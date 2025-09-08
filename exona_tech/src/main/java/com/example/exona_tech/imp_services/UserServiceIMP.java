@@ -1,8 +1,5 @@
 package com.example.exona_tech.imp_services;
 
-import com.example.domain.dtos.requests.UserDTO;
-import com.example.domain.dtos.requests.UserUpdateDTO;
-import com.example.domain.entities.Role;
 import com.example.domain.entities.User;
 import com.example.domain.repositories.RoleRepository;
 import com.example.domain.repositories.UserRepository;
