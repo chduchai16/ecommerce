@@ -5,6 +5,7 @@ import com.example.domain.entities.CartItem;
 import com.example.domain.repositories.CartItemRepository;
 import com.example.domain.repositories.CartRepository;
 import com.example.domain.services.ICartItemService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,11 +18,11 @@ public class CartItemServiceIMP implements ICartItemService {
 
     @Override
     public void deleteCartItem(int cartId, int cartItemId) throws Exception {
-        Cart existingCart = cartRepository.findById(cartId).orElseThrow(()-> new Exception("Cannot find this cart with id: " + cartId)) ;
-        CartItem cartItem = cartItemRepository.findById(cartItemId).orElseThrow(() -> new Exception("Cannot find this cart.")) ;
+        Cart existingCart = cartRepository.findById(cartId).orElseThrow(()-> new EntityNotFoundException("Không tìm thấy giỏ hàng với id: " + cartId)) ;
+        CartItem cartItem = cartItemRepository.findById(cartItemId).orElseThrow(() -> new EntityNotFoundException("Không tìm thấy sản phẩm trong giỏ hàng.")) ;
         // Kiểm tra xem cartItem này có thuộc cart đang xử lý không
         if (!existingCart.getCartItems().contains(cartItem)) {
-            throw new Exception("This cart does not contain the specified cart item.");
+            throw new Exception("Giỏ hàng này không chứa sản phẩm được chỉ định.");
         }
         // Xóa cartItem khỏi danh sách của cart
         existingCart.getCartItems().remove(cartItem);
@@ -36,7 +37,7 @@ public class CartItemServiceIMP implements ICartItemService {
     @Override
     public void deleteCartItemsWithCartId(int cartId) throws Exception {
         if(cartRepository.findById(cartId).isEmpty()){
-            throw new Exception("Cannot find this cart with id: " + cartId) ;
+            throw new EntityNotFoundException("Không tìm thấy giỏ hàng với id: " + cartId) ;
         }
         cartItemRepository.deleteCartItemsByCartId(cartId);
     }

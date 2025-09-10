@@ -21,7 +21,7 @@ public class SupplierServiceIMP implements ISupplierService {
 
     @Override
     public Supplier getSupplierById(int supplierId) throws Exception {
-        return supplierRepository.findById(supplierId).orElseThrow(()->new Exception("Cannot find this supplier"));
+        return supplierRepository.findById(supplierId).orElseThrow(()->new EntityNotFoundException("Không tìm thấy nhà cung cấp này"));
     }
 
     @Override
@@ -37,10 +37,10 @@ public class SupplierServiceIMP implements ISupplierService {
     @Override
     public Supplier updateSupplier(Supplier supplier) throws Exception {
         if (supplier.getId() == null) {
-            throw new Exception("Id must not be null to update");
+            throw new Exception("Id không được để trống khi cập nhật");
         }
         else if (!this.supplierRepository.existsById(supplier.getId())){
-            throw new EntityNotFoundException("This supplier does not exist");
+            throw new EntityNotFoundException("Nhà cung cấp này không tồn tại");
         }
         return this.supplierRepository.save(supplier) ;
     }
@@ -48,7 +48,7 @@ public class SupplierServiceIMP implements ISupplierService {
     @Override
     public void deleteSupplier(int supplierId) throws Exception {
         if (supplierRepository.findById(supplierId).isEmpty()){
-            throw new Exception("This supplier does not exist");
+            throw new EntityNotFoundException("Nhà cung cấp này không tồn tại");
         }
         supplierRepository.deleteById(supplierId);
     }

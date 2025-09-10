@@ -9,6 +9,8 @@ import com.example.domain.services.IAuthService;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,34 +28,31 @@ public class AuthServiceIMP implements IAuthService {
 
     @Override
     public String signIn(String phoneNumber , String password) throws Exception {
-        User user = userRepository.findByPhoneNumber(phoneNumber).orElseThrow(()->new Exception("Wrong phone number or password"));
+        User user = userRepository.findByPhoneNumber(phoneNumber).orElseThrow(()-> new BadCredentialsException("Số điện thoại hoặc mật khẩu không đúng"));
         if (passwordEncoder.matches(password , user.getPassword())){
-            String token = jwtConfiguration.generateToken(user) ;
-            return token ;
+            return jwtConfiguration.generateToken(user) ;
         }
         else {
-            throw new Exception("Login failed.") ;
+            throw new BadCredentialsException("Số điện thoại hoặc mật khẩu không đúng") ;
         }
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public User signUp(User user) throws Exception {
-        if(userRepository.findByPhoneNumber(user.getPhoneNumber()).isEmpty()) {
-            String encodedPassword = passwordEncoder.encode(user.getPassword()) ;
-            user.setPassword(encodedPassword);
-            // mặc định là role customer
-            Role role = roleRepository.findById(2).orElseThrow(()-> new EntityNotFoundException( "This role does not exist"));
-            user.setRole(role);
-            if(user.getUsername() == null) {
-                String uuid = UUID.randomUUID().toString().substring(0,10);
-                String name = "user_" + uuid ;
-                user.setFullName(name);
-            }
-            return userRepository.save(user);
+        if(userRepository.findByPhoneNumber(user.getPhoneNumber()).isPresent()) {
+            throw new DataIntegrityViolationException("Số điện thoại này đã tồn tại.");
         }
-        else {
-            throw new Exception("This phone number exist.");
+        String encodedPassword = passwordEncoder.encode(user.getPassword()) ;
+        user.setPassword(encodedPassword);
+        // mặc định là role customer
+        Role role = roleRepository.findById(2).orElseThrow(()-> new EntityNotFoundException( "Vai trò này không tồn tại"));
+        user.setRole(role);
+        if(user.getUsername() == null) {
+            String uuid = UUID.randomUUID().toString().substring(0,10);
+            String name = "user_" + uuid ;
+            user.setFullName(name);
         }
+        return userRepository.save(user);
     }
 }

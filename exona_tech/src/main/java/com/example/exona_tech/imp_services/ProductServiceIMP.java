@@ -1,11 +1,9 @@
 package com.example.exona_tech.imp_services;
 
 import com.example.domain.entities.Product;
-import com.example.domain.repositories.CategoryRepository;
 import com.example.domain.repositories.ProductRepository;
-import com.example.domain.repositories.SupplierRepository;
 import com.example.domain.services.IProductService;
-import com.example.exona_tech.mappers.ProductMapper;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,13 +17,10 @@ import java.util.List;
 public class ProductServiceIMP implements IProductService {
 
     private final ProductRepository productRepository ;
-    private final CategoryRepository categoryRepository ;
-    private final SupplierRepository supplierRepository ;
-    private final ProductMapper productMapper ;
 
     @Override
-    public Product getProductById(int productId) throws Exception {
-        return productRepository.findById(productId).orElseThrow(()->new Exception("Cannot find this product"));
+    public Product getProductById(int productId) {
+        return productRepository.findById(productId).orElseThrow(()->new EntityNotFoundException("Không tìm thấy sản phẩm này"));
     }
 
     @Override
@@ -34,25 +29,25 @@ public class ProductServiceIMP implements IProductService {
     }
 
     @Override
-    public Product createProduct(Product product) throws Exception {
+    public Product createProduct(Product product){
         return this.productRepository.save(product);
     }
 
     @Override
     public Product updateProduct(Product product) throws Exception {
         if(product.getId() == null) {
-            throw new Exception("Id must not be null to update");
+            throw new Exception("Id không được để trống khi cập nhật");
         }
         else if (!this.productRepository.existsById(product.getId())){
-            throw new Exception("This product does not exist");
+            throw new EntityNotFoundException("Sản phẩm này không tồn tại");
         }
         return this.productRepository.save(product);
     }
 
     @Override
-    public void deleteProduct(int productId) throws Exception {
+    public void deleteProduct(int productId) {
         if (productRepository.findById(productId).isEmpty()){
-            throw new Exception("This product does not exist");
+            throw new EntityNotFoundException("Sản phẩm này không tồn tại");
         }
         else {
             productRepository.deleteById(productId);
@@ -70,9 +65,9 @@ public class ProductServiceIMP implements IProductService {
     }
 
     @Override
-    public void viewProduct(int productId) throws Exception {
+    public void viewProduct(int productId) {
         if(productRepository.findById(productId).isEmpty()){
-            throw new Exception("This product does not exist") ;
+            throw new EntityNotFoundException("Sản phẩm này không tồn tại") ;
         }
         else {
             productRepository.viewProduct(productId) ;
@@ -95,7 +90,7 @@ public class ProductServiceIMP implements IProductService {
     }
 
     @Override
-    public List<Product> createProducts(List<Product> products) throws Exception {
+    public List<Product> createProducts(List<Product> products){
         return this.productRepository.saveAll(products);
     }
 

@@ -47,7 +47,8 @@ public class CartMapper {
 
         // map user
         if(cartDTO.getUserId() != null) {
-            User user = this.userRepository.findById(cartDTO.getUserId()).orElseThrow(()-> new EntityNotFoundException("This user does not exist"));
+            User user = this.userRepository.findById(cartDTO.getUserId())
+                    .orElseThrow(() -> new EntityNotFoundException("Người dùng với id " + cartDTO.getUserId() + " không tồn tại"));
             cart.setUser(user);
         }
 
@@ -74,8 +75,11 @@ public class CartMapper {
             cartResponse.setUsername(cart.getUser().getUsername());
         }
         // map cart items
-        if(cart.getCartItems() != null && cart.getCartItems().size() > 0) {
-            List<CartItemResponse> cartItemResponses = cart.getCartItems().stream().map(item -> this.cartItemMapper.fromEntityToResponse(item)).toList();
+        if(cart.getCartItems() != null && !cart.getCartItems().isEmpty()) {
+            List<CartItemResponse> cartItemResponses = cart.getCartItems()
+                    .stream()
+                    .map(this.cartItemMapper::fromEntityToResponse)
+                    .toList();
             cartResponse.setCartItemResponses(cartItemResponses);
         }
 

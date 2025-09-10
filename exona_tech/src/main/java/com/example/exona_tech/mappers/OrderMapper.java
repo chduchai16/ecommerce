@@ -43,7 +43,8 @@ public class OrderMapper {
 
         // map user
         if(orderDTO.getUserId() != null) {
-            User user = this.userRepository.findById(orderDTO.getUserId()).orElseThrow(()->new EntityNotFoundException("This user does not exist"));
+            User user = this.userRepository.findById(orderDTO.getUserId())
+                    .orElseThrow(() -> new EntityNotFoundException("Người dùng với id " + orderDTO.getUserId() + " không tồn tại"));
             order.setUser(user);
         }
         // map order detail

@@ -15,66 +15,71 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class UserMapper {
-    private final ModelMapper modelMapper ;
-    private final RoleRepository roleRepository ;
+    private final ModelMapper modelMapper;
+    private final RoleRepository roleRepository;
     private final RoleMapper roleMapper;
 
-    private TypeMap<UserDTO , User>  fromRequestToResponseTypeMap ;
-    private TypeMap<User , UserResponse> fromEntityToResponseTypeMap ;
+    private TypeMap<UserDTO, User> fromRequestToEntityTypeMap;
+    private TypeMap<User, UserResponse> fromEntityToResponseTypeMap;
 
     public User fromRequestToEntity(UserDTO userDTO) throws Exception {
-        if(userDTO == null) return null ;
+        if (userDTO == null) return null;
+
+        // kiểm tra password
         if (!userDTO.getPassword().equals(userDTO.getRetypePassword())) {
-            throw new Exception("Password does not match");
+            throw new Exception("Mật khẩu nhập lại không khớp");
         }
 
-        if(fromRequestToResponseTypeMap == null) {
-            fromRequestToResponseTypeMap = modelMapper.createTypeMap(UserDTO.class , User.class) ;
-            fromRequestToResponseTypeMap.getMappings().clear();
-            fromRequestToResponseTypeMap.addMappings(mapper -> {
-                mapper.skip(User :: setRole);
-                mapper.skip(User:: setCart);
-                mapper.skip(User :: setPassword);
+        if (fromRequestToEntityTypeMap == null) {
+            fromRequestToEntityTypeMap = modelMapper.createTypeMap(UserDTO.class, User.class);
+            fromRequestToEntityTypeMap.getMappings().clear();
+            fromRequestToEntityTypeMap.addMappings(mapper -> {
+                mapper.skip(User::setRole);
+                mapper.skip(User::setCart);
+                mapper.skip(User::setPassword); // set riêng
             });
-            fromRequestToResponseTypeMap.implicitMappings();
+            fromRequestToEntityTypeMap.implicitMappings();
         }
 
-        User user = fromRequestToResponseTypeMap.map(userDTO);
+        User user = fromRequestToEntityTypeMap.map(userDTO);
+
         // map role
-        Role role = roleRepository.findById(userDTO.getRoleId()).orElseThrow(()-> new EntityNotFoundException("This role does not exist"));
+        Role role = roleRepository.findById(userDTO.getRoleId())
+                .orElseThrow(() -> new EntityNotFoundException("Vai trò với id " + userDTO.getRoleId() + " không tồn tại"));
         user.setRole(role);
-        // map password
-        if(!userDTO.getPassword().equals(userDTO.getRetypePassword())){
-            throw new Exception("Password does not match");
-        }
 
-        return user ;
+        // set password
+        user.setPassword(userDTO.getPassword());
+
+        return user;
     }
 
-    public UserResponse fromEntityToResponse (User user){
-        if(user == null) return null ;
-        if(fromEntityToResponseTypeMap == null) {
-            fromEntityToResponseTypeMap = modelMapper.createTypeMap(User.class , UserResponse.class);
+    public UserResponse fromEntityToResponse(User user) {
+        if (user == null) return null;
+
+        if (fromEntityToResponseTypeMap == null) {
+            fromEntityToResponseTypeMap = modelMapper.createTypeMap(User.class, UserResponse.class);
             fromEntityToResponseTypeMap.getMappings().clear();
             fromEntityToResponseTypeMap.addMappings(mapper -> {
-                mapper.skip(UserResponse :: setRole);
-                mapper.skip(UserResponse :: setCartId);
+                mapper.skip(UserResponse::setRole);
+                mapper.skip(UserResponse::setCartId);
             });
             fromEntityToResponseTypeMap.implicitMappings();
         }
-        UserResponse userResponse = fromEntityToResponseTypeMap.map(user) ;
+
+        UserResponse userResponse = fromEntityToResponseTypeMap.map(user);
 
         // map role
-        if(user.getRole() != null){
+        if (user.getRole() != null) {
             RoleResponse roleResponse = roleMapper.fromEntityToResponse(user.getRole());
             userResponse.setRole(roleResponse);
         }
 
         // map cart id
-        if(user.getCart() != null){
+        if (user.getCart() != null) {
             userResponse.setCartId(user.getCart().getId());
         }
 
-        return userResponse ;
+        return userResponse;
     }
 }

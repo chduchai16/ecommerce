@@ -6,6 +6,7 @@ import com.example.domain.repositories.OrderRepository;
 import com.example.domain.repositories.ProductRepository;
 import com.example.domain.repositories.UserRepository;
 import com.example.domain.services.IOrderService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,7 +26,7 @@ public class OrderServiceIMP implements IOrderService {
 
     @Override
     public Order getOrderById(int orderId) throws Exception {
-        return orderRepository.findById(orderId).orElseThrow(()->new Exception("Cannot find this order"));
+        return orderRepository.findById(orderId).orElseThrow(()->new EntityNotFoundException("Không tìm thấy đơn hàng này"));
     }
 
     @Override
@@ -41,10 +42,10 @@ public class OrderServiceIMP implements IOrderService {
     @Override
     public Order updateOrder(Order order) throws Exception {
         if(order.getId() == null ) {
-            throw new Exception("Id must not be null to update");
+            throw new Exception("Id không được để trống khi cập nhật");
         }
         else if (!this.orderRepository.existsById(order.getId())){
-            throw new Exception("This order does not exist");
+            throw new EntityNotFoundException("Đơn hàng này không tồn tại");
         }
         return this.orderRepository.save(order);
     }
@@ -52,7 +53,7 @@ public class OrderServiceIMP implements IOrderService {
     @Override
     public void deleteOrder(int orderId) throws Exception {
         if (orderRepository.findById(orderId).isEmpty()){
-            throw new Exception("This order does not exist");
+            throw new EntityNotFoundException("Đơn hàng này không tồn tại");
         }
         orderRepository.deleteById(orderId);
     }

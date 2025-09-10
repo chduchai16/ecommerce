@@ -11,6 +11,7 @@ public class ModelMapperConfiguration {
     public ModelMapper modelMapper (){
         ModelMapper modelMapper = new ModelMapper() ;
         modelMapper.getConfiguration().setImplicitMappingEnabled(false);
+        modelMapper.getConfiguration().setSkipNullEnabled(true);
         return modelMapper ;
     }
 }

@@ -10,6 +10,7 @@ import com.example.exona_tech.pojos.PaginationInfo;
 import com.example.domain.services.ISupplierService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -52,11 +53,11 @@ public class SupplierController {
             );
 
             PagedResponse pagedSuppliersResponse = new PagedResponse(supplierResponses , paginationInfo) ;
-            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Get suppliers successfully.",pagedSuppliersResponse);
+            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Lấy danh sách nhà cung cấp thành công.",pagedSuppliersResponse);
             return ResponseEntity.ok(baseResponse);
         } catch (Exception e) {
-            System.out.println("Error getting suppliers: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Get suppliers failed: " + e.getMessage());
+            System.out.println("Lỗi lấy danh sách nhà cung cấp: " + e);
+            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Lỗi máy chủ nội bộ: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -66,11 +67,15 @@ public class SupplierController {
         try {
             Supplier supplier = supplierService.getSupplierById(supplierId);
             SupplierResponse supplierResponse = supplierMapper.fromEntityToResponse(supplier) ;
-            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Get supplier successfully.",supplierResponse);
+            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Lấy thông tin nhà cung cấp thành công.",supplierResponse);
             return ResponseEntity.ok(baseResponse);
+        } catch (EntityNotFoundException e) {
+            System.out.println("Lỗi lấy thông tin nhà cung cấp: " + e);
+            BaseResponse baseResponse = BaseResponse.buildResponse("404", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(baseResponse);
         } catch (Exception e) {
-            System.out.println("Error getting supplier: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Get supplier failed: " +e.getMessage());
+            System.out.println("Lỗi lấy thông tin nhà cung cấp: " + e);
+            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Lỗi máy chủ nội bộ: " +e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -89,17 +94,17 @@ public class SupplierController {
                             .append(fieldError.getDefaultMessage())
                             .append("\n");
                 }
-                System.out.println("Error creating supplier: " + errorsBuilder);
-                BaseResponse baseResponse = BaseResponse.buildResponse("400", "Invalid supplier data.");
+                System.out.println("Lỗi tạo nhà cung cấp: " + errorsBuilder);
+                BaseResponse baseResponse = BaseResponse.buildResponse("400", "Dữ liệu không hợp lệ.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse);
             }
             Supplier supplier = supplierService.createSupplier(supplierMapper.fromRequestToEntity(supplierDTO));
             SupplierResponse supplierResponse = supplierMapper.fromEntityToResponse(supplier) ;
-            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Create supplier successfully.", supplierResponse);
+            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Tạo nhà cung cấp thành công.", supplierResponse);
             return ResponseEntity.ok(baseResponse);
         } catch (Exception e) {
-            System.out.println("Error creating supplier: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Create supplier failed: " + e.getMessage());
+            System.out.println("Lỗi tạo nhà cung cấp: " + e);
+            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Lỗi máy chủ nội bộ: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -118,17 +123,21 @@ public class SupplierController {
                             .append(fieldError.getDefaultMessage())
                             .append("\n");
                 }
-                System.out.println("Error updating supplier: " + errorsBuilder);
-                BaseResponse baseResponse = BaseResponse.buildResponse("400", "Invalid supplier data.");
+                System.out.println("Lỗi cập nhật nhà cung cấp: " + errorsBuilder);
+                BaseResponse baseResponse = BaseResponse.buildResponse("400", "Dữ liệu không hợp lệ.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse);
             }
             Supplier supplier = supplierService.updateSupplier(supplierMapper.fromRequestToEntity(supplierDTO));
             SupplierResponse supplierResponse = supplierMapper.fromEntityToResponse(supplier) ;
-            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Update supplier successfully.", supplierResponse);
+            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Cập nhật nhà cung cấp thành công.", supplierResponse);
             return ResponseEntity.ok(baseResponse);
+        } catch (EntityNotFoundException e) {
+            System.out.println("Lỗi cập nhật nhà cung cấp: " + e);
+            BaseResponse baseResponse = BaseResponse.buildResponse("404", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(baseResponse);
         } catch (Exception e) {
-            System.out.println("Error updating supplier: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Update supplier failed: " + e.getMessage());
+            System.out.println("Lỗi cập nhật nhà cung cấp: " + e);
+            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Lỗi máy chủ nội bộ: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -137,11 +146,15 @@ public class SupplierController {
     public ResponseEntity<?> deleteSupplier(@PathVariable("id") int supplierId) {
         try {
             supplierService.deleteSupplier(supplierId);
-            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Delete supplier successfully.");
+            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Xóa nhà cung cấp thành công.");
             return ResponseEntity.ok(baseResponse);
+        } catch (EntityNotFoundException e) {
+            System.out.println("Lỗi xóa nhà cung cấp: " + e);
+            BaseResponse baseResponse = BaseResponse.buildResponse("404", e.getMessage() );
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(baseResponse);
         } catch (Exception e) {
-            System.out.println("Error deleting supplier: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Delete supplier failed: " + e.getMessage() );
+            System.out.println("Lỗi xóa nhà cung cấp: " + e);
+            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Lỗi máy chủ nội bộ: " + e.getMessage() );
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }

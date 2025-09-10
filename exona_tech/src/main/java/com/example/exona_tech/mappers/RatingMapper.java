@@ -36,15 +36,18 @@ public class RatingMapper {
         }
 
         Rating rating = fromRequestToEntityTypeMap.map(ratingDTO);
+
         // set product
         if(ratingDTO.getProductId() != null) {
-            Product product = productRepository.findById(ratingDTO.getProductId()).orElseThrow(()-> new EntityNotFoundException("This product does not exist"));
+            Product product = productRepository.findById(ratingDTO.getProductId())
+                    .orElseThrow(() -> new EntityNotFoundException("Sản phẩm với id " + ratingDTO.getProductId() + " không tồn tại"));
             rating.setProduct(product);
         }
 
         // set user
         if (ratingDTO.getUserId() != null) {
-            User user = userRepository.findById(ratingDTO.getUserId()).orElseThrow(() -> new EntityNotFoundException("This user does not exist"));
+            User user = userRepository.findById(ratingDTO.getUserId())
+                    .orElseThrow(() -> new EntityNotFoundException("Người dùng với id " + ratingDTO.getUserId() + " không tồn tại"));
             rating.setUser(user);
         }
         return rating ;

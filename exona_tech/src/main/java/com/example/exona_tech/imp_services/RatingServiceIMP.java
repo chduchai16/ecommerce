@@ -5,6 +5,7 @@ import com.example.domain.repositories.ProductRepository;
 import com.example.domain.repositories.RatingRepository;
 import com.example.domain.repositories.UserRepository;
 import com.example.domain.services.IRatingService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -44,13 +45,13 @@ public class RatingServiceIMP implements IRatingService {
     public Rating updateRating(Rating rating) throws Exception {
         // chỉ update comment và đánh giá
         if (rating.getId() == null) {
-            throw new Exception("Id is must not be null to update");
+            throw new Exception("Id không được để trống khi cập nhật");
         }
 
-        Rating exist = ratingRepository.findById(rating.getId()).orElseThrow(()->new Exception("Rating does not exist"));
+        Rating exist = ratingRepository.findById(rating.getId()).orElseThrow(()->new EntityNotFoundException("Đánh giá không tồn tại"));
 
         if(!Objects.equals(exist.getUser().getId(), rating.getUser().getId()) && !Objects.equals(rating.getProduct().getId(), rating.getProduct().getId())){
-            throw new Exception("User & product does not match");
+            throw new Exception("Người dùng và sản phẩm không khớp");
         }
 
         exist.setRate(rating.getRate());
@@ -63,7 +64,7 @@ public class RatingServiceIMP implements IRatingService {
     @Override
     public void deleteRating(int ratingId) throws Exception {
         if (ratingRepository.findById(ratingId).isEmpty()){
-            throw new Exception("Rating does not exist");
+            throw new EntityNotFoundException("Đánh giá không tồn tại");
         }
         else {
             ratingRepository.deleteById(ratingId);
@@ -72,7 +73,7 @@ public class RatingServiceIMP implements IRatingService {
 
     @Override
     public Rating getRatingByProductIdAndUserId(int productId, int userId) throws Exception {
-        return ratingRepository.findByProductIdAndUserId(productId , userId).orElseThrow(()->new Exception("This rating does not exist"));
+        return ratingRepository.findByProductIdAndUserId(productId , userId).orElseThrow(()->new EntityNotFoundException("Đánh giá này không tồn tại"));
     }
 
 

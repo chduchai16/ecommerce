@@ -10,7 +10,9 @@ import com.example.exona_tech.pojos.PaginationInfo;
 import com.example.domain.services.ICouponService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -38,13 +40,18 @@ public class CouponController {
         try{
             Coupon coupon = couponService.applyCoupon(code);
             CouponResponse couponResponse = couponMapper.fromEntityToResponse(coupon) ;
-            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Apply coupon successfully" , couponResponse) ;
+            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Áp dụng mã giảm giá thành công" , couponResponse) ;
             return ResponseEntity.ok(baseResponse) ;
         }
+        catch(EntityNotFoundException e){
+            System.out.println("Lỗi lấy mã giảm giá: "+e.getMessage() );
+            BaseResponse baseResponse = BaseResponse.buildResponse("404", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(baseResponse) ;
+        }
         catch(Exception exception){
-            System.out.println("Error getting coupon: "+exception.getMessage() );
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Apply coupon failed: " + exception.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse) ;
+            System.out.println("Lỗi lấy mã giảm giá: "+exception.getMessage() );
+            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Lỗi máy chủ nội bộ: " + exception.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse) ;
         }
     }
 
@@ -69,12 +76,12 @@ public class CouponController {
                     .map(couponMapper :: fromEntityToResponse)
                     .toList() ;
             PagedResponse pagedCouponsResponse = new PagedResponse(couponResponses , paginationInfo) ;
-            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Get coupons successfully." , pagedCouponsResponse) ;
+            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Lấy danh sách mã giảm giá thành công." , pagedCouponsResponse) ;
             return ResponseEntity.ok(baseResponse) ;
         }
         catch (Exception e) {
-            System.out.println("Error getting coupons: " + e.getMessage());
-            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Get coupons failed: " + e.getMessage()) ;
+            System.out.println("Lỗi lấy danh sách mã giảm giá: " + e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Lỗi máy chủ nội bộ: " + e.getMessage()) ;
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -85,12 +92,17 @@ public class CouponController {
         try {
             Coupon coupon = couponService.getCouponById(couponId) ;
             CouponResponse couponResponse = couponMapper.fromEntityToResponse(coupon) ;
-            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Get coupon successfully." ,couponResponse) ;
+            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Lấy thông tin mã giảm giá thành công." ,couponResponse) ;
             return ResponseEntity.ok(baseResponse) ;
         }
+        catch (EntityNotFoundException e) {
+            System.out.println("Lỗi lấy thông tin mã giảm giá: " + e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse("404" , e.getMessage()) ;
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(baseResponse);
+        }
         catch (Exception e) {
-            System.out.println("Error getting coupons: " + e.getMessage());
-            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Get coupon failed: " + e.getMessage()) ;
+            System.out.println("Lỗi lấy thông tin mã giảm giá: " + e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Lỗi máy chủ nội bộ: " + e.getMessage()) ;
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -111,17 +123,22 @@ public class CouponController {
                             .append("\n");
                 }
                 System.out.println(errorsBuilder);
-                BaseResponse baseResponse = BaseResponse.buildResponse("400" , "Invalid data.") ;
+                BaseResponse baseResponse = BaseResponse.buildResponse("400" , "Dữ liệu không hợp lệ.") ;
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse) ;
             }
             Coupon coupon = couponService.createCoupon(couponMapper.fromRequestToEntity(couponDTO));
             CouponResponse couponResponse = couponMapper.fromEntityToResponse(coupon) ;
-            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Create coupon successfully." ,couponResponse) ;
+            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Tạo mã giảm giá thành công." ,couponResponse) ;
             return ResponseEntity.ok(baseResponse) ;
         }
+        catch (DataIntegrityViolationException e) {
+            System.out.print("Lỗi tạo mã giảm giá: " + e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse("409" , e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(baseResponse);
+        }
         catch (Exception e) {
-            System.out.print("Error creating coupon: " + e.getMessage());
-            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Create coupon failed: " + e.getMessage());
+            System.out.print("Lỗi tạo mã giảm giá: " + e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Lỗi máy chủ nội bộ: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -142,17 +159,27 @@ public class CouponController {
                             .append("\n");
                 }
                 System.out.println(errorsBuilder);
-                BaseResponse baseResponse = BaseResponse.buildResponse("400" , "Invalid data.");
+                BaseResponse baseResponse = BaseResponse.buildResponse("400" , "Dữ liệu không hợp lệ.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse) ;
             }
             Coupon coupon = couponService.updateCoupon(couponMapper.fromRequestToEntity(couponDTO));
             CouponResponse couponResponse = couponMapper.fromEntityToResponse(coupon) ;
-            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Update coupon successfully." , couponResponse);
+            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Cập nhật mã giảm giá thành công." , couponResponse);
             return ResponseEntity.ok(baseResponse) ;
         }
+        catch (EntityNotFoundException e) {
+            System.out.print("Lỗi cập nhật mã giảm giá: " + e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse("404" , e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(baseResponse);
+        }
+        catch (DataIntegrityViolationException e) {
+            System.out.print("Lỗi cập nhật mã giảm giá: " + e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse("409" , e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(baseResponse);
+        }
         catch (Exception e) {
-            System.out.print("Error updating coupon: " + e.getMessage());
-            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Update coupon failed: " + e.getMessage());
+            System.out.print("Lỗi cập nhật mã giảm giá: " + e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Lỗi máy chủ nội bộ: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -162,12 +189,17 @@ public class CouponController {
     public ResponseEntity<?> deleteCoupon(@PathVariable("id") int couponId){
         try {
             couponService.deleteCoupon(couponId);
-            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Delete coupon successfully.") ;
+            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Xóa mã giảm giá thành công.") ;
             return ResponseEntity.ok().body(baseResponse);
         }
+        catch (EntityNotFoundException e) {
+            System.out.print("Lỗi xóa mã giảm giá: " + e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse("404" , e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(baseResponse);
+        }
         catch (Exception e) {
-            System.out.print("Error deleting coupon: " + e.getMessage());
-            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Delete coupon failed: " + e.getMessage());
+            System.out.print("Lỗi xóa mã giảm giá: " + e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Lỗi máy chủ nội bộ: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }

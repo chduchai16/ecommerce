@@ -3,7 +3,9 @@ package com.example.exona_tech.imp_services;
 import com.example.domain.entities.Role;
 import com.example.domain.repositories.RoleRepository;
 import com.example.domain.services.IRoleService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,13 +22,13 @@ public class RoleServiceIMP implements IRoleService {
             return roleRepository.save(role);
         }
         else {
-            throw new Exception("Role's name is duplicated");
+            throw new DataIntegrityViolationException("Tên vai trò đã tồn tại");
         }
     }
 
     @Override
     public Role getRoleById(int roleId) throws Exception {
-        return roleRepository.findById(roleId).orElseThrow(()->new Exception("Cannot find this role"));
+        return roleRepository.findById(roleId).orElseThrow(()->new EntityNotFoundException("Không tìm thấy vai trò này"));
     }
 
     @Override

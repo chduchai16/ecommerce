@@ -10,6 +10,7 @@ import com.example.exona_tech.pojos.PaginationInfo;
 import com.example.domain.services.IOrderService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -38,12 +39,17 @@ public class OrderController {
         try {
             Order order = orderService.getOrderById(orderId);
             OrderResponse orderResponse = orderMapper.fromEntityToResponse(order);
-            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Get order successfully." , orderResponse);
+            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Lấy thông tin đơn hàng thành công." , orderResponse);
             return ResponseEntity.ok(baseResponse);
         }
+        catch(EntityNotFoundException e) {
+            System.out.println(String.format("Lỗi lấy thông tin đơn hàng(%s): %s", orderId, e.getMessage() ));
+            BaseResponse baseResponse = BaseResponse.buildResponse("404" , e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(baseResponse) ;
+        }
         catch(Exception e) {
-            System.out.println(String.format("Error getting order(%s): %s", orderId, e.getMessage() ));
-            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Get order failed: " + e.getMessage());
+            System.out.println(String.format("Lỗi lấy thông tin đơn hàng(%s): %s", orderId, e.getMessage() ));
+            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Lỗi máy chủ nội bộ: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse) ;
         }
     }
@@ -72,12 +78,12 @@ public class OrderController {
 
             PagedResponse pagedOrdersResponse = new PagedResponse(orderResponses , paginationInfo) ;
 
-            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Get orders successfully." , pagedOrdersResponse) ;
+            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Lấy danh sách đơn hàng thành công." , pagedOrdersResponse) ;
             return ResponseEntity.ok(baseResponse) ;
         }
         catch (Exception e){
-            System.out.println("Error getting orders: " + e.getMessage());
-            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Get orders failed: " + e.getMessage());
+            System.out.println("Lỗi lấy danh sách đơn hàng: " + e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Lỗi máy chủ nội bộ: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -106,12 +112,12 @@ public class OrderController {
 
             PagedResponse pagedOrdersResponse  = new PagedResponse(orderResponses , paginationInfo);
 
-            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Get orders successfully." , pagedOrdersResponse) ;
+            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Lấy danh sách đơn hàng thành công." , pagedOrdersResponse) ;
             return ResponseEntity.ok(baseResponse) ;
         }
         catch (Exception e ) {
-            System.out.println("Error getting orders: " + e.getMessage());
-            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Get orders failed: " + e.getMessage());
+            System.out.println("Lỗi lấy danh sách đơn hàng: " + e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Lỗi máy chủ nội bộ: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -131,18 +137,18 @@ public class OrderController {
                             .append(fieldError.getDefaultMessage())
                             .append("\n");
                 }
-                System.out.println("Error order data: " + errorsBuilder);
-                BaseResponse baseResponse = BaseResponse.buildResponse("400" , "Create order failed.");
+                System.out.println("Lỗi dữ liệu đơn hàng: " + errorsBuilder);
+                BaseResponse baseResponse = BaseResponse.buildResponse("400" , "Tạo đơn hàng thất bại.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse) ;
             }
             Order order = orderService.createOrder(orderMapper.fromRequestToEntity(orderDTO));
             OrderResponse orderResponse = orderMapper.fromEntityToResponse(order);
-            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Create order successfully." , orderResponse);
+            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Tạo đơn hàng thành công." , orderResponse);
             return ResponseEntity.ok(baseResponse);
         }
         catch (Exception e ) {
-            System.out.println("Error creating order: " + e.getMessage());
-            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Create order failed: " + e.getMessage());
+            System.out.println("Lỗi tạo đơn hàng: " + e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Lỗi máy chủ nội bộ: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse) ;
         }
     }
@@ -190,18 +196,23 @@ public class OrderController {
                             .append(fieldError.getDefaultMessage())
                             .append("\n");
                 }
-                System.out.println("Error order data: " + errorsBuilder);
-                BaseResponse baseResponse = BaseResponse.buildResponse("400" , "Invalid data.");
+                System.out.println("Lỗi dữ liệu đơn hàng: " + errorsBuilder);
+                BaseResponse baseResponse = BaseResponse.buildResponse("400" , "Dữ liệu không hợp lệ.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse) ;
             }
             Order order = orderService.updateOrder(orderMapper.fromRequestToEntity(orderDTO));
             OrderResponse orderResponse  = orderMapper.fromEntityToResponse(order) ;
-            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Update order successfully." , orderResponse);
+            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Cập nhật đơn hàng thành công." , orderResponse);
             return ResponseEntity.ok(baseResponse);
         }
+        catch (EntityNotFoundException e ) {
+            System.out.println("Lỗi cập nhật đơn hàng: " + e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse("404" , e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(baseResponse) ;
+        }
         catch (Exception e ) {
-            System.out.println("Error updating order: " + e.getMessage());
-            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Update order failed: " + e.getMessage());
+            System.out.println("Lỗi cập nhật đơn hàng: " + e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Lỗi máy chủ nội bộ: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse) ;
         }
     }
@@ -213,12 +224,17 @@ public class OrderController {
     ){
         try {
             orderService.deleteOrder(orderId);
-            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Delete order successfully.");
+            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Xóa đơn hàng thành công.");
             return ResponseEntity.ok(baseResponse);
         }
+        catch (EntityNotFoundException e) {
+            System.out.println(String.format("Lỗi xóa đơn hàng(%s): %s" , orderId,e.getMessage()));
+            BaseResponse baseResponse = BaseResponse.buildResponse("404" , e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(baseResponse) ;
+        }
         catch (Exception e) {
-            System.out.println(String.format("Error deleting order(%s): %s" , orderId,e.getMessage()));
-            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Delete order failed: " + e.getMessage());
+            System.out.println(String.format("Lỗi xóa đơn hàng(%s): %s" , orderId,e.getMessage()));
+            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Lỗi máy chủ nội bộ: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse) ;
         }
     }

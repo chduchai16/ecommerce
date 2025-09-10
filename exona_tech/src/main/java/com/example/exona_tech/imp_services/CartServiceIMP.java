@@ -32,9 +32,9 @@ public class CartServiceIMP implements ICartService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Cart getCartByUserId(int userId) throws Exception {
-        User user = userRepository.findById(userId).orElseThrow(()->new EntityNotFoundException("Cannot find this user.")) ;
+        User user = userRepository.findById(userId).orElseThrow(()->new EntityNotFoundException("Không tìm thấy người dùng này.")) ;
         if(user.getCart() == null){
-            throw new Exception("This user has no products yet.") ;
+            throw new Exception("Người dùng này chưa có sản phẩm nào trong giỏ hàng.") ;
         }
         return user.getCart() ;
     }
@@ -42,7 +42,7 @@ public class CartServiceIMP implements ICartService {
     @Transactional(rollbackFor = Exception.class)
     public Cart addCartItemIntoCart(int userId, CartItem cartItem) throws Exception {
         // kiểm tra user và product có tô tại không
-        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("Cannot find this user."));
+        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("Không tìm thấy người dùng này."));
         Product product = cartItem.getProduct();
 
         // nếu đã có cart thì lấy còn khong thì tạo mới
@@ -85,7 +85,7 @@ public class CartServiceIMP implements ICartService {
 
         // Kiểm tra cart
         Cart existingCart = cartRepository.findById(cart.getId())
-                .orElseThrow(() -> new EntityNotFoundException("This cart does not exist"));
+                .orElseThrow(() -> new EntityNotFoundException("Giỏ hàng này không tồn tại"));
 
         // Lấy danh sách CartItem hiện tại từ cart
         Map<Integer, CartItem> existingItemsMap = cart.getCartItems()
@@ -107,7 +107,7 @@ public class CartServiceIMP implements ICartService {
         for (CartItem cartItem : cart.getCartItems()) {
             Product product = productMap.get(cartItem.getProduct().getId());
             if (product == null) {
-                throw new EntityNotFoundException("Cannot find product with ID: " + cartItem.getProduct().getId());
+                throw new EntityNotFoundException("Không tìm thấy sản phẩm với ID: " + cartItem.getProduct().getId());
             }
 
             CartItem existingItem = existingItemsMap.get(cartItem.getProduct().getId());

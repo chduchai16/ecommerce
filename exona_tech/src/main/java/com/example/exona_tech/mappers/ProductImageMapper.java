@@ -25,9 +25,7 @@ public class ProductImageMapper {
         if(fromRequestToEntityTypeMap == null) {
             fromRequestToEntityTypeMap = this.modelMapper.createTypeMap(ProductImageDTO.class , ProductImage.class) ;
             fromRequestToEntityTypeMap.getMappings().clear();
-            fromRequestToEntityTypeMap.addMappings(mapper -> {
-                mapper.skip(ProductImage :: setProduct);
-            });
+            fromRequestToEntityTypeMap.addMappings(mapper -> mapper.skip(ProductImage :: setProduct));
             fromRequestToEntityTypeMap.implicitMappings();
         }
 
@@ -35,7 +33,8 @@ public class ProductImageMapper {
 
         // map product
         if(productImageDTO.getProductId() != null) {
-            Product product = this.productRepository.findById(productImageDTO.getProductId()).orElseThrow(()-> new EntityNotFoundException("This product does not exist"));
+            Product product = this.productRepository.findById(productImageDTO.getProductId())
+                    .orElseThrow(() -> new EntityNotFoundException("Sản phẩm với id " + productImageDTO.getProductId() + " không tồn tại"));
             productImage.setProduct(product);
         }
         return productImage ;
@@ -46,9 +45,7 @@ public class ProductImageMapper {
         if(fromEntityToResponseTypeMap == null){
             fromEntityToResponseTypeMap = modelMapper.createTypeMap(ProductImage.class , ProductImageResponse.class);
             fromEntityToResponseTypeMap.getMappings().clear();
-            fromEntityToResponseTypeMap.addMappings(mapper -> {
-                mapper.map(src -> src.getProduct().getId() , ProductImageResponse :: setProductId);
-            });
+            fromEntityToResponseTypeMap.addMappings(mapper -> mapper.map(src -> src.getProduct().getId() , ProductImageResponse :: setProductId));
             fromEntityToResponseTypeMap.implicitMappings();
         }
         ProductImageResponse productImageResponse = fromEntityToResponseTypeMap.map(productImage) ;

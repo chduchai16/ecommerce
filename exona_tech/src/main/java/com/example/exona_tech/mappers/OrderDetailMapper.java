@@ -39,12 +39,14 @@ public class OrderDetailMapper {
 
         // map order
         if(orderDetailDTO.getOrderId() != null) {
-            Order order = orderRepository.findById(orderDetailDTO.getOrderId()).orElseThrow(()-> new EntityNotFoundException("This order does not exist"));
+            Order order = orderRepository.findById(orderDetailDTO.getOrderId())
+                    .orElseThrow(() -> new EntityNotFoundException("Đơn hàng với id " + orderDetailDTO.getOrderId() + " không tồn tại"));
             orderDetail.setOrder(order);
         }
         // map product
         if (orderDetailDTO.getProductId() != null) {
-            Product product = productRepository.findById(orderDetailDTO.getProductId()).orElseThrow(()-> new EntityNotFoundException("This product does not exist"));
+            Product product = productRepository.findById(orderDetailDTO.getProductId())
+                    .orElseThrow(() -> new EntityNotFoundException("Sản phẩm với id " + orderDetailDTO.getProductId() + " không tồn tại"));
             orderDetail.setProduct(product);
         }
 

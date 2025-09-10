@@ -6,6 +6,7 @@ import com.example.domain.repositories.UserRepository;
 import com.example.domain.services.IUserService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,7 +26,7 @@ public class UserServiceIMP implements IUserService {
     @Transactional(rollbackFor = Exception.class)
     public User createUser(User user) throws Exception {
         if(!userRepository.findByPhoneNumber(user.getPhoneNumber()).isEmpty()){
-            throw new Exception("Phone number must not be duplicated");
+            throw new DataIntegrityViolationException("Số điện thoại không được trùng lặp");
         }
         // mã hoá mật khẩu
         String encodedPassword = this.passwordEncoder.encode(user.getPassword());
@@ -36,7 +37,7 @@ public class UserServiceIMP implements IUserService {
     @Override
     public void deleteUser(int userId) throws Exception {
         if(userRepository.findById(userId).isEmpty()){
-            throw new Exception("This user does not exist");
+            throw new EntityNotFoundException("Người dùng này không tồn tại");
         }
         else {
             userRepository.deleteById(userId);
@@ -48,16 +49,18 @@ public class UserServiceIMP implements IUserService {
     public User updateUser(User user) throws Exception {
 
         if(user.getId()== null) {
-            throw new Exception("Id must not be null to update");
+            throw new Exception("Id không được để trống khi cập nhật");
         }
         else if (!this.userRepository.existsById(user.getId())){
-            throw new EntityNotFoundException("This user does not exist");
+            throw new EntityNotFoundException("Người dùng này không tồn tại");
         }
 
         if (user.getPhoneNumber() != null && !user.getPhoneNumber().trim().isEmpty()) {
-            if (userRepository.findByPhoneNumber(user.getPhoneNumber()).isPresent()) {
-                throw new Exception("Phone number already exists");
-            }
+            userRepository.findByPhoneNumber(user.getPhoneNumber()).ifPresent(existingUser -> {
+                if (!existingUser.getId().equals(user.getId())) {
+                    throw new DataIntegrityViolationException("Số điện thoại đã tồn tại");
+                }
+            });
         }
 
         // mã hoá mật khẩu
@@ -69,7 +72,7 @@ public class UserServiceIMP implements IUserService {
 
     @Override
     public User getUserById(int userId) throws Exception {
-        return userRepository.findById(userId).orElseThrow(()->new Exception("Cannot find this user"));
+        return userRepository.findById(userId).orElseThrow(()->new EntityNotFoundException("Không tìm thấy người dùng này"));
     }
 
     @Override
@@ -84,7 +87,7 @@ public class UserServiceIMP implements IUserService {
 
     @Override
     public User getUserByPhoneNumber (String phoneNumber) throws Exception {
-        return userRepository.findByPhoneNumber(phoneNumber).orElseThrow(()-> new Exception("Cannot find this user")) ;
+        return userRepository.findByPhoneNumber(phoneNumber).orElseThrow(()-> new EntityNotFoundException("Không tìm thấy người dùng này")) ;
     }
 
 }

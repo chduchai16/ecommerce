@@ -1,7 +1,6 @@
 package com.example.exona_tech.mappers;
 
 import com.example.exona_tech.dtos.requests.ProductDTO;
-import com.example.exona_tech.dtos.resposnes.CategoryResponse;
 import com.example.exona_tech.dtos.resposnes.ProductImageResponse;
 import com.example.exona_tech.dtos.resposnes.ProductResponse;
 import com.example.domain.entities.*;
@@ -22,7 +21,6 @@ public class ProductMapper {
     private final ProductImageRepository productImageRepository ;
     private final CartItemRepository cartItemRepository ;
     private final ModelMapper modelMapper ;
-    private final CategoryMapper categoryMapper ;
     private final ProductImageMapper productImageMapper ;
 
     private TypeMap<ProductDTO , Product> fromRequestToEntityTypeMap;
@@ -45,20 +43,25 @@ public class ProductMapper {
         Product product = fromRequestToEntityTypeMap.map(productDTO) ;
 
         // map category
-        Category category = this.categoryRepository.findById(productDTO.getCategoryId()).orElseThrow(()-> new EntityNotFoundException("This category does not exist"));
+        Category category = this.categoryRepository.findById(productDTO.getCategoryId())
+                .orElseThrow(() -> new EntityNotFoundException("Danh mục với id " + productDTO.getCategoryId() + " không tồn tại"));
         product.setCategory(category);
+
         // map supplier
         if(productDTO.getSupplierId() != null){
-            Supplier supplier = this.supplierRepository.findById(productDTO.getSupplierId()).orElseThrow(()-> new EntityNotFoundException("This supplier does not exist"));
+            Supplier supplier = this.supplierRepository.findById(productDTO.getSupplierId())
+                    .orElseThrow(() -> new EntityNotFoundException("Nhà cung cấp với id " + productDTO.getSupplierId() + " không tồn tại"));
             product.setSupplier(supplier);
         }
+
         // map Product Image
         if(productDTO.getProductImageIds() != null && !productDTO.getProductImageIds().isEmpty()) {
             List<ProductImage> productImages = this.productImageRepository.findAllById(productDTO.getProductImageIds());
             product.setProductImages(productImages);
         }
+
         // map Cart items
-        if( productDTO.getCartItemIds() != null && !productDTO.getCartItemIds().isEmpty()){
+        if(productDTO.getCartItemIds() != null && !productDTO.getCartItemIds().isEmpty()){
             List<CartItem> cartItems = this.cartItemRepository.findAllById(productDTO.getCartItemIds());
             product.setCartItems(cartItems);
         }
@@ -88,7 +91,7 @@ public class ProductMapper {
         if(product.getProductImages() != null && !product.getProductImages().isEmpty()) {
             List<ProductImageResponse> productImageResponses = product.getProductImages()
                     .stream()
-                    .map(entity -> productImageMapper.fromEntityToResponse(entity))
+                    .map(productImageMapper::fromEntityToResponse)
                     .toList();
             productResponse.setProductImageResponses(productImageResponses);
         }

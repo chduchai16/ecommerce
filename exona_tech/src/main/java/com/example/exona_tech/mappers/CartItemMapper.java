@@ -41,12 +41,12 @@ public class CartItemMapper {
 
         // map cart
         if(cartItemDTO.getCartId() != null) {
-            Cart cart = this.cartRepository.findById(cartItemDTO.getCartId()).orElseThrow(()-> new EntityNotFoundException("This cart does not exist"));
+            Cart cart = this.cartRepository.findById(cartItemDTO.getCartId()).orElseThrow(()-> new EntityNotFoundException("Giỏ hàng này không tồn tại"));
             cartItem.setCart(cart);
         }
         // map product
         if(cartItemDTO.getProductId() != null) {
-            Product product = this.productRepository.findById(cartItemDTO.getProductId()).orElseThrow(()-> new EntityNotFoundException("This product does not exist"));
+            Product product = this.productRepository.findById(cartItemDTO.getProductId()).orElseThrow(()-> new EntityNotFoundException("Sản phẩm này không tồn tại"));
             cartItem.setProduct(product);
         }
 
@@ -58,9 +58,7 @@ public class CartItemMapper {
         if(fromEntityToResponseTypeMap == null) {
             fromEntityToResponseTypeMap = modelMapper.createTypeMap(CartItem.class , CartItemResponse.class) ;
             fromEntityToResponseTypeMap.getMappings().clear();
-            fromEntityToResponseTypeMap.addMappings(mapper -> {
-                mapper.skip( CartItemResponse :: setProductResponse);
-            });
+            fromEntityToResponseTypeMap.addMappings(mapper -> mapper.skip( CartItemResponse :: setProductResponse));
             fromEntityToResponseTypeMap.implicitMappings();
         }
         CartItemResponse cartItemResponse = fromEntityToResponseTypeMap.map(cartItem) ;

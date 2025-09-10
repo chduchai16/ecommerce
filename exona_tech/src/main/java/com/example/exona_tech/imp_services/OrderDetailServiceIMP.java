@@ -17,7 +17,7 @@ public class OrderDetailServiceIMP implements IOrderDetailService {
 
     @Override
     public OrderDetail getOrderDetailById(int orderDetailId) throws Exception {
-        return orderDetailRepository.findById(orderDetailId).orElseThrow(()->new Exception("Cannot fiind this order detail"));
+        return orderDetailRepository.findById(orderDetailId).orElseThrow(()->new EntityNotFoundException("Không tìm thấy chi tiết đơn hàng này"));
     }
 
     @Override
@@ -33,10 +33,10 @@ public class OrderDetailServiceIMP implements IOrderDetailService {
     @Override
     public OrderDetail updateOrderDetail(OrderDetail orderDetail) throws Exception {
         if(orderDetail.getId() == null) {
-            throw new Exception("Id must not be null to update");
+            throw new Exception("Id không được để trống khi cập nhật");
         }
         if(this.orderDetailRepository.findById(orderDetail.getId()).isEmpty()) {
-            throw new EntityNotFoundException("This order detail does not exist");
+            throw new EntityNotFoundException("Chi tiết đơn hàng này không tồn tại");
         }
         return this.orderDetailRepository.save(orderDetail);
     }
@@ -44,7 +44,7 @@ public class OrderDetailServiceIMP implements IOrderDetailService {
     @Override
     public void deleteOrderDetail(int orderDetailId) throws Exception {
         if (orderDetailRepository.findById(orderDetailId).isEmpty()){
-            throw new Exception("This order detail does not exist");
+            throw new EntityNotFoundException("Chi tiết đơn hàng này không tồn tại");
         }
         else {
             orderDetailRepository.deleteById(orderDetailId);
