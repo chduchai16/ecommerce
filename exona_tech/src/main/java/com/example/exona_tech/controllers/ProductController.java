@@ -44,20 +44,46 @@ public class ProductController {
     private final ProductMapper productMapper ;
     private final FileHelper fileHelper;
 
-    // tìm kiêm product theo keyword
-    @GetMapping("/search")
-    public ResponseEntity<?> getProductsWithKeyword(
+    @GetMapping
+    public ResponseEntity<?> getProducts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "18") int limit,
-            @RequestParam(required = false, defaultValue = "") String keyword
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) Integer categoryId,
+            @RequestParam(defaultValue = "false") boolean shuffle
     ) {
         try {
             PageRequest pageRequest = PageRequest.of(page, limit, Sort.by("createdAt").descending());
-            Page<Product> products = productService.searchProducts(keyword, pageRequest);
+            Page<Product> products;
 
-            List<ProductResponse> productResponses = products.getContent()
-                    .stream()
-                    .map(productMapper :: fromEntityToResponse)
+            // Nếu có keyword
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                if (categoryId != null) {
+                    // tìm theo keyword + category
+                    products = productService.searchProductsByCategory(keyword, categoryId, pageRequest);
+                } else {
+                    // tìm theo keyword
+                    products = productService.searchProducts(keyword, pageRequest);
+                }
+            }
+            // Nếu chỉ có category
+            else if (categoryId != null) {
+                products = productService.getProductsByCategory(categoryId, pageRequest);
+            }
+            // Nếu không có filter nào → lấy tất cả
+            else {
+                products = productService.getAllProducts(pageRequest);
+            }
+
+            // Shuffle random nếu cần
+            List<Product> result = new ArrayList<>(products.getContent());
+            if (shuffle) {
+                Collections.shuffle(result);
+            }
+
+            // Mapping sang response
+            List<ProductResponse> productResponses = result.stream()
+                    .map(productMapper::fromEntityToResponse)
                     .toList();
 
             PaginationInfo paginationInfo = new PaginationInfo(
@@ -68,43 +94,11 @@ public class ProductController {
             );
 
             PagedResponse<ProductResponse> pagedResponse = new PagedResponse<>(productResponses, paginationInfo);
-            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Tìm kiếm sản phẩm thành công.", pagedResponse);
+            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Lấy danh sách sản phẩm thành công.", pagedResponse);
 
             return ResponseEntity.ok(baseResponse);
+
         } catch (Exception e) {
-            System.err.println("Lỗi tìm kiếm sản phẩm: " + e.getMessage());
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Lỗi máy chủ nội bộ: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
-        }
-    }
-
-    // lấy product theo loại
-    @GetMapping("/category")
-    public ResponseEntity<?> getProductsWithCategoryId(
-            @RequestParam(value = "id" , defaultValue = "1") int categoryId ,
-            @RequestParam(value = "page", defaultValue = "0") int page ,
-            @RequestParam(value = "limit", defaultValue = "18") int limit
-    ){
-        try{
-            PageRequest pageRequest = PageRequest.of(page , limit ) ;
-            Page<Product> products = productService.getProductsByCategory(categoryId , pageRequest) ;
-            List<ProductResponse> productResponses = products.getContent()
-                    .stream()
-                    .map(productMapper :: fromEntityToResponse)
-                    .toList();
-
-            PaginationInfo paginationInfo = new PaginationInfo(
-                    products.getNumber() ,
-                    products.getSize() ,
-                    products.getTotalPages() ,
-                    products.getTotalElements()
-            ) ;
-
-            PagedResponse pagedProductsResponse = new PagedResponse(productResponses , paginationInfo) ;
-            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Lấy danh sách sản phẩm thành công.", pagedProductsResponse);
-            return ResponseEntity.ok(baseResponse);
-        }
-        catch (Exception e) {
             System.err.println("Lỗi lấy danh sách sản phẩm: " + e.getMessage());
             BaseResponse baseResponse = BaseResponse.buildResponse("500", "Lỗi máy chủ nội bộ: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
@@ -130,42 +124,6 @@ public class ProductController {
         }
     }
 
-    // lấy danh sách phân trang cho sản phẩm mới
-    @GetMapping()
-    public ResponseEntity<?> getAllProducts(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "40") int limit
-    ){
-        try {
-            PageRequest pageRequest = PageRequest.of(page, limit, Sort.by("createdAt").descending());
-            Page<Product> products = productService.getAllProducts(pageRequest);
-
-            List<Product> shuffled = new ArrayList<>(products.getContent());
-            Collections.shuffle(shuffled); // Random tại đây
-
-            PaginationInfo paginationInfo = new PaginationInfo(
-                    products.getNumber(),
-                    products.getSize(),
-                    products.getTotalPages(),
-                    products.getTotalElements()
-            );
-
-            List<ProductResponse> productResponses = shuffled
-                    .stream()
-                    .map(productMapper :: fromEntityToResponse)
-                    .toList();
-
-            PagedResponse<ProductResponse> pagedProductResponse = new PagedResponse<>(productResponses , paginationInfo) ;
-
-            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Lấy danh sách sản phẩm thành công.",pagedProductResponse);
-            return ResponseEntity.ok(baseResponse);
-
-        } catch (Exception e) {
-            System.out.println("Lỗi lấy danh sách sản phẩm: " + e.getMessage());
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Lỗi máy chủ nội bộ: " +e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
-        }
-    }
 
     @GetMapping("/hot")
     public ResponseEntity<?> getHotProducts(
