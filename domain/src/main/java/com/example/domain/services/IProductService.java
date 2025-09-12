@@ -18,4 +18,19 @@ public interface IProductService {
     List<Product> getHotProducts(int limit);
     List<Product> getTop10BestSellingProducts();
     List<Product> createProducts(List<Product> products) throws Exception;
+
+    // cải tiến
+    Page<Product> filterProducts(
+            String name,
+            String categoryName,
+            String color,
+            String brand,
+            Float minPrice,
+            Float maxPrice,
+            Integer minStock,
+            Float minRating,
+            String description,
+            Long minViews,
+            Pageable pageable
+    );
 }

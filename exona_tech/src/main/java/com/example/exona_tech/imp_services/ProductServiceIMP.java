@@ -3,10 +3,12 @@ package com.example.exona_tech.imp_services;
 import com.example.domain.entities.Product;
 import com.example.domain.repositories.ProductRepository;
 import com.example.domain.services.IProductService;
+import com.example.domain.specifications.ProductSpecification;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -94,4 +96,30 @@ public class ProductServiceIMP implements IProductService {
         return this.productRepository.saveAll(products);
     }
 
+    @Override
+    public Page<Product> filterProducts(
+            String name,
+            String categoryName,
+            String color,
+            String brand,
+            Float minPrice,
+            Float maxPrice,
+            Integer minStock,
+            Float minRating,
+            String description,
+            Long minViews,
+            Pageable pageable
+    ) {
+        Specification<Product> spec = Specification.where(ProductSpecification.hasName(name))
+                .and(ProductSpecification.hasCategoryName(categoryName))
+                .and(ProductSpecification.hasColor(color))
+                .and(ProductSpecification.hasBrand(brand))
+                .and(ProductSpecification.hasPriceBetween(minPrice, maxPrice))
+                .and(ProductSpecification.hasStockQuantityGreaterThan(minStock))
+                .and(ProductSpecification.hasAverageRatingGreaterThan(minRating))
+                .and(ProductSpecification.hasDescription(description))
+                .and(ProductSpecification.hasMoreViewsThan(minViews));
+
+        return productRepository.findAll(spec, pageable);
+    }
 }
