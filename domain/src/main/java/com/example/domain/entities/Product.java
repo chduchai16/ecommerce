@@ -55,6 +55,9 @@ public class Product extends BaseEntity{
 
     private Long views ;
 
+    @Column
+    private String status ;
+
     @OneToMany(mappedBy = "product",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @ToString.Exclude
     @JsonBackReference
