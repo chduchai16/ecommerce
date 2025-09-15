@@ -1,10 +1,10 @@
 package com.example.domain.helpers;
 
 
-import com.example.domain.entities.Product;
-import com.example.domain.entities.ProductImage;
-import com.example.domain.repositories.ProductImageRepository;
-import com.example.domain.repositories.ProductRepository;
+import com.example.domain.models.entities.Product;
+import com.example.domain.models.entities.ProductImage;
+import com.example.domain.persistence.repositories.ProductImageRepository;
+import com.example.domain.persistence.repositories.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;

@@ -1,6 +1,6 @@
 package com.example.domain.services;
 
-import com.example.domain.entities.Role;
+import com.example.domain.models.entities.Role;
 
 import java.util.List;
 

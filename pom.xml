@@ -18,8 +18,7 @@
 
   <modules>
     <module>domain</module>
-    <module>media</module>
-    <module>exona_tech</module>
+    <module>shopapp</module>
   </modules>
 
   <dependencies>

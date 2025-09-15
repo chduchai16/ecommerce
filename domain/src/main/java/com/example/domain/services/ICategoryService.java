@@ -1,6 +1,6 @@
 package com.example.domain.services;
 
-import com.example.domain.entities.Category;
+import com.example.domain.models.entities.Category;
 import java.util.List;
 
 public interface ICategoryService {

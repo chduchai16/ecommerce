@@ -1,7 +1,7 @@
 package com.example.domain.services;
 
-import com.example.domain.entities.Product;
-import com.example.domain.entities.Supplier;
+import com.example.domain.models.entities.Product;
+import com.example.domain.models.entities.Supplier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import java.util.List;

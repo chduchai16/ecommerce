@@ -1,6 +1,6 @@
 package com.example.domain.services;
 
-import com.example.domain.entities.OrderDetail;
+import com.example.domain.models.entities.OrderDetail;
 import java.util.List;
 
 public interface IOrderDetailService {

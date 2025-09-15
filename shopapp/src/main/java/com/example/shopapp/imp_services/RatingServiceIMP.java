@@ -1,0 +1,80 @@
+package com.example.shopapp.imp_services;
+
+import com.example.domain.models.entities.Rating;
+import com.example.domain.persistence.repositories.ProductRepository;
+import com.example.domain.persistence.repositories.RatingRepository;
+import com.example.domain.persistence.repositories.UserRepository;
+import com.example.domain.services.IRatingService;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Objects;
+
+@Service
+@RequiredArgsConstructor
+public class RatingServiceIMP implements IRatingService {
+
+    private final RatingRepository ratingRepository ;
+    private final ProductRepository productRepository;
+    private final UserRepository userRepository ;
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Rating createRating(Rating rating) throws Exception {
+        if(rating.getId() != null) {
+            rating.setId(null);
+        }
+        Rating saved = new Rating();
+        if (ratingRepository.findByProductIdAndUserId(rating.getProduct().getId(),rating.getUser().getId()).isEmpty()){
+            saved = ratingRepository.save(rating);
+            productRepository.updateAverageRating(rating.getProduct().getId());
+        }
+        return saved ;
+    }
+
+    @Override
+    public Page<Rating> getRatingsByProductId(int productId , Pageable pageable) {
+        return ratingRepository.findByProductId(productId , pageable) ;
+    }
+
+    @Override
+    public Rating updateRating(Rating rating) throws Exception {
+        // chỉ update comment và đánh giá
+        if (rating.getId() == null) {
+            throw new Exception("Id không được để trống khi cập nhật");
+        }
+
+        Rating exist = ratingRepository.findById(rating.getId()).orElseThrow(()->new EntityNotFoundException("Đánh giá không tồn tại"));
+
+        if(!Objects.equals(exist.getUser().getId(), rating.getUser().getId()) && !Objects.equals(rating.getProduct().getId(), rating.getProduct().getId())){
+            throw new Exception("Người dùng và sản phẩm không khớp");
+        }
+
+        exist.setRate(rating.getRate());
+        exist.setComment(rating.getComment());
+        ratingRepository.save(exist);
+        productRepository.updateAverageRating(rating.getProduct().getId());
+        return exist ;
+    }
+
+    @Override
+    public void deleteRating(int ratingId) throws Exception {
+        if (ratingRepository.findById(ratingId).isEmpty()){
+            throw new EntityNotFoundException("Đánh giá không tồn tại");
+        }
+        else {
+            ratingRepository.deleteById(ratingId);
+        }
+    }
+
+    @Override
+    public Rating getRatingByProductIdAndUserId(int productId, int userId) throws Exception {
+        return ratingRepository.findByProductIdAndUserId(productId , userId).orElseThrow(()->new EntityNotFoundException("Đánh giá này không tồn tại"));
+    }
+
+
+}

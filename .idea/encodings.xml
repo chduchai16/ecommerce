@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/app/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/build-app/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/commom/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/domain/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/erp/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/exona_tech/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/media/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/runapp/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/security/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/shared/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/shop/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/shop_electronics/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/shopapp/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
   </component>

@@ -1,6 +1,6 @@
 package com.example.domain.services;
 
-import com.example.domain.entities.Rating;
+import com.example.domain.models.entities.Rating;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

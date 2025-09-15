@@ -1,6 +1,6 @@
 package com.example.domain.services;
 
-import com.example.domain.entities.Order;
+import com.example.domain.models.entities.Order;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

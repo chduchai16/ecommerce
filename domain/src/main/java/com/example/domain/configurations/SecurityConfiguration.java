@@ -1,6 +1,6 @@
 package com.example.domain.configurations;
 
-import com.example.domain.repositories.UserRepository;
+import com.example.domain.persistence.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,7 +25,7 @@ public class SecurityConfiguration {
     public UserDetailsService userDetailsService() {
         return phoneNumber -> {
             try {
-                com.example.domain.entities.User user = userRepository.findByPhoneNumber(phoneNumber).orElseThrow(()->new UsernameNotFoundException("User not found."));
+                com.example.domain.models.entities.User user = userRepository.findByPhoneNumber(phoneNumber).orElseThrow(()->new UsernameNotFoundException("User not found."));
                 return User.withUsername(user.getPhoneNumber())
                         .password(user.getPassword())
                         .roles(user.getRole().getName()) // Role phải đúng định dạng ROLE_USER hoặc ROLE_ADMIN
