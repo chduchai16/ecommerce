@@ -2,13 +2,19 @@ package com.example.shopapp.imp_services;
 
 import com.example.domain.models.entities.Category;
 import com.example.domain.persistence.repositories.CategoryRepository;
+import com.example.domain.persistence.specifications.CategorySpecification;
 import com.example.domain.services.ICategoryService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,26 +29,56 @@ public class CategoryServiceIMP implements ICategoryService {
 
     @Override
     public List<Category> getAllCategories() {
-        return categoryRepository.findAll();
+        return this.categoryRepository.findAll() ;
+    }
+
+    @Override
+    public Page<Category> filterCategories(
+            String name ,
+            Pageable pageable
+    ) {
+        Specification<Category> spec = Specification.where(
+                CategorySpecification.hasName(name)
+        ) ;
+        return categoryRepository.findAll(spec , pageable);
     }
 
     @Override
     public Category createCategory(Category category) throws Exception {
-        if(categoryRepository.findByName(category.getName()).isEmpty()){
-            return categoryRepository.save(category) ;
-        }else {
+
+        Specification<Category> spec = Specification.where(
+                CategorySpecification.hasExactName(category.getName())
+        ) ;
+
+        boolean exists = categoryRepository.findOne(spec).isPresent() ;
+
+        if(exists) {
             throw new DataIntegrityViolationException("Tên loại hàng không được trùng lặp") ;
         }
+        return categoryRepository.save(category) ;
     }
 
     @Override
     public Category updateCategory(Category category) throws Exception {
-        Category existingCategory = categoryRepository.findById(category.getId()).orElseThrow(() -> new EntityNotFoundException("Loại hàng không tồn tại"));
-        if(categoryRepository.findByName(category.getName()).isPresent() && !existingCategory.getName().equals(category.getName())) {
+
+        if(category.getId() == 0) {
+            throw new IllegalArgumentException("ID loại hàng không được để trống khi cập nhật") ;
+        }
+
+        Specification<Category> spec = Specification.where(
+                CategorySpecification.hasExactName(category.getName())
+        ) ;
+
+        Optional<Category> existingCategory = categoryRepository.findOne(spec) ;
+
+        if(existingCategory.isEmpty()) {
+            throw new EntityNotFoundException("Loại hàng không tồn tại") ;
+        }
+
+        if(!Objects.equals(existingCategory.get().getId(), category.getId())) {
             throw new DataIntegrityViolationException("Tên loại hàng không được trùng lặp") ;
         }
-        existingCategory.setName(category.getName());
-        return categoryRepository.save(existingCategory) ;
+        return categoryRepository.save(category) ;
     }
 
     @Override

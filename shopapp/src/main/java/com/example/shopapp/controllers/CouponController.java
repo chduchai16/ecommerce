@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -59,11 +60,14 @@ public class CouponController {
     @GetMapping()
     public ResponseEntity<?> getAllCoupons(
             @RequestParam("page") int page ,
-            @RequestParam("limit") int limit
+            @RequestParam("limit") int limit,
+            @RequestParam("min_discount_percent") Float minDiscountPercent ,
+            @RequestParam("is_expired") Boolean isExpired ,
+            @RequestParam("code") String code
     ){
         try {
             PageRequest pageRequest = PageRequest.of(page , limit) ;
-            Page<Coupon> coupons = couponService.getAllCoupons(pageRequest);
+            Page<Coupon> coupons = couponService.filterCoupon(minDiscountPercent , isExpired , code , pageRequest) ;
 
             PaginationInfo paginationInfo = new PaginationInfo(
                     coupons.getNumber() ,

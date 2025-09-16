@@ -30,4 +30,7 @@ public class Coupon extends BaseEntity{
 
     @Column(name = "expiration_date")
     private LocalDate expirationDate ;
+
+    @Column(name = "status")
+    private Integer status ;
 }

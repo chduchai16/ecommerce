@@ -6,7 +6,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface ICouponService {
     Coupon getCouponById (int couponId) throws Exception;
-    Page<Coupon> getAllCoupons(Pageable pageable);
+    Page<Coupon> filterCoupon(Float minDiscountPercent ,Boolean isExpired ,String code ,Pageable pageable);
     Coupon createCoupon(Coupon coupon) throws Exception;
     Coupon updateCoupon(Coupon coupon) throws Exception;
     void deleteCoupon(int couponId) throws Exception;
