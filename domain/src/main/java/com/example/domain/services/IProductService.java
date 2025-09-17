@@ -12,10 +12,8 @@ public interface IProductService {
     Product updateProduct(Product product) throws Exception;
     void deleteProduct(int productId) throws Exception;
     void viewProduct (int productId) throws Exception;
-    Page<Product> getHotProducts(Pageable pageable);
     List<Product> createProducts(List<Product> products) throws Exception;
 
-    // cải tiến
     Page<Product> filterProducts(
             String name,
             String categoryName,
@@ -27,6 +25,7 @@ public interface IProductService {
             Float minRating,
             String description,
             Long minViews,
+            Integer status ,
             Pageable pageable
     );
 }

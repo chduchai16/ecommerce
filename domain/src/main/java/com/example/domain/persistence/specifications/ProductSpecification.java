@@ -8,6 +8,16 @@ import org.springframework.data.jpa.domain.Specification;
 
 public class ProductSpecification {
 
+    // id hàng hóa
+    public static  Specification<Product> hasId (Integer id) {
+        return (root , query , cb) -> {
+            if (id == null) {
+                return cb.conjunction();
+            }
+            return cb.equal(root.get("id"), id);
+        } ;
+    }
+
     // tên hàng hóa
     public static Specification<Product> hasName (String keyword){
         return (root, query , cb) -> {

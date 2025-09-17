@@ -3,16 +3,18 @@ package com.example.shopapp.imp_services;
 import com.example.domain.models.entities.Rating;
 import com.example.domain.persistence.repositories.ProductRepository;
 import com.example.domain.persistence.repositories.RatingRepository;
-import com.example.domain.persistence.repositories.UserRepository;
+import com.example.domain.persistence.specifications.RatingSpecification;
 import com.example.domain.services.IRatingService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,27 +22,60 @@ public class RatingServiceIMP implements IRatingService {
 
     private final RatingRepository ratingRepository ;
     private final ProductRepository productRepository;
-    private final UserRepository userRepository ;
 
+    // lấy theo sản phẩm và người dùng
+    @Override
+    public Rating getRatingByProductIdAndUserId(int productId, int userId) throws Exception {
+
+        Specification<Rating> spec = Specification.where(RatingSpecification.hasProductId(productId))
+                .and(RatingSpecification.hasUserId(userId)) ;
+
+        Optional<Rating> existingRating = ratingRepository.findOne(spec);
+        if (existingRating.isEmpty()) {
+            throw new EntityNotFoundException("Đánh giá không tồn tại");
+        }
+        return existingRating.get();
+    }
+    // lọc đánh giá
+    @Override
+    public Page<Rating> filterRatings(String productName, String userName, Integer minRate, Integer maxRate, String comment , Pageable pageable) {
+        Specification<Rating> spec = Specification.where(RatingSpecification.hasProductName(productName))
+                .and(RatingSpecification.hasUserName(userName))
+                .and(RatingSpecification.hasComment(comment)) ;
+        if (minRate != null && maxRate != null) {
+            spec = spec.and(RatingSpecification.hasRateBetween(minRate, maxRate));
+        } else if (minRate != null) {
+            spec = spec.and(RatingSpecification.hasMinRate(minRate));
+        } else if (maxRate != null) {
+            spec = spec.and(RatingSpecification.hasMaxRate(maxRate));
+        }
+        return ratingRepository.findAll(spec, pageable);
+    }
+
+    // tạo đánh giá
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Rating createRating(Rating rating) throws Exception {
         if(rating.getId() != null) {
             rating.setId(null);
         }
-        Rating saved = new Rating();
-        if (ratingRepository.findByProductIdAndUserId(rating.getProduct().getId(),rating.getUser().getId()).isEmpty()){
-            saved = ratingRepository.save(rating);
-            productRepository.updateAverageRating(rating.getProduct().getId());
+        Specification<Rating> spec = Specification.where(RatingSpecification.hasProductId(rating.getProduct().getId()))
+                .and(RatingSpecification.hasUserId(rating.getUser().getId())) ;
+
+        Optional<Rating> existingRating = ratingRepository.findOne(spec);
+        if (existingRating.isPresent()) {
+            throw new Exception("Người dùng đã đánh giá sản phẩm này");
         }
-        return saved ;
+        return ratingRepository.save(rating);
     }
 
     @Override
     public Page<Rating> getRatingsByProductId(int productId , Pageable pageable) {
-        return ratingRepository.findByProductId(productId , pageable) ;
+        Specification<Rating> spec = Specification.where(RatingSpecification.hasProductId(productId)) ;
+        return ratingRepository.findAll(spec , pageable) ;
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Rating updateRating(Rating rating) throws Exception {
         // chỉ update comment và đánh giá
@@ -70,11 +105,4 @@ public class RatingServiceIMP implements IRatingService {
             ratingRepository.deleteById(ratingId);
         }
     }
-
-    @Override
-    public Rating getRatingByProductIdAndUserId(int productId, int userId) throws Exception {
-        return ratingRepository.findByProductIdAndUserId(productId , userId).orElseThrow(()->new EntityNotFoundException("Đánh giá này không tồn tại"));
-    }
-
-
 }

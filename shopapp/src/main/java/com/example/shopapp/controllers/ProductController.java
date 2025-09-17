@@ -46,7 +46,8 @@ public class ProductController {
             @RequestParam(required = false , value = "min_stock") Integer minStock,
             @RequestParam(required = false , value = "min_rating") Float minRating,
             @RequestParam(required = false) String description,
-            @RequestParam(required = false, value ="min_views") Long minViews
+            @RequestParam(required = false, value ="min_views") Long minViews,
+            @RequestParam(required = false) Integer status
     ) {
         try {
             PageRequest pageRequest = PageRequest.of(page, limit, Sort.by("createdAt").descending());
@@ -63,6 +64,7 @@ public class ProductController {
                     minRating,
                     description,
                     minViews,
+                    status ,
                     pageRequest
             );
             // Xáo trộn danh sách sản phẩm

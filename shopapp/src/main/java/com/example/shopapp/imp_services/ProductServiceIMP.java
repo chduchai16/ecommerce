@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -24,11 +25,12 @@ public class ProductServiceIMP implements IProductService {
     // lấy thông tin
     @Override
     public Product getProductById(int productId) {
-        return productRepository.findById(productId).orElseThrow(()->new EntityNotFoundException("Không tìm thấy sản phẩm này"));
-    }
-    @Override
-    public Page<Product> getHotProducts(Pageable pageable) {
-        return productRepository.findAll(pageable) ;
+        Specification<Product> spec = Specification.where(ProductSpecification.hasId(productId)) ;
+        Optional<Product> product = productRepository.findOne(spec);
+        if (product.isEmpty()) {
+            throw new EntityNotFoundException("Sản phẩm này không tồn tại");
+        }
+        return product.get();
     }
 
     @Override
@@ -43,6 +45,7 @@ public class ProductServiceIMP implements IProductService {
             Float minRating,
             String description,
             Long minViews,
+            Integer status ,
             Pageable pageable
     ) {
         Specification<Product> spec = Specification.where(ProductSpecification.hasName(name))
@@ -53,8 +56,8 @@ public class ProductServiceIMP implements IProductService {
                 .and(ProductSpecification.hasStockQuantityGreaterThan(minStock))
                 .and(ProductSpecification.hasAverageRatingGreaterThan(minRating))
                 .and(ProductSpecification.hasDescription(description))
-                .and(ProductSpecification.hasMoreViewsThan(minViews));
-
+                .and(ProductSpecification.hasMoreViewsThan(minViews))
+                .and(ProductSpecification.hasStatus(status));
         return productRepository.findAll(spec, pageable);
     }
 
@@ -84,19 +87,23 @@ public class ProductServiceIMP implements IProductService {
 
     @Override
     public void viewProduct(int productId) {
-        Product product = productRepository.findById(productId).orElseThrow(() -> new EntityNotFoundException("Sản phẩm này không tồn tại"));
-        product.setViews(product.getViews() + 1);
-        productRepository.save(product);
+        Specification<Product> spec = Specification.where(ProductSpecification.hasId(productId)) ;
+        Optional<Product> product = productRepository.findOne(spec);
+        if (product.isEmpty()) {
+            throw new EntityNotFoundException("Sản phẩm này không tồn tại");
+        }
+        product.get().setViews(product.get().getViews() + 1);
+        productRepository.save(product.get());
     }
 
     // xoá
     @Override
     public void deleteProduct(int productId) {
-        if (productRepository.findById(productId).isEmpty()){
+        Specification<Product> spec = Specification.where(ProductSpecification.hasId(productId)) ;
+        Optional<Product> product = productRepository.findOne(spec);
+        if (product.isEmpty()) {
             throw new EntityNotFoundException("Sản phẩm này không tồn tại");
         }
-        else {
-            productRepository.deleteById(productId);
-        }
+        productRepository.deleteById(productId);
     }
 }
