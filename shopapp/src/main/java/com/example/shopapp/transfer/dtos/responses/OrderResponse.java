@@ -45,6 +45,9 @@ public class OrderResponse {
     @JsonProperty("note")
     private String note ;
 
+    @JsonProperty("coupon_code")
+    private String couponCode ;
+
     @JsonProperty("order_detail_responses")
     private List<OrderDetailResponse> orderDetailResponses ;
 

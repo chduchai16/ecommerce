@@ -3,6 +3,8 @@ package com.example.shopapp.filters;
 import com.example.domain.configurations.JwtConfiguration;
 import com.example.domain.models.entities.User;
 import com.example.domain.persistence.repositories.UserRepository;
+import com.example.domain.services.IUserService;
+import com.example.shopapp.imp_services.UserServiceIMP;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -26,8 +28,8 @@ import java.util.Map;
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtConfiguration jwtConfiguration;
-    private final UserRepository userRepository;
     private List<Map<String, String>> permitAllEndpoints;
+    private final IUserService userService ;
 
     @Value("${app.api-prefix}")
     private String apiPrefix ;
@@ -70,8 +72,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         if (phoneNumber != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            User userDetails = userRepository.findByPhoneNumber(phoneNumber)
-                    .orElseThrow(() -> new UsernameNotFoundException("Cannot find this user"));
+            User userDetails = userService.getUserByPhoneNumber(phoneNumber);
             if (jwtConfiguration.validateToken(token, userDetails)) {
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities()

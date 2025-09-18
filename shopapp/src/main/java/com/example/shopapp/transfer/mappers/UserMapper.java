@@ -22,37 +22,37 @@ public class UserMapper {
     private TypeMap<UserDTO, User> fromRequestToEntityTypeMap;
     private TypeMap<User, UserResponse> fromEntityToResponseTypeMap;
 
-    public User fromRequestToEntity(UserDTO userDTO) throws Exception {
+    public User fromRequestToEntity(UserDTO userDTO, boolean includePassword) throws Exception {
         if (userDTO == null) return null;
 
-        // kiểm tra password
-        if (!userDTO.getPassword().equals(userDTO.getRetypePassword())) {
-            throw new Exception("Mật khẩu nhập lại không khớp");
+        if (includePassword) {
+            if (!userDTO.getPassword().equals(userDTO.getRetypePassword())) {
+                throw new Exception("Mật khẩu nhập lại không khớp");
+            }
         }
 
-        if (fromRequestToEntityTypeMap == null) {
-            fromRequestToEntityTypeMap = modelMapper.createTypeMap(UserDTO.class, User.class);
-            fromRequestToEntityTypeMap.getMappings().clear();
-            fromRequestToEntityTypeMap.addMappings(mapper -> {
-                mapper.skip(User::setRole);
-                mapper.skip(User::setCart);
-                mapper.skip(User::setPassword); // set riêng
-            });
-            fromRequestToEntityTypeMap.implicitMappings();
-        }
+        TypeMap<UserDTO, User> typeMap = modelMapper.typeMap(UserDTO.class, User.class);
+        typeMap.addMappings(mapper -> {
+            mapper.skip(User::setRole);
+            mapper.skip(User::setCart);
+            if (!includePassword) {
+                mapper.skip(User::setPassword);
+            }
+        });
 
-        User user = fromRequestToEntityTypeMap.map(userDTO);
+        User user = typeMap.map(userDTO);
 
-        // map role
         Role role = roleRepository.findById(userDTO.getRoleId())
-                .orElseThrow(() -> new EntityNotFoundException("Vai trò với id " + userDTO.getRoleId() + " không tồn tại"));
+                .orElseThrow(() -> new EntityNotFoundException("Vai trò không tồn tại"));
         user.setRole(role);
 
-        // set password
-        user.setPassword(userDTO.getPassword());
+        if (includePassword) {
+            user.setPassword(userDTO.getPassword());
+        }
 
         return user;
     }
+
 
     public UserResponse fromEntityToResponse(User user) {
         if (user == null) return null;

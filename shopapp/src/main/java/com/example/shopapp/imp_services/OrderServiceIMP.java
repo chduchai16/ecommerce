@@ -3,12 +3,16 @@ package com.example.shopapp.imp_services;
 
 import com.example.domain.models.entities.Order;
 import com.example.domain.persistence.repositories.OrderRepository;
+import com.example.domain.persistence.specifications.OrderSpecification;
 import com.example.domain.services.IOrderService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -18,12 +22,30 @@ public class OrderServiceIMP implements IOrderService {
 
     @Override
     public Order getOrderById(int orderId) throws Exception {
-        return orderRepository.findById(orderId).orElseThrow(()->new EntityNotFoundException("Không tìm thấy đơn hàng này"));
+        Specification<Order> spec = Specification.where(OrderSpecification.hasId(orderId));
+
+        Optional<Order> order = orderRepository.findOne(spec);
+        if(order.isEmpty()) {
+            throw new EntityNotFoundException("Không tìm thấy đơn hàng này");
+        }
+        return order.get();
     }
 
     @Override
-    public Page<Order> getAllOrders(Pageable pageable) {
-        return orderRepository.findAll(pageable);
+    public Page<Order> getOrdersByUserId(int userId, Pageable pageable) {
+        Specification<Order> spec = Specification.where(OrderSpecification.hasUserId(userId));
+        Page<Order> order = orderRepository.findAll(spec, pageable);
+        return order ;
+    }
+
+    @Override
+    public Page<Order> filterOrders(Float minTotalAmount , Float maxTotalAmount , Integer status , String shippingAddress , String customerName ,Pageable pageable) {
+        Specification<Order> spec = Specification.where(OrderSpecification.minTotalAmount(minTotalAmount))
+                .and(OrderSpecification.maxTotalAmount(maxTotalAmount))
+                .and(OrderSpecification.hasStatus(status))
+                .and(OrderSpecification.hasShippingAddress(shippingAddress))
+                .and(OrderSpecification.hasCustomerName(customerName));
+        return orderRepository.findAll(spec, pageable);
     }
 
     @Override
@@ -36,24 +58,25 @@ public class OrderServiceIMP implements IOrderService {
         if(order.getId() == null ) {
             throw new Exception("Id không được để trống khi cập nhật");
         }
-        else if (!this.orderRepository.existsById(order.getId())){
-            throw new EntityNotFoundException("Đơn hàng này không tồn tại");
+
+        Specification<Order> spec = Specification.where(OrderSpecification.hasId(order.getId()));
+        boolean exists = orderRepository.exists(spec) ;
+        if(!exists) {
+            throw new EntityNotFoundException("Không tìm thấy đơn hàng này");
         }
         return this.orderRepository.save(order);
     }
 
     @Override
     public void deleteOrder(int orderId) throws Exception {
-        if (orderRepository.findById(orderId).isEmpty()){
-            throw new EntityNotFoundException("Đơn hàng này không tồn tại");
+        Specification<Order> spec = Specification.where(OrderSpecification.hasId(orderId));
+        boolean exists = orderRepository.exists(spec) ;
+        if(!exists) {
+            throw new EntityNotFoundException("Không tìm thấy đơn hàng này");
         }
         orderRepository.deleteById(orderId);
     }
 
-    @Override
-    public Page<Order> getOrdersByUserId(int userId, Pageable pageable) {
-        return orderRepository.findOrdersByUserId(userId, pageable) ;
-    }
 
 //    @Override
 //    public Order placeOrder(Order order) throws Exception {

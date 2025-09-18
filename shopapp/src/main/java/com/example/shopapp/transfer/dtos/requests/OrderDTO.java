@@ -43,9 +43,9 @@ public class OrderDTO {
     @JsonProperty("shipping_method")
     private String shippingMethod ;
 
-    @JsonProperty("fullname")
-    @NotNull(message = "Full name must not be null.")
-    private String fullName ;
+    @JsonProperty("customer_name")
+    @NotNull(message = "customer name must not be null.")
+    private String customerName ;
 
     @JsonProperty("phone_number")
     @NotNull(message = "Phone number must not be null.")
@@ -55,6 +55,9 @@ public class OrderDTO {
     private String email;
 
     private String note ;
+
+    @JsonProperty("coupon_code")
+    private String couponCode ;
 
     @JsonProperty("order_detail_ids")
     private List<Integer> orderDetailIds ;

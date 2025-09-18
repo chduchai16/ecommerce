@@ -53,8 +53,8 @@ public class User extends BaseEntity implements UserDetails{
     @JoinColumn(name = "role_id")
     private Role role;
 
-    @Column(name = "is_active")
-    private Boolean isActive;
+    @Column(name = "status")
+    private Integer status ;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -73,7 +73,7 @@ public class User extends BaseEntity implements UserDetails{
 
     @Override
     public boolean isAccountNonLocked() {
-        return isActive != null && isActive;
+        return status != null && status != 3;
     }
 
     @Override
@@ -83,6 +83,6 @@ public class User extends BaseEntity implements UserDetails{
 
     @Override
     public boolean isEnabled() {
-        return isActive != null && isActive;
+        return status != null && status == 0;
     }
 }

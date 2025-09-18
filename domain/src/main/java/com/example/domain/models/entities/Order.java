@@ -23,8 +23,8 @@ public class Order extends BaseEntity{
     @JoinColumn(name = "user_id")
     private User user ;
 
-    @Column(name = "total_price")
-    private Float totalPrice ;
+    @Column(name = "total_amount")
+    private Float totalAmount ;
 
     @Column(name = "status" ,columnDefinition = "NVARCHAR(255)", length = 20)
     private String status ;
@@ -38,8 +38,8 @@ public class Order extends BaseEntity{
     @Column(name = "shipping_method",columnDefinition = "NVARCHAR(255)" , length = 255)
     private String shippingMethod ;
 
-    @Column(name = "fullname",columnDefinition = "NVARCHAR(255)" , length =255)
-    private String fullName ;
+    @Column(name = "customerName",columnDefinition = "NVARCHAR(255)" , length =255)
+    private String customerName ;
 
     @Column(name = "phone_number" , length=20)
     private String phoneNumber ;
@@ -49,6 +49,10 @@ public class Order extends BaseEntity{
 
     @Column(name = "note" ,columnDefinition = "NVARCHAR(255)")
     private String note ;
+
+    @ManyToOne
+    @JoinColumn(name = "coupon_id")
+    private Coupon coupon;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
