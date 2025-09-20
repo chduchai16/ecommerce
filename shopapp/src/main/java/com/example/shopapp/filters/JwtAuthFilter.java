@@ -1,10 +1,8 @@
 package com.example.shopapp.filters;
 
-import com.example.domain.configurations.JwtConfiguration;
+import com.example.shopapp.configurations.JwtConfiguration;
 import com.example.domain.models.entities.User;
-import com.example.domain.persistence.repositories.UserRepository;
 import com.example.domain.services.IUserService;
-import com.example.shopapp.imp_services.UserServiceIMP;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -14,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;

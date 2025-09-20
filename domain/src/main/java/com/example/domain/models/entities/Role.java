@@ -2,8 +2,8 @@ package com.example.domain.models.entities;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Table(name ="roles")
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@EqualsAndHashCode(callSuper = false)
 public class Role extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

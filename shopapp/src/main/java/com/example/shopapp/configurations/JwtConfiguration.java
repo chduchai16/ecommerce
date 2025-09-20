@@ -1,4 +1,4 @@
-package com.example.domain.configurations;
+package com.example.shopapp.configurations;
 
 import com.example.domain.models.entities.User;
 import io.jsonwebtoken.Claims;

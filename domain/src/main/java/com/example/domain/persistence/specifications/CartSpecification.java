@@ -14,4 +14,14 @@ public class CartSpecification {
         };
     }
 
+    public static Specification<Cart> hasUserId(Integer userId) {
+        return (root, query, cb) -> {
+            if(userId == null) {
+                return cb.conjunction();
+            }
+            return cb.equal(root.get("user").get("id"), userId);
+        };
+    }
+
+
 }

@@ -73,7 +73,7 @@ public class AuthController {
                 BaseResponse baseResponse = BaseResponse.buildResponse("400", "Dữ liệu không hợp lệ.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse);
             }
-            User user = userMapper.fromRequestToEntity(userDTO);
+            User user = userMapper.fromRequestToEntity(userDTO, true);
             authService.signUp(user);
             BaseResponse baseResponse = BaseResponse.buildResponse("200", "Đăng ký tài khoản thành công.", userMapper.fromEntityToResponse(user));
             return ResponseEntity.ok(baseResponse);

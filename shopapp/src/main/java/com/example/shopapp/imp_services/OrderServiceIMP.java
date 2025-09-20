@@ -39,7 +39,14 @@ public class OrderServiceIMP implements IOrderService {
     }
 
     @Override
-    public Page<Order> filterOrders(Float minTotalAmount , Float maxTotalAmount , Integer status , String shippingAddress , String customerName ,Pageable pageable) {
+    public Page<Order> filterOrders(
+            Float minTotalAmount ,
+            Float maxTotalAmount ,
+            Integer status ,
+            String shippingAddress ,
+            String customerName ,
+            Pageable pageable
+    ) {
         Specification<Order> spec = Specification.where(OrderSpecification.minTotalAmount(minTotalAmount))
                 .and(OrderSpecification.maxTotalAmount(maxTotalAmount))
                 .and(OrderSpecification.hasStatus(status))

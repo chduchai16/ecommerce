@@ -33,13 +33,17 @@ public class SupplierController {
     private final SupplierMapper supplierMapper ;
 
     @GetMapping()
-    public ResponseEntity<?> getAllSuppliers(
-            @RequestParam("page") int page ,
-            @RequestParam("limit") int limit
+    public ResponseEntity<?> filterSuppliers(
+            @RequestParam(value = "name" , required = false) String name ,
+            @RequestParam(value = "phone_number" , required = false) String phoneNumber ,
+            @RequestParam(value = "email" , required = false) String email ,
+            @RequestParam(value = "address" , required = false) String address ,
+            @RequestParam(value = "page" , defaultValue = "0") int page ,
+            @RequestParam(value = "limit" , defaultValue = "10") int limit
     ) {
         try {
             PageRequest pageRequest = PageRequest.of(page , limit) ;
-            Page<Supplier> suppliers = supplierService.getAllSuppliers(pageRequest);
+            Page<Supplier> suppliers = supplierService.filterSuppliers(name , phoneNumber , email , address ,pageRequest);
             List<SupplierResponse> supplierResponses = suppliers
                     .stream()
                     .map(supplierMapper :: fromEntityToResponse)

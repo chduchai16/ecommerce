@@ -1,20 +1,22 @@
 package com.example.shopapp.imp_services;
 
-
 import com.example.domain.models.entities.Cart;
 import com.example.domain.models.entities.CartItem;
 import com.example.domain.models.entities.Product;
 import com.example.domain.models.entities.User;
-import com.example.domain.persistence.repositories.CartItemRepository;
 import com.example.domain.persistence.repositories.CartRepository;
 import com.example.domain.persistence.repositories.ProductRepository;
 import com.example.domain.persistence.repositories.UserRepository;
+import com.example.domain.persistence.specifications.CartSpecification;
+import com.example.domain.persistence.specifications.UserSpecification;
 import com.example.domain.services.ICartService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -27,38 +29,53 @@ public class CartServiceIMP implements ICartService {
     private final UserRepository userRepository ;
     private final CartRepository cartRepository ;
     private final ProductRepository productRepository ;
-    private final CartItemRepository cartItemRepository ;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Cart getCartByUserId(int userId) throws Exception {
-        User user = userRepository.findById(userId).orElseThrow(()->new EntityNotFoundException("Không tìm thấy người dùng này.")) ;
-        if(user.getCart() == null){
+        Specification<User> spec = Specification.where(UserSpecification.hasId(userId));
+        Optional<User> userOpt = userRepository.findOne(spec);
+        if(userOpt.isEmpty()){
+            throw new EntityNotFoundException("Không tìm thấy người dùng với id: " + userId) ;
+        }
+        if(userOpt.get().getCart() == null) {
             throw new Exception("Người dùng này chưa có sản phẩm nào trong giỏ hàng.") ;
         }
-        return user.getCart() ;
+        return userOpt.get().getCart();
     }
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Cart addCartItemIntoCart(int userId, CartItem cartItem) throws Exception {
-        // kiểm tra user và product có tô tại không
-        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("Không tìm thấy người dùng này."));
+
+        Specification<User> userSpec = Specification.where(UserSpecification.hasId(userId));
+        Optional<User> userOpt = userRepository.findOne(userSpec);
+        if(userOpt.isEmpty()){
+            throw new EntityNotFoundException("Không tìm thấy người dùng với id: " + userId) ;
+        }
+        User user = userOpt.get();
         Product product = cartItem.getProduct();
 
-        // nếu đã có cart thì lấy còn khong thì tạo mới
-        Cart cart = cartRepository.findByUserId(userId)
-                .orElseGet(() -> {
-                    Cart newCart = new Cart();
-                    newCart.setUser(user);
-                    return newCart;
-                });
+        Specification<Cart> cartSpec = Specification.where(CartSpecification.hasUserId(userId));
+        Optional<Cart> cartOpt = cartRepository.findOne(cartSpec);
 
+        Cart cart ;
+        // nếu chưa có cart thì tạo mới
+        if(cartOpt.isEmpty()){
+            cart = new Cart() ;
+            cart.setUser(user);
+            cart.setCartItems(new ArrayList<>()); // Khởi tạo cartItems khi tạo mới Cart
+        } else {
+            cart = cartOpt.get();
+            if (cart.getCartItems() == null) {
+                cart.setCartItems(new ArrayList<>()); // Đảm bảo cartItems không bị null
+            }
+        }
         // lọc items có product như trên
         Optional<CartItem> existingItem = cart.getCartItems()
                 .stream()
                 .filter(item -> item.getProduct().getId() == product.getId())
                 .findFirst();
-
         // đã có thì thêm số lượng, còn không thì tạo mới rồi thêm vào giỏ hàng
         if (existingItem.isPresent()) {
             CartItem item = existingItem.get();

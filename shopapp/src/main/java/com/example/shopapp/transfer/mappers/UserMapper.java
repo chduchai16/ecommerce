@@ -25,34 +25,34 @@ public class UserMapper {
     public User fromRequestToEntity(UserDTO userDTO, boolean includePassword) throws Exception {
         if (userDTO == null) return null;
 
+        if(this.fromRequestToEntityTypeMap == null) {
+            this.fromRequestToEntityTypeMap = this.modelMapper.createTypeMap(UserDTO.class, User.class);
+            this.fromRequestToEntityTypeMap.getMappings().clear();
+            this.fromRequestToEntityTypeMap.addMappings(mapper -> {
+                mapper.skip(User::setRole);
+                mapper.skip(User::setCart);
+                if (!includePassword) {
+                    mapper.skip(User::setPassword);
+                }
+            });
+            this.fromRequestToEntityTypeMap.implicitMappings();
+        }
+
         if (includePassword) {
             if (!userDTO.getPassword().equals(userDTO.getRetypePassword())) {
                 throw new Exception("Mật khẩu nhập lại không khớp");
             }
         }
 
-        TypeMap<UserDTO, User> typeMap = modelMapper.typeMap(UserDTO.class, User.class);
-        typeMap.addMappings(mapper -> {
-            mapper.skip(User::setRole);
-            mapper.skip(User::setCart);
-            if (!includePassword) {
-                mapper.skip(User::setPassword);
-            }
-        });
-
-        User user = typeMap.map(userDTO);
-
+        User user = this.fromRequestToEntityTypeMap.map(userDTO) ;
         Role role = roleRepository.findById(userDTO.getRoleId())
                 .orElseThrow(() -> new EntityNotFoundException("Vai trò không tồn tại"));
         user.setRole(role);
-
         if (includePassword) {
             user.setPassword(userDTO.getPassword());
         }
-
         return user;
     }
-
 
     public UserResponse fromEntityToResponse(User user) {
         if (user == null) return null;

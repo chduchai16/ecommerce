@@ -10,6 +10,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = false)
 public class ProductImage extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

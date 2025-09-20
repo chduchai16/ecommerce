@@ -1,37 +1,46 @@
-package com.example.domain.configurations;
+package com.example.shopapp.configurations;
 
 import com.example.domain.persistence.repositories.UserRepository;
+import com.example.domain.persistence.specifications.UserSpecification;
+import com.example.domain.services.IUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.Optional;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfiguration {
 
-    private final UserRepository userRepository;
+    private final UserRepository userRepository ;
 
     @Bean
     public UserDetailsService userDetailsService() {
         return phoneNumber -> {
             try {
-                com.example.domain.models.entities.User user = userRepository.findByPhoneNumber(phoneNumber).orElseThrow(()->new UsernameNotFoundException("User not found."));
+                Specification<com.example.domain.models.entities.User> spec = Specification.where(UserSpecification.hasPhoneNumberExact(phoneNumber));
+                Optional<com.example.domain.models.entities.User> userOptional = userRepository.findOne(spec);
+                if (userOptional.isEmpty()) {
+                    throw new RuntimeException("Người dùng không tồn tại");
+                }
+                com.example.domain.models.entities.User user = userOptional.get();
                 return User.withUsername(user.getPhoneNumber())
                         .password(user.getPassword())
                         .roles(user.getRole().getName()) // Role phải đúng định dạng ROLE_USER hoặc ROLE_ADMIN
                         .build();
             } catch (Exception e) {
-                throw new RuntimeException("User not found");
+                throw new RuntimeException("Lỗi xác thực: " + e.getMessage());
             }
         };
     }

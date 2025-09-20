@@ -114,27 +114,6 @@ public class ProductController {
         }
     }
 
-    @GetMapping("/hot")
-    public ResponseEntity<?> getHotProducts(
-            @RequestParam(defaultValue = "12") int limit
-    ){
-        try{
-           PageRequest pageRequest = PageRequest.of(0 , limit , Sort.by("views").descending()) ;
-           Page<Product> products = productService.getHotProducts(pageRequest) ;
-           List<ProductResponse> productResponses = products.getContent()
-                   .stream()
-                   .map(productMapper :: fromEntityToResponse)
-                   .toList() ;
-           BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Lấy sản phẩm hot thành công" , productResponses) ;
-           return ResponseEntity.ok(baseResponse) ;
-        }
-        catch (Exception e ) {
-            System.out.println("Lỗi lấy sản phẩm hot");
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Lỗi máy chủ nội bộ: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
-        }
-    }
-
     // xem sản phẩm
     @GetMapping("/view/{id}")
     public ResponseEntity<?> viewProduct (@PathVariable("id") int productId){

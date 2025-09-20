@@ -5,6 +5,7 @@ import com.example.domain.persistence.repositories.UserRepository;
 import com.example.domain.persistence.specifications.UserSpecification;
 import com.example.domain.services.IUserService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -12,7 +13,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -47,6 +47,7 @@ public class UserServiceIMP implements IUserService {
     }
 
     @Override
+    @Transactional(rollbackOn = {Exception.class})
     public User createUser(User user) throws Exception {
         Specification<User> spec = Specification.where(UserSpecification.hasPhoneNumberExact(user.getPhoneNumber()))
                 .and(UserSpecification.notId(user.getId()));
@@ -66,6 +67,7 @@ public class UserServiceIMP implements IUserService {
     }
 
     @Override
+    @Transactional(rollbackOn = {Exception.class})
     public User updateUser(User user) throws Exception {
         if(user.getId() == null) {
             throw new Exception("ID người dùng không được để trống khi cập nhật");

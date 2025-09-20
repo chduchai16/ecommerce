@@ -32,48 +32,20 @@ public class UserController {
     private final IUserService userService;
     private final UserMapper userMapper ;
 
-    // tìm kiếm user
-    @GetMapping("/search")
-    public ResponseEntity<?> searchUsers(
-            @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "limit", defaultValue = "12") int limit,
-            @RequestParam(value = "keyword", defaultValue = "") String keyword
-    ) {
-        try {
-            PageRequest pageRequest = PageRequest.of(page, limit);
-            Page<User> users = userService.searchUsers(keyword, pageRequest);
-            List<UserResponse> userResponses = users.getContent()
-                    .stream()
-                    .map(userMapper :: fromEntityToResponse)
-                    .toList();
-
-            PaginationInfo paginationInfo = new PaginationInfo(
-                    users.getNumber() ,
-                    users.getSize() ,
-                    users.getTotalPages() ,
-                    users.getTotalElements()
-            ) ;
-
-            PagedResponse pagedUsersResponse = new PagedResponse(userResponses , paginationInfo) ;
-
-            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Tìm kiếm người dùng thành công.", pagedUsersResponse);
-            return ResponseEntity.ok(baseResponse);
-        } catch (Exception e) {
-            System.out.println("Lỗi tìm kiếm người dùng: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Lỗi máy chủ nội bộ: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
-        }
-    }
-
     // danh sách phân trang users
     @GetMapping()
-    public ResponseEntity<?> getUsers(
+    public ResponseEntity<?> filterUsers(
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "email", required = false) String email,
+            @RequestParam(value = "phone_number", required = false) String phoneNumber,
+            @RequestParam(value = "address", required = false) String address,
+            @RequestParam(value = "status", required = false) Integer status,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "limit", defaultValue = "12") int limit
     ) {
         try {
             PageRequest pageRequest = PageRequest.of(page, limit);
-            Page<User> users = userService.getAllUsers(pageRequest);
+            Page<User> users = userService.filterUsers(name , email , phoneNumber , address , status , pageRequest);
             List<UserResponse> userResponses = users.getContent()
                     .stream()
                     .map(userMapper :: fromEntityToResponse)
@@ -153,7 +125,7 @@ public class UserController {
                 BaseResponse baseResponse = BaseResponse.buildResponse("400", "Dữ liệu không hợp lệ.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse);
             }
-            User user = userService.createUser(userMapper.fromRequestToEntity(userDTO));
+            User user = userService.createUser(userMapper.fromRequestToEntity(userDTO , true));
             UserResponse userResponse = userMapper.fromEntityToResponse(user);
             BaseResponse baseResponse = BaseResponse.buildResponse("200", "Tạo người dùng thành công.",userResponse);
             return ResponseEntity.ok(baseResponse);
@@ -186,7 +158,7 @@ public class UserController {
                 BaseResponse baseResponse = BaseResponse.buildResponse("400", "Dữ liệu không hợp lệ.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse);
             }
-            User user = userService.updateUser(userMapper.fromRequestToEntity(userDTO)) ;
+            User user = userService.updateUser(userMapper.fromRequestToEntity(userDTO ,false)) ;
             UserResponse userResponse = userMapper.fromEntityToResponse(user);
             BaseResponse baseResponse = new BaseResponse("200" , "Cập nhật thành công." , userResponse);
             return ResponseEntity.ok(baseResponse) ;

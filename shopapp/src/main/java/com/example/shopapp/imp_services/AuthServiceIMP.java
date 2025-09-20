@@ -1,19 +1,23 @@
 package com.example.shopapp.imp_services;
 
-import com.example.domain.configurations.JwtConfiguration;
+import com.example.shopapp.configurations.JwtConfiguration;
 import com.example.domain.models.entities.Role;
 import com.example.domain.models.entities.User;
 import com.example.domain.persistence.repositories.RoleRepository;
 import com.example.domain.persistence.repositories.UserRepository;
+import com.example.domain.persistence.specifications.RoleSpecification;
+import com.example.domain.persistence.specifications.UserSpecification;
 import com.example.domain.services.IAuthService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -27,9 +31,17 @@ public class AuthServiceIMP implements IAuthService {
 
     @Override
     public String signIn(String phoneNumber , String password) throws Exception {
-        User user = userRepository.findByPhoneNumber(phoneNumber).orElseThrow(()-> new BadCredentialsException("Số điện thoại hoặc mật khẩu không đúng"));
-        if (passwordEncoder.matches(password , user.getPassword())){
-            return jwtConfiguration.generateToken(user) ;
+        Specification<User> spec = Specification.where(UserSpecification.hasPhoneNumberExact(phoneNumber));
+        Optional<User> user = userRepository.findOne(spec) ;
+        if(user.isEmpty()) {
+            throw new BadCredentialsException("Số điện thoại hoặc mật khẩu không đúng") ;
+        }
+        User existingUser = user.get() ;
+        if(existingUser.getRole() == null) {
+            throw new EntityNotFoundException("Người dùng này chưa được phân quyền, vui lòng liên hệ quản trị viên") ;
+        }
+        if (passwordEncoder.matches(password , existingUser.getPassword())){
+            return jwtConfiguration.generateToken(existingUser) ;
         }
         else {
             throw new BadCredentialsException("Số điện thoại hoặc mật khẩu không đúng") ;
@@ -39,14 +51,22 @@ public class AuthServiceIMP implements IAuthService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public User signUp(User user) throws Exception {
-        if(userRepository.findByPhoneNumber(user.getPhoneNumber()).isPresent()) {
-            throw new DataIntegrityViolationException("Số điện thoại này đã tồn tại.");
+        Specification<User> userSpec = Specification.where(UserSpecification.hasPhoneNumberExact(user.getPhoneNumber()));
+        // kiểm tra số điện thoại đã tồn tại chưa
+        Optional<User> optionalUser = userRepository.findOne(userSpec) ;
+        if(optionalUser.isPresent()) {
+            throw new DataIntegrityViolationException("Số điện thoại này đã tồn tại.") ;
         }
         String encodedPassword = passwordEncoder.encode(user.getPassword()) ;
         user.setPassword(encodedPassword);
         // mặc định là role customer
-        Role role = roleRepository.findById(2).orElseThrow(()-> new EntityNotFoundException( "Vai trò này không tồn tại"));
-        user.setRole(role);
+        Specification<Role> roleSpec = Specification.where(RoleSpecification.hasId(2));
+        Optional<Role> optionalRole = roleRepository.findOne(roleSpec) ;
+        if(optionalRole.isEmpty()) {
+            throw new EntityNotFoundException("Vai trò này không tồn tại");
+        }
+        user.setRole(optionalRole.get());
+        // nếu không nhập tên thì tạo tên ngẫu nhiên
         if(user.getUsername() == null) {
             String uuid = UUID.randomUUID().toString().substring(0,10);
             String name = "user_" + uuid ;

@@ -56,13 +56,26 @@ public class OrderController {
 
     // lấy danh dách phân trang tất cả đơn hàng
     @GetMapping()
-    public ResponseEntity<?> getOrders(
+    public ResponseEntity<?> filterOrders(
+            @RequestParam(value ="minTotalAmount" , required = false) Float minTotalAmount ,
+            @RequestParam(value ="maxTotalAmount" , required = false) Float maxTotalAmount ,
+            @RequestParam(value ="status" , required = false) Integer status ,
+            @RequestParam(value ="shippingAddress" , required = false) String shippingAddress ,
+            @RequestParam(value ="customerName" , required = false) String customerName ,
             @RequestParam(value = "page" ,defaultValue = "0") int page ,
             @RequestParam(value = "limit" , defaultValue = "12") int limit
     ){
         try{
             PageRequest pageRequest = PageRequest.of(page , limit );
-            Page<Order> orders = orderService.getAllOrders(pageRequest);
+
+            Page<Order> orders = orderService.filterOrders(
+                    minTotalAmount ,
+                    maxTotalAmount ,
+                    status ,
+                    shippingAddress ,
+                    customerName ,
+                    pageRequest
+            );
 
             List<OrderResponse> orderResponses = orders.getContent()
                     .stream()
