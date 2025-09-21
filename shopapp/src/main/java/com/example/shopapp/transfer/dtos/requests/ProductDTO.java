@@ -16,37 +16,50 @@ import java.util.List;
 @AllArgsConstructor
 public class ProductDTO {
     @Nullable
-    private Integer id ;
+    private Integer id;
 
     @NotNull(message = "Name must not be null.")
-    @Size(min =  5 , max = 255 , message = "Name must from 5 to 255 chars.")
-    private String name ;
+    @Size(min = 5, max = 255, message = "Name must from 5 to 255 chars.")
+    private String name;
 
     private String description;
 
-    @Min(value = 0 , message = "Product's price must not be < 0.")
-    private Float price ;
+    @Min(value = 0, message = "Product's price must not be < 0.")
+    private Float price;
+
+    @JsonProperty("original_price")
+    private Float originalPrice;
+
+    private Integer discount;
+
+    @JsonProperty("review_count")
+    private Integer reviewCount;
+
+    @JsonProperty("in_stock")
+    private Boolean inStock;
+
+    private String tags;
 
     @JsonProperty("stock_quantity")
     private int stockQuantity;
 
     @JsonProperty("category_id")
-    private Integer categoryId ;
+    private Integer categoryId;
 
     private String brand;
 
-    @JsonProperty("supplier_id")
+    @JsonProperty("seller_id")
     @Nullable
-    private Integer supplierId ;
+    private Integer sellerId;
 
     @JsonProperty("cart_item_ids")
-    private List<Integer> cartItemIds ;
+    private List<Integer> cartItemIds;
 
     @JsonProperty("product_image_ids")
     private List<Integer> productImageIds;
 
-    private String thumbnail ;
+    private String thumbnail;
 
-    private Long views ;
+    private Long views;
 
 }

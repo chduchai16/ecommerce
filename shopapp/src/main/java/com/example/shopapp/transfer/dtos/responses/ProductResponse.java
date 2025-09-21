@@ -14,28 +14,45 @@ import java.util.List;
 @AllArgsConstructor
 public class ProductResponse {
 
-    private int id ;
+    private int id;
 
-    private String name ;
+    private String name;
 
-    private String description ;
+    private String description;
 
-    private Float price ;
+    private Float price;
+
+    @JsonProperty("original_price")
+    private Float originalPrice;
+
+    private Integer discount;
+
+    @JsonProperty("review_count")
+    private Integer reviewCount;
+
+    @JsonProperty("in_stock")
+    private Boolean inStock;
+
+    private String tags;
 
     @JsonProperty("stock_quantity")
-    private int stockQuantity ;
+    private int stockQuantity;
 
     @JsonProperty("category_name")
-    private String categoryName ;
+    private String categoryName;
 
     private String brand;
 
     @JsonProperty("average_rating")
     private Float averageRating;
 
-    private String thumbnail ;
-    private Long views ;
+    private String thumbnail;
+    private Long views;
 
     @JsonProperty("product_images")
     List<ProductImageResponse> productImageResponses;
+
+    private SellerResponse seller;
+
+    private List<ProductSpecificationResponse> specifications;
 }
