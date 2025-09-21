@@ -12,7 +12,6 @@ E:\Java\ecommerce\domain\src\main\java\com\example\domain\models\entities\Produc
 E:\Java\ecommerce\domain\src\main\java\com\example\domain\models\entities\ProductSpecification.java
 E:\Java\ecommerce\domain\src\main\java\com\example\domain\models\entities\Rating.java
 E:\Java\ecommerce\domain\src\main\java\com\example\domain\models\entities\Role.java
-E:\Java\ecommerce\domain\src\main\java\com\example\domain\models\entities\Seller.java
 E:\Java\ecommerce\domain\src\main\java\com\example\domain\models\entities\User.java
 E:\Java\ecommerce\domain\src\main\java\com\example\domain\models\enums\CouponStatus.java
 E:\Java\ecommerce\domain\src\main\java\com\example\domain\models\enums\OrderStatus.java
@@ -29,7 +28,6 @@ E:\Java\ecommerce\domain\src\main\java\com\example\domain\persistence\repositori
 E:\Java\ecommerce\domain\src\main\java\com\example\domain\persistence\repositories\ProductSpecificationRepository.java
 E:\Java\ecommerce\domain\src\main\java\com\example\domain\persistence\repositories\RatingRepository.java
 E:\Java\ecommerce\domain\src\main\java\com\example\domain\persistence\repositories\RoleRepository.java
-E:\Java\ecommerce\domain\src\main\java\com\example\domain\persistence\repositories\SellerRepository.java
 E:\Java\ecommerce\domain\src\main\java\com\example\domain\persistence\repositories\UserRepository.java
 E:\Java\ecommerce\domain\src\main\java\com\example\domain\persistence\specifications\CartItemSpecification.java
 E:\Java\ecommerce\domain\src\main\java\com\example\domain\persistence\specifications\CartSpecification.java

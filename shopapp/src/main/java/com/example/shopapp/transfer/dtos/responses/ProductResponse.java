@@ -52,7 +52,7 @@ public class ProductResponse {
     @JsonProperty("product_images")
     List<ProductImageResponse> productImageResponses;
 
-    private SellerResponse seller;
+    private UserResponse seller;
 
     private List<ProductSpecificationResponse> specifications;
 }

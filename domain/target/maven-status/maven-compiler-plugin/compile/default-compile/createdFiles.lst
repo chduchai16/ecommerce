@@ -11,7 +11,6 @@ com\example\domain\models\entities\ProductImage.class
 com\example\domain\persistence\repositories\CategoryRepository.class
 com\example\domain\models\entities\BaseEntity.class
 com\example\domain\models\entities\Cart.class
-com\example\domain\persistence\repositories\SellerRepository.class
 com\example\domain\persistence\specifications\UserSpecification.class
 com\example\domain\persistence\specifications\CartItemSpecification.class
 com\example\domain\services\IAuthService.class
@@ -33,7 +32,6 @@ com\example\domain\models\entities\Role.class
 com\example\domain\services\IRatingService.class
 com\example\domain\persistence\specifications\CouponSpecification.class
 com\example\domain\models\entities\Coupon$CouponBuilder.class
-com\example\domain\models\entities\Seller$SellerBuilder.class
 com\example\domain\models\entities\Category$CategoryBuilder.class
 com\example\domain\persistence\repositories\ProductSpecificationRepository.class
 com\example\domain\persistence\repositories\OrderRepository.class
@@ -52,7 +50,6 @@ com\example\domain\models\entities\Cart$CartBuilder.class
 com\example\domain\persistence\specifications\RoleSpecification.class
 com\example\domain\models\entities\OrderDetail.class
 com\example\domain\models\entities\Category.class
-com\example\domain\models\entities\Seller.class
 com\example\domain\services\ICouponService.class
 com\example\domain\persistence\repositories\CartRepository.class
 com\example\domain\models\entities\ProductImage$ProductImageBuilder.class

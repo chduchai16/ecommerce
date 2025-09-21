@@ -4,7 +4,7 @@ import com.example.domain.models.entities.*;
 import com.example.domain.persistence.repositories.CartItemRepository;
 import com.example.domain.persistence.repositories.CategoryRepository;
 import com.example.domain.persistence.repositories.ProductImageRepository;
-import com.example.domain.persistence.repositories.SellerRepository;
+import com.example.domain.persistence.repositories.UserRepository;
 import com.example.shopapp.transfer.dtos.requests.ProductDTO;
 import com.example.shopapp.transfer.dtos.responses.ProductImageResponse;
 import com.example.shopapp.transfer.dtos.responses.ProductResponse;
@@ -23,10 +23,10 @@ public class ProductMapper {
     private final CategoryRepository categoryRepository;
     private final ProductImageRepository productImageRepository;
     private final CartItemRepository cartItemRepository;
-    private final SellerRepository sellerRepository;
+    private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final ProductImageMapper productImageMapper;
-    private final SellerMapper sellerMapper;
+    private final UserMapper userMapper;
     private final ProductSpecificationMapper productSpecificationMapper;
 
     private TypeMap<ProductDTO, Product> fromRequestToEntityTypeMap;
@@ -58,7 +58,7 @@ public class ProductMapper {
 
         // map seller
         if (productDTO.getSellerId() != null) {
-            Seller seller = this.sellerRepository.findById(productDTO.getSellerId())
+            User seller = this.userRepository.findById(productDTO.getSellerId())
                     .orElseThrow(() -> new EntityNotFoundException(
                             "Người bán với id " + productDTO.getSellerId() + " không tồn tại"));
             product.setSeller(seller);
@@ -111,7 +111,7 @@ public class ProductMapper {
 
         // map seller
         if (product.getSeller() != null) {
-            productResponse.setSeller(sellerMapper.fromEntityToResponse(product.getSeller()));
+            productResponse.setSeller(userMapper.fromEntityToResponse(product.getSeller()));
         }
 
         // map specifications

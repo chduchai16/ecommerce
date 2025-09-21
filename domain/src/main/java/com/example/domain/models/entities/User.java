@@ -8,6 +8,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -18,7 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode(callSuper = false)
-public class User extends BaseEntity implements UserDetails{
+public class User extends BaseEntity implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,23 +43,51 @@ public class User extends BaseEntity implements UserDetails{
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
-    @Column(name = "gender", length = 10 ,columnDefinition = "NVARCHAR(255)")
+    @Column(name = "gender", length = 10, columnDefinition = "NVARCHAR(255)")
     private String gender;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonBackReference
-    private Cart cart ;
+    private Cart cart;
 
     @ManyToOne
     @JoinColumn(name = "role_id")
     private Role role;
 
     @Column(name = "status")
-    private Integer status ;
+    private Integer status;
+
+    // Seller-specific fields (nullable for regular users)
+    @Column(name = "shop_name", columnDefinition = "NVARCHAR(255)")
+    private String shopName;
+
+    @Column(name = "shop_description", columnDefinition = "NVARCHAR(1000)")
+    private String shopDescription;
+
+    @Column(name = "shop_logo", columnDefinition = "NVARCHAR(500)")
+    private String shopLogo;
+
+    @Column(name = "business_license", columnDefinition = "NVARCHAR(255)")
+    private String businessLicense;
+
+    @Column(name = "tax_code", columnDefinition = "NVARCHAR(50)")
+    private String taxCode;
+
+    @Column(name = "seller_rating", columnDefinition = "DECIMAL(2,1) DEFAULT 0")
+    @Builder.Default
+    private Double sellerRating = 0.0;
+
+    @Column(name = "total_sales", columnDefinition = "BIGINT DEFAULT 0")
+    @Builder.Default
+    private Long totalSales = 0L;
+
+    @Column(name = "is_verified", columnDefinition = "BIT DEFAULT 0")
+    @Builder.Default
+    private Boolean isVerified = false;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_"+role.getName().toUpperCase()));
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.getName().toUpperCase()));
     }
 
     @Override

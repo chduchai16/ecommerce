@@ -62,7 +62,7 @@ public class Product extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "seller_id", nullable = true)
-    private Seller seller;
+    private User seller;
 
     @Column(name = "thumbnail", columnDefinition = "NVARCHAR(255)")
     private String thumbnail;
