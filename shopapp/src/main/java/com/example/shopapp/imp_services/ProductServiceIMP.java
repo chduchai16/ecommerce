@@ -70,6 +70,9 @@ public class ProductServiceIMP implements IProductService {
 
     @Override
     public List<Product> createProducts(List<Product> products){
+        for (Product product : products) {
+            product.setStatus(ProductStatus.ACTIVE.ordinal());
+        }
         return this.productRepository.saveAll(products);
     }
 

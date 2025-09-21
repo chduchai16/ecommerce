@@ -34,8 +34,8 @@ public class WebSecurityFilter {
                 .authorizeHttpRequests(auth -> auth
 
                         // auth
-                        .requestMatchers(HttpMethod.POST, apiPrefix + "/auth/sign-in").permitAll()
-                        .requestMatchers(HttpMethod.POST, apiPrefix + "/auth/sign-up").permitAll()
+                        .requestMatchers(HttpMethod.POST, apiPrefix + "/auth/sign-in**").permitAll()
+                        .requestMatchers(HttpMethod.POST, apiPrefix + "/auth/sign-up**").permitAll()
 
                         // users (chỉ admin quản lý user)
                         .requestMatchers(HttpMethod.GET, apiPrefix + "/users/**").hasRole(ADMIN)

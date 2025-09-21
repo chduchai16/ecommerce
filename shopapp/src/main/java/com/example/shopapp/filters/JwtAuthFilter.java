@@ -47,9 +47,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String requestURI = request.getRequestURI();
-        String requestMethod = request.getMethod(); // Lấy phương thức HTTP (GET, POST, ...)
+        String requestMethod = request.getMethod();
 
-        // Kiểm tra nếu request nằm trong danh sách permitAll
+        // Kiểm tra các endpoint khác
         boolean isPermitAll = permitAllEndpoints.stream()
                 .anyMatch(entry -> entry.get(requestMethod) != null && requestURI.startsWith(entry.get(requestMethod)));
 

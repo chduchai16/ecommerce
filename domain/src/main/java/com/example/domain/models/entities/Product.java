@@ -23,7 +23,7 @@ public class Product extends BaseEntity {
     @Column(name = "name", columnDefinition = "NVARCHAR(255)")
     private String name;
 
-    @Column(name = "description", columnDefinition = "TEXT")
+    @Column(name = "description", columnDefinition = "NTEXT")
     private String description;
 
     @Column(name = "price")
@@ -32,13 +32,13 @@ public class Product extends BaseEntity {
     @Column(name = "original_price")
     private Float originalPrice;
 
-    @Column(name = "discount", columnDefinition = "TINYINT DEFAULT 0")
+    @Column(name = "discount")
     private Integer discount;
 
-    @Column(name = "review_count", columnDefinition = "INT DEFAULT 0")
+    @Column(name = "review_count")
     private Integer reviewCount;
 
-    @Column(name = "in_stock", columnDefinition = "BIT DEFAULT 1")
+    @Column(name = "in_stock")
     private Boolean inStock;
 
     @Column(name = "tags", columnDefinition = "NVARCHAR(500)")
@@ -57,7 +57,7 @@ public class Product extends BaseEntity {
     @Column(name = "color")
     private String color;
 
-    @Column(name = "average_rating", columnDefinition = "FLOAT DEFAULT 0")
+    @Column(name = "average_rating")
     private Float averageRating;
 
     @ManyToOne

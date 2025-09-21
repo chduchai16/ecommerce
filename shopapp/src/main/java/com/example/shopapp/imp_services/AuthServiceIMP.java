@@ -59,8 +59,7 @@ public class AuthServiceIMP implements IAuthService {
         }
         String encodedPassword = passwordEncoder.encode(user.getPassword()) ;
         user.setPassword(encodedPassword);
-        // mặc định là role customer
-        Specification<Role> roleSpec = Specification.where(RoleSpecification.hasId(2));
+        Specification<Role> roleSpec = Specification.where(RoleSpecification.hasId(user.getRole().getId()));
         Optional<Role> optionalRole = roleRepository.findOne(roleSpec) ;
         if(optionalRole.isEmpty()) {
             throw new EntityNotFoundException("Vai trò này không tồn tại");
