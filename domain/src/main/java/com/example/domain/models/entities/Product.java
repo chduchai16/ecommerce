@@ -61,7 +61,7 @@ public class Product extends BaseEntity {
     private Float averageRating;
 
     @ManyToOne
-    @JoinColumn(name = "seller_id", nullable = true)
+    @JoinColumn(name = "seller_id")
     private User seller;
 
     @Column(name = "thumbnail", columnDefinition = "NVARCHAR(255)")

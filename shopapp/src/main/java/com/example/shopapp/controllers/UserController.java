@@ -17,6 +17,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
@@ -82,6 +84,34 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(baseResponse);
         } catch (Exception e) {
             System.out.println("Lỗi lấy thông tin người dùng: " + e);
+            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Lỗi máy chủ nội bộ: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
+        }
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> getUserWithToken() {
+        try {
+            // Lấy thông tin xác thực từ SecurityContext
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+            if (authentication == null || authentication.getPrincipal() == null) {
+                BaseResponse baseResponse = BaseResponse.buildResponse("401", "Không tìm thấy thông tin xác thực.");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(baseResponse);
+            }
+
+            // Lấy user từ principal (đã được set trong JwtAuthFilter)
+            User user = (User) authentication.getPrincipal();
+            UserResponse userResponse = userMapper.fromEntityToResponse(user);
+            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Lấy thông tin người dùng thành công.", userResponse);
+            return ResponseEntity.ok(baseResponse);
+
+        } catch (ClassCastException e) {
+            System.out.println("Lỗi ép kiểu người dùng: " + e);
+            BaseResponse baseResponse = BaseResponse.buildResponse("401", "Token không hợp lệ.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(baseResponse);
+        } catch (Exception e) {
+            System.out.println("Lỗi lấy thông tin người dùng từ token: " + e);
             BaseResponse baseResponse = BaseResponse.buildResponse("500", "Lỗi máy chủ nội bộ: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }

@@ -37,7 +37,8 @@ public class WebSecurityFilter {
                         .requestMatchers(HttpMethod.POST, apiPrefix + "/auth/sign-in**").permitAll()
                         .requestMatchers(HttpMethod.POST, apiPrefix + "/auth/sign-up**").permitAll()
 
-                        // users (chỉ admin quản lý user)
+                        // users - endpoint /me cho phép user đã đăng nhập truy cập
+                        .requestMatchers(HttpMethod.GET, apiPrefix + "/users/me").authenticated()
                         .requestMatchers(HttpMethod.GET, apiPrefix + "/users/**").hasRole(ADMIN)
                         .requestMatchers(HttpMethod.POST, apiPrefix + "/users/**").hasRole(ADMIN)
                         .requestMatchers(HttpMethod.PUT, apiPrefix + "/users**").hasRole(ADMIN)
