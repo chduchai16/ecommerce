@@ -61,7 +61,7 @@ public class UserMapper {
             fromEntityToResponseTypeMap = modelMapper.createTypeMap(User.class, UserResponse.class);
             fromEntityToResponseTypeMap.getMappings().clear();
             fromEntityToResponseTypeMap.addMappings(mapper -> {
-                mapper.skip(UserResponse::setRole);
+                mapper.skip(UserResponse::setRoleName);
                 mapper.skip(UserResponse::setCartId);
             });
             fromEntityToResponseTypeMap.implicitMappings();
@@ -71,8 +71,7 @@ public class UserMapper {
 
         // map role
         if (user.getRole() != null) {
-            RoleResponse roleResponse = roleMapper.fromEntityToResponse(user.getRole());
-            userResponse.setRole(roleResponse);
+            userResponse.setRoleName(user.getRole().getName());
         }
 
         // map cart id

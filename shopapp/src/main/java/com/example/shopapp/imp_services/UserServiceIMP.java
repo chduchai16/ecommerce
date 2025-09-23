@@ -61,7 +61,7 @@ public class UserServiceIMP implements IUserService {
         if(exist) {
             throw new DataIntegrityViolationException("Email đã tồn tại trong hệ thống");
         }
-
+        user.setStatus(1); // mặc định kích hoạt
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
