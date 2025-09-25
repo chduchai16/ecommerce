@@ -36,7 +36,7 @@ public class ProductController {
     @GetMapping
     public ResponseEntity<?> getProducts(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "18") int limit ,
+            @RequestParam(defaultValue = "12") int limit ,
             @RequestParam(required = false) String name,
             @RequestParam(required = false , value = "category_name") String categoryName,
             @RequestParam(required = false) String color,
