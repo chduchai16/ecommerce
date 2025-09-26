@@ -61,19 +61,12 @@ public class CartMapper {
             fromEntityToResponseTypeMap = this.modelMapper.createTypeMap(Cart.class , CartResponse.class);
             fromEntityToResponseTypeMap.getMappings().clear();
             fromEntityToResponseTypeMap.addMappings(mapper -> {
-                mapper.skip(CartResponse :: setUserId);
-                mapper.skip(CartResponse :: setUsername);
                 mapper.skip(CartResponse :: setCartItemResponses);
             });
             fromEntityToResponseTypeMap.implicitMappings();
         }
         CartResponse cartResponse = fromEntityToResponseTypeMap.map(cart) ;
 
-        // map user id
-        if(cart.getUser() != null){
-            cartResponse.setUserId(cart.getUser().getId());
-            cartResponse.setUsername(cart.getUser().getUsername());
-        }
         // map cart items
         if(cart.getCartItems() != null && !cart.getCartItems().isEmpty()) {
             List<CartItemResponse> cartItemResponses = cart.getCartItems()

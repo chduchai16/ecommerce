@@ -2,6 +2,7 @@ package com.example.shopapp.controllers;
 
 import com.example.domain.models.entities.Cart;
 import com.example.domain.models.entities.CartItem;
+import com.example.domain.models.entities.User;
 import com.example.domain.services.ICartItemService;
 import com.example.domain.services.ICartService;
 import com.example.shopapp.transfer.dtos.requests.CartDTO;
@@ -16,6 +17,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
@@ -33,33 +35,34 @@ public class CartController {
     private final CartItemMapper cartItemMapper ;
 
     // lấy thông tin cart cho người dunng
-    @GetMapping("/user/{id}")
+    @GetMapping()
     public ResponseEntity<?> getCart(
-            @PathVariable("id") int userId
+            @AuthenticationPrincipal User user
     ){
         try{
+            int userId = user.getId() ;
             Cart cart = cartService.getCartByUserId(userId) ;
             CartResponse cartResponse =  cartMapper.fromEntityToResponse(cart);
             BaseResponse baseResponse = BaseResponse.buildResponse("200","Lấy giỏ hàng thành công" , cartResponse);
             return ResponseEntity.ok(baseResponse) ;
         }
         catch (EntityNotFoundException e){
-            System.out.println("Lỗi lấy giỏ hàng của người dùng:" + userId);
+            System.out.println("Lỗi lấy giỏ hàng của người dùng:" + user.getId());
             BaseResponse baseResponse = BaseResponse.buildResponse("404" , e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(baseResponse);
         }
         catch (Exception e){
-            System.out.println("Lỗi lấy giỏ hàng của người dùng:" + userId);
+            System.out.println("Lỗi lấy giỏ hàng của người dùng:" + user.getId());
             BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Lỗi máy chủ nội bộ.");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
 
-    // thêm item vào cart cho nguoi dung theo id ngươ dùng
-    @PostMapping("/user/{id}/item")
+    // thêm item vào cart
+    @PostMapping("/items")
     public ResponseEntity<?> addItem (
-            @PathVariable("id") int userId ,
             @RequestBody CartItemDTO cartItemDTO,
+            @AuthenticationPrincipal User user,
             BindingResult result
     ){
         try{
@@ -72,13 +75,13 @@ public class CartController {
                 BaseResponse baseResponse = BaseResponse.buildResponse("400" , "Dữ liệu không hợp lệ.") ;
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse);
             }
+            int userId = user.getId() ;
             CartItem cartItem = cartItemMapper.fromRequestToEntity(cartItemDTO) ;
             Cart cart = cartService.addCartItemIntoCart(userId,cartItem) ;
             CartResponse cartResponse = cartMapper.fromEntityToResponse(cart) ;
             System.out.println("Thêm sản phẩm vào giỏ hàng thành công");
             BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Thêm sản phẩm vào giỏ hàng thành công", cartResponse) ;
             return ResponseEntity.ok(baseResponse) ;
-
         }
         catch (EntityNotFoundException e) {
             System.out.println("Lỗi thêm sản phẩm vào giỏ hàng");

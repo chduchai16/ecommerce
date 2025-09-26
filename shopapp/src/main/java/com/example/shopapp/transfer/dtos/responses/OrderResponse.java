@@ -48,7 +48,7 @@ public class OrderResponse {
     @JsonProperty("coupon_code")
     private String couponCode ;
 
-    @JsonProperty("order_detail_responses")
+    @JsonProperty("order_details")
     private List<OrderDetailResponse> orderDetailResponses ;
 
 }

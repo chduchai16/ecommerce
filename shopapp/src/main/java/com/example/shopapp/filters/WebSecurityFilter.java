@@ -74,6 +74,7 @@ public class WebSecurityFilter {
 
                         // carts (chỉ customer)
                         .requestMatchers(apiPrefix + "/carts/**").hasRole(CUSTOMER)
+                        .requestMatchers(apiPrefix + "/carts**").hasRole(CUSTOMER)
 
                         // ratings
                         .requestMatchers(HttpMethod.POST, apiPrefix + "/ratings**").hasRole(CUSTOMER)

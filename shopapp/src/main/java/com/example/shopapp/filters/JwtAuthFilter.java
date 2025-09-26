@@ -68,16 +68,21 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             phoneNumber = jwtConfiguration.extractPhoneNumber(token);
         }
 
-        if (phoneNumber != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            User userDetails = userService.getUserByPhoneNumber(phoneNumber);
-            if (jwtConfiguration.validateToken(token, userDetails)) {
-                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities()
-                );
-                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+        try {
+            if (phoneNumber != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                User userDetails = userService.getUserByPhoneNumber(phoneNumber);
+                if (jwtConfiguration.validateToken(token, userDetails)) {
+                    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities()
+                    );
+                    authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                }
             }
+            filterChain.doFilter(request, response);
         }
-        filterChain.doFilter(request, response);
+        catch (Exception e){
+            throw new RuntimeException("Token không hợp lệ") ;
+        }
     }
 }

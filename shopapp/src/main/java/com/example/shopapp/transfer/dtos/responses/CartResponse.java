@@ -2,7 +2,6 @@ package com.example.shopapp.transfer.dtos.responses;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -15,10 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 public class CartResponse {
     private int id ;
-    @JsonProperty("user_id")
-    private Integer userId ;
-    @JsonProperty("username")
-    private String username ;
+
     @JsonProperty("cart_items")
     private List<CartItemResponse> cartItemResponses = new ArrayList<>();
 
