@@ -62,14 +62,10 @@ public class WebSecurityFilter {
 
                         // orders
                         .requestMatchers(HttpMethod.GET, apiPrefix + "/orders/user**").hasRole(CUSTOMER) // customer xem
-                                                                                                         // đơn của mình
                         .requestMatchers(HttpMethod.POST, apiPrefix + "/orders/place**").hasRole(CUSTOMER) // customer
-                                                                                                           // đặt đơn
                         .requestMatchers(HttpMethod.PUT, apiPrefix + "/orders**").hasAnyRole(CUSTOMER, SELLER, ADMIN)
                         .requestMatchers(HttpMethod.GET, apiPrefix + "/orders/seller**").hasRole(SELLER) // seller xem
-                                                                                                         // đơn liên
-                                                                                                         // quan sản
-                                                                                                         // phẩm mình
+
                         .requestMatchers(HttpMethod.GET, apiPrefix + "/orders**").hasRole(ADMIN) // admin xem tất cả
 
                         // carts (chỉ customer)
@@ -125,5 +121,4 @@ public class WebSecurityFilter {
         source.registerCorsConfiguration("/**", configuration); // Áp dụng cho tất cả API
         return source;
     }
-
 }

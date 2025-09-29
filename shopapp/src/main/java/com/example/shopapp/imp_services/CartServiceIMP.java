@@ -44,61 +44,11 @@ public class CartServiceIMP implements ICartService {
         return userOpt.get().getCart();
     }
 
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public Cart addCartItemIntoCart(int userId, CartItem cartItem) throws Exception {
 
-        Specification<User> userSpec = Specification.where(UserSpecification.hasId(userId));
-        Optional<User> userOpt = userRepository.findOne(userSpec);
-        if(userOpt.isEmpty()){
-            throw new EntityNotFoundException("Không tìm thấy người dùng với id: " + userId) ;
-        }
-        User user = userOpt.get();
-        Product product = cartItem.getProduct();
-
-        Specification<Cart> cartSpec = Specification.where(CartSpecification.hasUserId(userId));
-        Optional<Cart> cartOpt = cartRepository.findOne(cartSpec);
-
-        Cart cart ;
-        // nếu chưa có cart thì tạo mới
-        if(cartOpt.isEmpty()){
-            cart = new Cart() ;
-            cart.setUser(user);
-            cart.setCartItems(new ArrayList<>()); // Khởi tạo cartItems khi tạo mới Cart
-        } else {
-            cart = cartOpt.get();
-            if (cart.getCartItems() == null) {
-                cart.setCartItems(new ArrayList<>()); // Đảm bảo cartItems không bị null
-            }
-        }
-        // lọc items có product như trên
-        Optional<CartItem> existingItem = cart.getCartItems()
-                .stream()
-                .filter(item -> item.getProduct().getId() == product.getId())
-                .findFirst();
-        // đã có thì thêm số lượng, còn không thì tạo mới rồi thêm vào giỏ hàng
-        if (existingItem.isPresent()) {
-            CartItem item = existingItem.get();
-            item.setQuantity(item.getQuantity() + cartItem.getQuantity());
-        } else {
-            CartItem newItem = new CartItem();
-            newItem.setProduct(product);
-            newItem.setQuantity(cartItem.getQuantity());
-            newItem.setCart(cart);
-            cart.getCartItems().add(newItem);
-        }
-        return cartRepository.save(cart);
-    }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Cart updateCart(Cart cart) throws Exception {
-        // Kiểm tra user
-
-        User user = new User();
-        if(cart.getUser() != null) {
-            user = cart.getUser();
-        }
 
         // Kiểm tra cart
         Cart existingCart = cartRepository.findById(cart.getId())

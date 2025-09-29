@@ -42,15 +42,15 @@ public class AuthController {
                             .append("\n");
                 }
                 System.out.println("Lỗi đăng nhập: " + errorsBuilder);
-                BaseResponse baseResponse = BaseResponse.buildResponse("400", "Dữ liệu không hợp lệ.");
+                BaseResponse baseResponse = BaseResponse.buildResponse(400, "Dữ liệu không hợp lệ.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse);
             }
             String token = authService.signIn(userLoginDTO.getPhoneNumber(), userLoginDTO.getPassword());
-            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Đăng nhập thành công.", token);
+            BaseResponse baseResponse = BaseResponse.buildResponse(200, "Đăng nhập thành công.", token);
             return ResponseEntity.ok(baseResponse);
         } catch (Exception e) {
             System.out.println("Lỗi đăng nhập: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Đăng nhập thất bại: " + e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse(500, "Đăng nhập thất bại: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -70,16 +70,16 @@ public class AuthController {
                             .append("\n");
                 }
                 System.out.println("Lỗi đăng ký: " + errorsBuilder);
-                BaseResponse baseResponse = BaseResponse.buildResponse("400", "Dữ liệu không hợp lệ.");
+                BaseResponse baseResponse = BaseResponse.buildResponse(400, "Dữ liệu không hợp lệ.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse);
             }
             User user = userMapper.fromRequestToEntity(userDTO, true);
             authService.signUp(user);
-            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Đăng ký tài khoản thành công.", userMapper.fromEntityToResponse(user));
+            BaseResponse baseResponse = BaseResponse.buildResponse(200, "Đăng ký tài khoản thành công.", userMapper.fromEntityToResponse(user));
             return ResponseEntity.ok(baseResponse);
         } catch (Exception e) {
             System.out.println("Lỗi đăng ký: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Đăng ký thất bại: " + e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse(500, "Đăng ký thất bại: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }

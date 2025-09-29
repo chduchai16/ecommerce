@@ -43,17 +43,17 @@ public class CartController {
             int userId = user.getId() ;
             Cart cart = cartService.getCartByUserId(userId) ;
             CartResponse cartResponse =  cartMapper.fromEntityToResponse(cart);
-            BaseResponse baseResponse = BaseResponse.buildResponse("200","Lấy giỏ hàng thành công" , cartResponse);
+            BaseResponse baseResponse = BaseResponse.buildResponse(200,"Lấy giỏ hàng thành công" , cartResponse);
             return ResponseEntity.ok(baseResponse) ;
         }
         catch (EntityNotFoundException e){
             System.out.println("Lỗi lấy giỏ hàng của người dùng:" + user.getId());
-            BaseResponse baseResponse = BaseResponse.buildResponse("404" , e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse(404 , e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(baseResponse);
         }
         catch (Exception e){
             System.out.println("Lỗi lấy giỏ hàng của người dùng:" + user.getId());
-            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Lỗi máy chủ nội bộ.");
+            BaseResponse baseResponse = BaseResponse.buildResponse(500 , "Lỗi máy chủ nội bộ.");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -72,25 +72,23 @@ public class CartController {
                     errorBuilder.append(x).append("\n") ;
                 }
                 System.out.println("Lỗi thêm sản phẩm vào giỏ hàng: " + errorBuilder);
-                BaseResponse baseResponse = BaseResponse.buildResponse("400" , "Dữ liệu không hợp lệ.") ;
+                BaseResponse baseResponse = BaseResponse.buildResponse(400 , "Dữ liệu không hợp lệ.") ;
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse);
             }
-            int userId = user.getId() ;
             CartItem cartItem = cartItemMapper.fromRequestToEntity(cartItemDTO) ;
-            Cart cart = cartService.addCartItemIntoCart(userId,cartItem) ;
-            CartResponse cartResponse = cartMapper.fromEntityToResponse(cart) ;
+            CartItem savedItem = cartItemService.addCartItemIntoCart(user,cartItem) ;
             System.out.println("Thêm sản phẩm vào giỏ hàng thành công");
-            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Thêm sản phẩm vào giỏ hàng thành công", cartResponse) ;
+            BaseResponse baseResponse = BaseResponse.buildResponse(200 , "Thêm sản phẩm vào giỏ hàng thành công", savedItem.getId()) ;
             return ResponseEntity.ok(baseResponse) ;
         }
         catch (EntityNotFoundException e) {
             System.out.println("Lỗi thêm sản phẩm vào giỏ hàng");
-            BaseResponse baseResponse = BaseResponse.buildResponse("404" , e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse(404 , e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(baseResponse);
         }
         catch (Exception e) {
             System.out.println("Lỗi thêm sản phẩm vào giỏ hàng");
-            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Lỗi máy chủ nội bộ: " + e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse(500 , "Lỗi máy chủ nội bộ: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -99,6 +97,7 @@ public class CartController {
     @PutMapping()
     public ResponseEntity<?> updateCart(
             @RequestBody @Valid CartDTO cartDTO,
+            @AuthenticationPrincipal User user,
             BindingResult result
     ){
         try{
@@ -108,22 +107,25 @@ public class CartController {
                     errorBuilder.append(fieldError).append("\n");
                 }
                 String error = errorBuilder.toString() ;
-                BaseResponse baseResponse = BaseResponse.buildResponse("400" , "Dữ liệu không hợp lệ" , error) ;
+                BaseResponse baseResponse = BaseResponse.buildResponse(400 , "Dữ liệu không hợp lệ" , error) ;
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse) ;
             }
+
+
+            cartDTO.setUserId(user.getId());
             Cart cart = cartService.updateCart(cartMapper.fromRequestToEntity(cartDTO)) ;
             CartResponse cartResponse = cartMapper.fromEntityToResponse(cart) ;
-            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Cập nhật giỏ hàng thành công.",cartResponse) ;
+            BaseResponse baseResponse = BaseResponse.buildResponse(200 , "Cập nhật giỏ hàng thành công.",cartResponse) ;
             return ResponseEntity.ok(baseResponse) ;
         }
         catch(EntityNotFoundException e){
             System.out.println("Lỗi cập nhật giỏ hàng.");
-            BaseResponse baseResponse = BaseResponse.buildResponse("404" , e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse(404, e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(baseResponse);
         }
         catch(Exception exception){
             System.out.println("Lỗi cập nhật giỏ hàng.");
-            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Lỗi máy chủ nội bộ: " + exception.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse(500 , "Lỗi máy chủ nội bộ: " + exception.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -136,17 +138,17 @@ public class CartController {
     ){
         try{
             cartItemService.deleteCartItem(cartId , cartItemId);
-            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Xóa sản phẩm khỏi giỏ hàng thành công.") ;
+            BaseResponse baseResponse = BaseResponse.buildResponse(200 , "Xóa sản phẩm khỏi giỏ hàng thành công.") ;
             return ResponseEntity.status(HttpStatus.OK).body(baseResponse) ;
         }
         catch (EntityNotFoundException e) {
             System.out.println("Lỗi xóa sản phẩm khỏi giỏ hàng.");
-            BaseResponse baseResponse = BaseResponse.buildResponse("404" , e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse(404, e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(baseResponse) ;
         }
         catch (Exception exception) {
             System.out.println("Lỗi xóa sản phẩm khỏi giỏ hàng.");
-            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Lỗi máy chủ nội bộ.");
+            BaseResponse baseResponse = BaseResponse.buildResponse(500 , "Lỗi máy chủ nội bộ.");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse) ;
         }
     }
@@ -158,17 +160,17 @@ public class CartController {
     ){
         try{
             cartItemService.deleteCartItemsWithCartId(cartId);
-            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Xóa tất cả sản phẩm trong giỏ hàng thành công.") ;
+            BaseResponse baseResponse = BaseResponse.buildResponse(200 , "Xóa tất cả sản phẩm trong giỏ hàng thành công.") ;
             return ResponseEntity.status(HttpStatus.OK).body(baseResponse) ;
         }
         catch (EntityNotFoundException e){
             System.out.println("Lỗi xóa tất cả sản phẩm trong giỏ hàng: " + e.getMessage() );
-            BaseResponse baseResponse = BaseResponse.buildResponse("404" , e.getMessage()) ;
+            BaseResponse baseResponse = BaseResponse.buildResponse(404 , e.getMessage()) ;
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(baseResponse) ;
         }
         catch (Exception exception){
             System.out.println("Lỗi xóa tất cả sản phẩm trong giỏ hàng: " + exception.getMessage() );
-            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Lỗi máy chủ nội bộ: " + exception.getMessage()) ;
+            BaseResponse baseResponse = BaseResponse.buildResponse(500 , "Lỗi máy chủ nội bộ: " + exception.getMessage()) ;
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse) ;
         }
     }

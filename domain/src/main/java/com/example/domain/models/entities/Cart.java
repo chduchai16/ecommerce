@@ -25,7 +25,7 @@ public class Cart extends BaseEntity{
     @ToString.Exclude
     private User user ;
 
-    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JsonManagedReference
     @ToString.Exclude
     private List<CartItem> cartItems = new ArrayList<>();

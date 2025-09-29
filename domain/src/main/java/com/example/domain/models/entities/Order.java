@@ -38,7 +38,7 @@ public class Order extends BaseEntity{
     @Column(name = "shipping_method",columnDefinition = "NVARCHAR(255)" , length = 255)
     private String shippingMethod ;
 
-    @Column(name = "customerName",columnDefinition = "NVARCHAR(255)" , length =255)
+    @Column(name = "customer_name",columnDefinition = "NVARCHAR(255)" , length =255)
     private String customerName ;
 
     @Column(name = "phone_number" , length=20)

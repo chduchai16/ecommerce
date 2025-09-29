@@ -62,11 +62,11 @@ public class UserController {
 
             PagedResponse pagedUsersResponse = new PagedResponse(userResponses , paginationInfo) ;
 
-            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Lấy danh sách người dùng thành công.", pagedUsersResponse);
+            BaseResponse baseResponse = BaseResponse.buildResponse(20, "Lấy danh sách người dùng thành công.", pagedUsersResponse);
             return ResponseEntity.ok(baseResponse);
         } catch (Exception e) {
             System.out.println("Lỗi lấy danh sách người dùng: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Lỗi máy chủ nội bộ.");
+            BaseResponse baseResponse = BaseResponse.buildResponse(500, "Lỗi máy chủ nội bộ.");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -76,15 +76,15 @@ public class UserController {
         try {
             User user = userService.getUserById(userId);
             UserResponse userResponse = userMapper.fromEntityToResponse(user);
-            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Lấy thông tin người dùng thành công.", userResponse);
+            BaseResponse baseResponse = BaseResponse.buildResponse(200, "Lấy thông tin người dùng thành công.", userResponse);
             return ResponseEntity.ok(baseResponse);
         } catch (EntityNotFoundException e) {
             System.out.println("Lỗi lấy thông tin người dùng: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("404", e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse(404, e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(baseResponse);
         } catch (Exception e) {
             System.out.println("Lỗi lấy thông tin người dùng: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Lỗi máy chủ nội bộ: " + e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse(500, "Lỗi máy chủ nội bộ: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -96,23 +96,23 @@ public class UserController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
             if (authentication == null || authentication.getPrincipal() == null) {
-                BaseResponse baseResponse = BaseResponse.buildResponse("401", "Không tìm thấy thông tin xác thực.");
+                BaseResponse baseResponse = BaseResponse.buildResponse(401, "Không tìm thấy thông tin xác thực.");
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(baseResponse);
             }
 
             // Lấy user từ principal (đã được set trong JwtAuthFilter)
             User user = (User) authentication.getPrincipal();
             UserResponse userResponse = userMapper.fromEntityToResponse(user);
-            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Lấy thông tin người dùng thành công.", userResponse);
+            BaseResponse baseResponse = BaseResponse.buildResponse(200, "Lấy thông tin người dùng thành công.", userResponse);
             return ResponseEntity.ok(baseResponse);
 
         } catch (ClassCastException e) {
             System.out.println("Lỗi ép kiểu người dùng: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("401", "Token không hợp lệ.");
+            BaseResponse baseResponse = BaseResponse.buildResponse(401, "Token không hợp lệ.");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(baseResponse);
         } catch (Exception e) {
             System.out.println("Lỗi lấy thông tin người dùng từ token: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Lỗi máy chủ nội bộ: " + e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse(500, "Lỗi máy chủ nội bộ: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -122,17 +122,17 @@ public class UserController {
         try{
             User user = userService.getUserByPhoneNumber(phoneNumber) ;
             UserResponse userResponse = userMapper.fromEntityToResponse(user) ;
-            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Lấy thông tin người dùng thành công." , userResponse) ;
+            BaseResponse baseResponse = BaseResponse.buildResponse(200 , "Lấy thông tin người dùng thành công." , userResponse) ;
             return ResponseEntity.ok(baseResponse) ;
         }
         catch (EntityNotFoundException e ) {
             System.out.println("Lỗi lấy thông tin người dùng: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("404", e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse(404, e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(baseResponse);
         }
         catch (Exception e ) {
             System.out.println("Lỗi lấy thông tin người dùng: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Lỗi máy chủ nội bộ: " + e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse(500, "Lỗi máy chủ nội bộ: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -152,20 +152,20 @@ public class UserController {
                             .append("\n");
                 }
                 System.out.println("Lỗi đăng ký: " + errorsBuilder);
-                BaseResponse baseResponse = BaseResponse.buildResponse("400", "Dữ liệu không hợp lệ.");
+                BaseResponse baseResponse = BaseResponse.buildResponse(400, "Dữ liệu không hợp lệ.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse);
             }
             User user = userService.createUser(userMapper.fromRequestToEntity(userDTO , true));
             UserResponse userResponse = userMapper.fromEntityToResponse(user);
-            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Tạo người dùng thành công.",userResponse);
+            BaseResponse baseResponse = BaseResponse.buildResponse(200, "Tạo người dùng thành công.",userResponse);
             return ResponseEntity.ok(baseResponse);
         } catch (DataIntegrityViolationException e) {
             System.out.println("Lỗi đăng ký: " + e);
-             BaseResponse baseResponse = BaseResponse.buildResponse("409", e.getMessage());
+             BaseResponse baseResponse = BaseResponse.buildResponse(409, e.getMessage());
              return ResponseEntity.status(HttpStatus.CONFLICT).body(baseResponse);
         } catch (Exception e) {
             System.out.println("Lỗi đăng ký: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Lỗi máy chủ nội bộ: " + e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse(500, "Lỗi máy chủ nội bộ: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -185,27 +185,27 @@ public class UserController {
                             .append("\n");
                 }
                 System.out.println("Lỗi cập nhật: " + errorsBuilder);
-                BaseResponse baseResponse = BaseResponse.buildResponse("400", "Dữ liệu không hợp lệ.");
+                BaseResponse baseResponse = BaseResponse.buildResponse(400, "Dữ liệu không hợp lệ.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse);
             }
             User user = userService.updateUser(userMapper.fromRequestToEntity(userDTO ,false)) ;
             UserResponse userResponse = userMapper.fromEntityToResponse(user);
-            BaseResponse baseResponse = new BaseResponse("200" , "Cập nhật thành công." , userResponse);
+            BaseResponse baseResponse = new BaseResponse(200 , "Cập nhật thành công." , userResponse);
             return ResponseEntity.ok(baseResponse) ;
         }
         catch (EntityNotFoundException e) {
             System.out.println("Lỗi cập nhật người dùng: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("404", e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse(404, e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(baseResponse);
         }
         catch (DataIntegrityViolationException e) {
             System.out.println("Lỗi cập nhật người dùng: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("409", e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse(409, e.getMessage());
             return ResponseEntity.status(HttpStatus.CONFLICT).body(baseResponse);
         }
         catch (Exception e) {
             System.out.println("Lỗi cập nhật người dùng: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Lỗi máy chủ nội bộ: " + e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse(500, "Lỗi máy chủ nội bộ: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }

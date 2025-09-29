@@ -84,13 +84,13 @@ public class ProductController {
             );
 
             PagedResponse<ProductResponse> pagedResponse = new PagedResponse<>(productResponses, paginationInfo);
-            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Lấy danh sách sản phẩm thành công.", pagedResponse);
+            BaseResponse baseResponse = BaseResponse.buildResponse(200, "Lấy danh sách sản phẩm thành công.", pagedResponse);
 
             return ResponseEntity.ok(baseResponse);
 
         } catch (Exception e) {
             System.err.println("Lỗi lấy danh sách sản phẩm: " + e.getMessage());
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Lỗi máy chủ nội bộ: " + e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse(500, "Lỗi máy chủ nội bộ: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -101,15 +101,15 @@ public class ProductController {
         try {
             Product product = productService.getProductById(productId);
             ProductResponse productResponse = productMapper.fromEntityToResponse(product) ;
-            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Lấy thông tin sản phẩm thành công.", productResponse);
+            BaseResponse baseResponse = BaseResponse.buildResponse(200, "Lấy thông tin sản phẩm thành công.", productResponse);
             return ResponseEntity.ok(baseResponse);
         } catch (EntityNotFoundException e) {
             System.out.println("Lỗi lấy thông tin sản phẩm: " + e.getMessage());
-            BaseResponse baseResponse = BaseResponse.buildResponse("404", e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse(404, e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(baseResponse);
         } catch (Exception e) {
             System.out.println("Lỗi lấy thông tin sản phẩm: " + e.getMessage());
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Lỗi máy chủ nội bộ: " + e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse(500, "Lỗi máy chủ nội bộ: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -119,17 +119,17 @@ public class ProductController {
     public ResponseEntity<?> viewProduct (@PathVariable("id") int productId){
         try{
             productService.viewProduct(productId);
-            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Xem sản phẩm thành công") ;
+            BaseResponse baseResponse = BaseResponse.buildResponse(200 , "Xem sản phẩm thành công") ;
             return ResponseEntity.ok(baseResponse) ;
         }
         catch (EntityNotFoundException e ) {
             System.out.println("Lỗi xem sản phẩm: " + productId);
-            BaseResponse baseResponse = BaseResponse.buildResponse("404", e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse(404, e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(baseResponse);
         }
         catch (Exception e ) {
             System.out.println("Lỗi xem sản phẩm: " + productId);
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Lỗi máy chủ nội bộ: " + e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse(500, "Lỗi máy chủ nội bộ: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -150,16 +150,16 @@ public class ProductController {
                             .append("\n");
                }
                System.out.println("Lỗi tạo sản phẩm: " + errorsBuilder);
-               BaseResponse baseResponse = BaseResponse.buildResponse("400", "Dữ liệu không hợp lệ.");
+               BaseResponse baseResponse = BaseResponse.buildResponse(400, "Dữ liệu không hợp lệ.");
                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse);
            }
            Product product = productService.createProduct(productMapper.fromRequestToEntity(productDTO));
            ProductResponse productResponse = productMapper.fromEntityToResponse(product) ;
-           BaseResponse baseResponse = BaseResponse.buildResponse("200", "Tạo sản phẩm thành công.", productResponse);
+           BaseResponse baseResponse = BaseResponse.buildResponse(200, "Tạo sản phẩm thành công.", productResponse);
            return ResponseEntity.ok(baseResponse);
        } catch (Exception e) {
            System.out.println("Lỗi tạo sản phẩm: " + e.getMessage());
-           BaseResponse baseResponse = BaseResponse.buildResponse("500", "Lỗi máy chủ nội bộ: " + e.getMessage());
+           BaseResponse baseResponse = BaseResponse.buildResponse(500, "Lỗi máy chủ nội bộ: " + e.getMessage());
            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
        }
     }
@@ -181,7 +181,7 @@ public class ProductController {
                             .append("\n");
                }
                System.out.println("Lỗi tạo sản phẩm: " + errorsBuilder);
-               BaseResponse baseResponse = BaseResponse.buildResponse("400", "Dữ liệu không hợp lệ.");
+               BaseResponse baseResponse = BaseResponse.buildResponse(400, "Dữ liệu không hợp lệ.");
                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse);
            }
            List<Product> convertedProducts = productDTOs
@@ -193,16 +193,15 @@ public class ProductController {
                    .stream()
                    .map(productMapper :: fromEntityToResponse)
                    .toList();
-           BaseResponse baseResponse = BaseResponse.buildResponse("200", "Tạo sản phẩm thành công.",productResponses );
+           BaseResponse baseResponse = BaseResponse.buildResponse(200, "Tạo sản phẩm thành công.",productResponses );
            return ResponseEntity.ok(baseResponse);
 
        } catch (Exception e) {
            System.out.println("Lỗi tạo sản phẩm: " + e.getMessage());
-           BaseResponse baseResponse = BaseResponse.buildResponse("500", "Lỗi máy chủ nội bộ: " + e.getMessage());
+           BaseResponse baseResponse = BaseResponse.buildResponse(500, "Lỗi máy chủ nội bộ: " + e.getMessage());
            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
        }
     }
-
 
     //  cập nhật sản phẩm
     @PutMapping()
@@ -220,20 +219,20 @@ public class ProductController {
                             .append("\n");
                }
                System.out.println("Lỗi cập nhật sản phẩm: " + errorsBuilder);
-               BaseResponse baseResponse = BaseResponse.buildResponse("400", "Dữ liệu không hợp lệ.");
+               BaseResponse baseResponse = BaseResponse.buildResponse(400, "Dữ liệu không hợp lệ.");
                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse);
            }
            Product product = productService.updateProduct(productMapper.fromRequestToEntity(productDTO));
            ProductResponse productResponse = productMapper.fromEntityToResponse(product) ;
-           BaseResponse baseResponse = BaseResponse.buildResponse("200", "Cập nhật sản phẩm thành công.", productResponse);
+           BaseResponse baseResponse = BaseResponse.buildResponse(200, "Cập nhật sản phẩm thành công.", productResponse);
            return ResponseEntity.ok(baseResponse);
        } catch (EntityNotFoundException e) {
            System.out.println("Lỗi cập nhật sản phẩm: " + e.getMessage());
-           BaseResponse baseResponse = BaseResponse.buildResponse("404", e.getMessage());
+           BaseResponse baseResponse = BaseResponse.buildResponse(404, e.getMessage());
            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(baseResponse);
        } catch (Exception e) {
            System.out.println("Lỗi cập nhật sản phẩm: " + e.getMessage());
-           BaseResponse baseResponse = BaseResponse.buildResponse("500", "Lỗi máy chủ nội bộ: " + e.getMessage());
+           BaseResponse baseResponse = BaseResponse.buildResponse(500, "Lỗi máy chủ nội bộ: " + e.getMessage());
            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
        }
     }
@@ -242,15 +241,15 @@ public class ProductController {
     public ResponseEntity<?> deleteProduct(@PathVariable("id") int productId) {
         try {
             productService.deleteProduct(productId);
-            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Xóa sản phẩm thành công.");
+            BaseResponse baseResponse = BaseResponse.buildResponse(200, "Xóa sản phẩm thành công.");
             return ResponseEntity.ok(baseResponse);
         } catch (EntityNotFoundException e) {
             System.out.println("Lỗi xóa sản phẩm: " + e.getMessage());
-            BaseResponse baseResponse = BaseResponse.buildResponse("404", e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse(404, e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(baseResponse);
         } catch (Exception e) {
             System.out.println("Lỗi xóa sản phẩm: " + e.getMessage());
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Lỗi máy chủ nội bộ.");
+            BaseResponse baseResponse = BaseResponse.buildResponse(500, "Lỗi máy chủ nội bộ.");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }

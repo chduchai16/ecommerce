@@ -57,11 +57,11 @@ public class RatingController {
             );
 
             PagedResponse pagedRatingsResponse = new PagedResponse(ratingResponses , paginationInfo) ;
-            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Lấy danh sách đánh giá thành công.", pagedRatingsResponse);
+            BaseResponse baseResponse = BaseResponse.buildResponse(200, "Lấy danh sách đánh giá thành công.", pagedRatingsResponse);
             return ResponseEntity.ok(baseResponse);
         } catch (Exception e) {
             System.out.println("Lỗi lấy danh sách đánh giá: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Lỗi máy chủ nội bộ: " + e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse(500, "Lỗi máy chủ nội bộ: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -74,15 +74,15 @@ public class RatingController {
         try {
             Rating rating = ratingService.getRatingByProductIdAndUserId(productId, userId);
             RatingResponse ratingResponse = ratingMapper.fromEntityToResponse(rating) ;
-            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Lấy đánh giá thành công.",ratingResponse);
+            BaseResponse baseResponse = BaseResponse.buildResponse(200, "Lấy đánh giá thành công.",ratingResponse);
             return ResponseEntity.ok(baseResponse);
         } catch (EntityNotFoundException e) {
             System.out.println("Lỗi lấy đánh giá: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("404", e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse(404, e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(baseResponse);
         } catch (Exception e) {
             System.out.println("Lỗi lấy đánh giá: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Lỗi máy chủ nội bộ: " +e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse(500, "Lỗi máy chủ nội bộ: " +e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -102,16 +102,16 @@ public class RatingController {
                             .append("\n");
                 }
                 System.out.println("Lỗi tạo đánh giá: " + errorsBuilder);
-                BaseResponse baseResponse = BaseResponse.buildResponse("400", "Dữ liệu không hợp lệ.");
+                BaseResponse baseResponse = BaseResponse.buildResponse(400, "Dữ liệu không hợp lệ.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse);
             }
             Rating rating = ratingService.createRating(ratingMapper.fromRequestToEntity(ratingDTO));
             RatingResponse ratingResponse = ratingMapper.fromEntityToResponse(rating) ;
-            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Tạo đánh giá thành công.",ratingResponse);
+            BaseResponse baseResponse = BaseResponse.buildResponse(200, "Tạo đánh giá thành công.",ratingResponse);
             return ResponseEntity.ok(baseResponse);
         } catch (Exception e) {
             System.out.println("Lỗi tạo đánh giá: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Lỗi máy chủ nội bộ: " + e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse(500, "Lỗi máy chủ nội bộ: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -131,20 +131,20 @@ public class RatingController {
                             .append("\n");
                 }
                 System.out.println("Lỗi cập nhật đánh giá: " + errorsBuilder);
-                BaseResponse baseResponse = BaseResponse.buildResponse("400", "Dữ liệu không hợp lệ.");
+                BaseResponse baseResponse = BaseResponse.buildResponse(400, "Dữ liệu không hợp lệ.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse);
             }
             Rating rating = ratingService.updateRating(ratingMapper.fromRequestToEntity(ratingDTO));
             RatingResponse ratingResponse = ratingMapper.fromEntityToResponse(rating) ;
-            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Cập nhật đánh giá thành công.",ratingResponse);
+            BaseResponse baseResponse = BaseResponse.buildResponse(200, "Cập nhật đánh giá thành công.",ratingResponse);
             return ResponseEntity.ok(baseResponse);
         } catch (EntityNotFoundException e) {
             System.out.println("Lỗi cập nhật đánh giá: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("404", e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse(404, e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(baseResponse);
         } catch (Exception e) {
             System.out.println("Lỗi cập nhật đánh giá: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Lỗi máy chủ nội bộ: " + e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse(500, "Lỗi máy chủ nội bộ: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -155,15 +155,15 @@ public class RatingController {
     ) {
         try {
             ratingService.deleteRating(ratingId);
-            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Xóa đánh giá thành công.");
+            BaseResponse baseResponse = BaseResponse.buildResponse(200, "Xóa đánh giá thành công.");
             return ResponseEntity.ok(baseResponse);
         } catch (EntityNotFoundException e) {
             System.out.println("Lỗi xóa đánh giá: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("404", e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse(404, e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(baseResponse);
         } catch (Exception e) {
             System.out.println("Lỗi xóa đánh giá: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Lỗi máy chủ nội bộ: " + e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse(500, "Lỗi máy chủ nội bộ: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }

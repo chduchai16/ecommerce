@@ -73,7 +73,7 @@ public class MediaController {
         }
         catch (Exception e) {
             System.out.println("Xem ảnh thất bại: " + e.getMessage());
-            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Tệp không tồn tại.") ;
+            BaseResponse baseResponse = BaseResponse.buildResponse(500 , "Tệp không tồn tại.") ;
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -86,16 +86,16 @@ public class MediaController {
     ){
         try {
             if (imageFiles.length == 0) {
-                BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Tải lên ảnh sản phẩm thành công.") ;
+                BaseResponse baseResponse = BaseResponse.buildResponse(200 , "Tải lên ảnh sản phẩm thành công.") ;
                 return ResponseEntity.ok(baseResponse) ;
             }
             String[] result = fileHelper.saveProductImage(productId , imageFiles);
-            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Tải lên ảnh sản phẩm thành công." , result) ;
+            BaseResponse baseResponse = BaseResponse.buildResponse(200 , "Tải lên ảnh sản phẩm thành công." , result) ;
             return ResponseEntity.ok(baseResponse) ;
         }
         catch (Exception e) {
             System.out.println("Lỗi tải lên ảnh sản phẩm: " + e.getMessage());
-            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Lỗi máy chủ nội bộ: " +e.getMessage()) ;
+            BaseResponse baseResponse = BaseResponse.buildResponse(500 , "Lỗi máy chủ nội bộ: " +e.getMessage()) ;
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse) ;
         }
     }

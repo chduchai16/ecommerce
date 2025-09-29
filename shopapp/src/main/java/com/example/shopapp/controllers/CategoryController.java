@@ -22,7 +22,7 @@ import java.util.List;
 @RestController
 @RequestMapping("${app.api-prefix}/categories")
 @RequiredArgsConstructor
-@Tag(name = "Category Management", description = "Quản lý loại hàng hóa trong hệ thống")
+@Tag(name = "Category Management", description = "Quản lý danh mục hàng hóa trong hệ thống")
 
 public class CategoryController {
     private final ICategoryService categoryService ;
@@ -36,12 +36,12 @@ public class CategoryController {
                     .stream()
                     .map(categoryMapper :: fromEntityToResponse)
                     .toList();
-            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Lấy danh sách loại hàng thành công." ,categoryResponses);
+            BaseResponse baseResponse = BaseResponse.buildResponse(200 , "Lấy danh sách danh mục thành công." ,categoryResponses);
             return ResponseEntity.ok(baseResponse) ;
         }
         catch (Exception e){
-            System.out.println("Lỗi lấy danh sách loại hàng: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Lỗi máy chủ nội bộ: " + e.getMessage());
+            System.out.println("Lỗi lấy danh sách danh mục: " + e);
+            BaseResponse baseResponse = BaseResponse.buildResponse(500 , "Lỗi máy chủ nội bộ: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -51,17 +51,17 @@ public class CategoryController {
         try{
             Category category = categoryService.getCategoryById(categoryId);
             CategoryResponse categoryResponse = categoryMapper.fromEntityToResponse(category) ;
-            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Lấy thông tin loại hàng thành công.",categoryResponse);
+            BaseResponse baseResponse = BaseResponse.buildResponse(200 , "Lấy thông tin danh mục thành công.",categoryResponse);
             return ResponseEntity.ok(baseResponse);
         }
         catch (EntityNotFoundException e){
-            System.out.println("Lỗi lấy thông tin loại hàng: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("404" , e.getMessage());
+            System.out.println("Lỗi lấy thông tin danh mục: " + e);
+            BaseResponse baseResponse = BaseResponse.buildResponse(404 , e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(baseResponse);
         }
         catch (Exception e){
-            System.out.println("Lỗi lấy thông tin loại hàng: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Lỗi máy chủ nội bộ: " + e.getMessage());
+            System.out.println("Lỗi lấy thông tin danh mục: " + e);
+            BaseResponse baseResponse = BaseResponse.buildResponse(500 , "Lỗi máy chủ nội bộ: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -82,22 +82,22 @@ public class CategoryController {
                             .append("\n");
                 }
                 System.out.println("Tạo : dữ liệu không hợp lệ " + errorsBuilder);
-                BaseResponse baseResponse = BaseResponse.buildResponse("400" , "Dữ liệu không hợp lệ.");
+                BaseResponse baseResponse = BaseResponse.buildResponse(400 , "Dữ liệu không hợp lệ.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse) ;
             }
             Category category = categoryService.createCategory(categoryMapper.fromRequestToEntity(categoryDTO));
             CategoryResponse categoryResponse = categoryMapper.fromEntityToResponse(category) ;
-            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Tạo loại hàng thành công.",categoryResponse);
+            BaseResponse baseResponse = BaseResponse.buildResponse(200 , "Tạo danh mục thành công.",categoryResponse);
             return ResponseEntity.ok(baseResponse) ;
         }
         catch(DataIntegrityViolationException e) {
-            System.err.println("Lỗi tạo loại hàng: " + e.getMessage());
-            BaseResponse baseResponse = BaseResponse.buildResponse("409" , e.getMessage());
+            System.err.println("Lỗi tạo danh mục: " + e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse(409 , e.getMessage());
             return ResponseEntity.status(HttpStatus.CONFLICT).body(baseResponse);
         }
         catch(Exception e) {
-            System.err.println("Lỗi tạo loại hàng: " + e.getMessage());
-            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Lỗi máy chủ nội bộ: " + e.getMessage());
+            System.err.println("Lỗi tạo danh mục: " + e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse(500 , "Lỗi máy chủ nội bộ: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -118,27 +118,27 @@ public class CategoryController {
                             .append("\n");
                 }
                 System.out.println("Cập nhật : dữ liệu không hợp lệ " + errorsBuilder);
-                BaseResponse baseResponse = BaseResponse.buildResponse("400" , "Dữ liệu không hợp lệ.");
+                BaseResponse baseResponse = BaseResponse.buildResponse(400 , "Dữ liệu không hợp lệ.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse) ;
             }
             Category category = categoryService.updateCategory(categoryMapper.fromRequestToEntity(categoryDTO)) ;
             CategoryResponse categoryResponse = categoryMapper.fromEntityToResponse(category) ;
-            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Cập nhật loại hàng thành công." ,categoryResponse);
+            BaseResponse baseResponse = BaseResponse.buildResponse(200 , "Cập nhật danh mục thành công." ,categoryResponse);
             return ResponseEntity.ok(baseResponse) ;
         }
         catch(EntityNotFoundException e) {
-            System.err.println("Lỗi cập nhật loại hàng: " + e.getMessage());
-            BaseResponse baseResponse = BaseResponse.buildResponse("404" , e.getMessage());
+            System.err.println("Lỗi cập nhật danh mục: " + e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse(404 , e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(baseResponse);
         }
         catch(DataIntegrityViolationException e) {
-            System.err.println("Lỗi cập nhật loại hàng: " + e.getMessage());
-            BaseResponse baseResponse = BaseResponse.buildResponse("409" , e.getMessage());
+            System.err.println("Lỗi cập nhật danh mục: " + e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse(409 , e.getMessage());
             return ResponseEntity.status(HttpStatus.CONFLICT).body(baseResponse);
         }
         catch(Exception e) {
-            System.err.println("Lỗi cập nhật loại hàng: " + e.getMessage());
-            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Lỗi máy chủ nội bộ: " + e.getMessage());
+            System.err.println("Lỗi cập nhật danh mục: " + e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse(500 , "Lỗi máy chủ nội bộ: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -148,17 +148,17 @@ public class CategoryController {
     public ResponseEntity<?> deleteCategory(@PathVariable("id") int categoryId){
         try{
             categoryService.deleteCategory(categoryId);
-            BaseResponse baseResponse = BaseResponse.buildResponse("200" , "Xóa loại hàng thành công.");
+            BaseResponse baseResponse = BaseResponse.buildResponse(200 , "Xóa danh mục thành công.");
             return ResponseEntity.ok().body(baseResponse) ;
         }
         catch(EntityNotFoundException e){
-            System.out.println("Lỗi xóa loại hàng: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("404" , e.getMessage());
+            System.out.println("Lỗi xóa danh mục: " + e);
+            BaseResponse baseResponse = BaseResponse.buildResponse(404, e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(baseResponse);
         }
         catch(Exception e){
-            System.out.println("Lỗi xóa loại hàng: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Lỗi máy chủ nội bộ.");
+            System.out.println("Lỗi xóa danh mục: " + e);
+            BaseResponse baseResponse = BaseResponse.buildResponse(500 , "Lỗi máy chủ nội bộ.");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }

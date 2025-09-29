@@ -56,11 +56,11 @@ public class RoleController {
 
             PagedResponse pagedResponse = new PagedResponse(roleResponses, paginationInfo);
 
-            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Lấy danh sách vai trò thành công.", pagedResponse);
+            BaseResponse baseResponse = BaseResponse.buildResponse(200, "Lấy danh sách vai trò thành công.", pagedResponse);
             return ResponseEntity.ok(baseResponse);
         } catch (Exception e) {
             System.out.println("Lỗi lấy danh sách vai trò: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Lỗi máy chủ nội bộ: " + e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse(500, "Lỗi máy chủ nội bộ: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -80,20 +80,20 @@ public class RoleController {
                             .append("\n");
                 }
                 System.out.println("Lỗi tạo vai trò: " + errorsBuilder);
-                BaseResponse baseResponse = BaseResponse.buildResponse("400", "Dữ liệu không hợp lệ.");
+                BaseResponse baseResponse = BaseResponse.buildResponse(400, "Dữ liệu không hợp lệ.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse);
             }
             Role role = roleService.createRole(roleMapper.fromRequestToEntity(roleDTO));
             RoleResponse roleResponse = roleMapper.fromEntityToResponse(role) ;
-            BaseResponse baseResponse = BaseResponse.buildResponse("200", "Tạo vai trò thành công.",roleResponse);
+            BaseResponse baseResponse = BaseResponse.buildResponse(200, "Tạo vai trò thành công.",roleResponse);
             return ResponseEntity.ok(baseResponse);
         } catch (DataIntegrityViolationException e) {
             System.out.println("Lỗi tạo vai trò: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("409", e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse(409, e.getMessage());
             return ResponseEntity.status(HttpStatus.CONFLICT).body(baseResponse);
         } catch (Exception e) {
             System.out.println("Lỗi tạo vai trò: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse("500", "Lỗi máy chủ nội bộ: " + e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse(500, "Lỗi máy chủ nội bộ: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }

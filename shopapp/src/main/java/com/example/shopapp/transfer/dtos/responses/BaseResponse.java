@@ -12,19 +12,19 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class BaseResponse<T> {
-    private String status;
+    private Integer status;
     private String message;
     private T data;
     private LocalDateTime timestamp;
 
-    public BaseResponse(String status, String message, T data) {
+    public BaseResponse(Integer status, String message, T data) {
         this.status = status;
         this.message = message;
         this.data = data;
         this.timestamp = LocalDateTime.now();
     }
 
-    public static <T> BaseResponse<T> buildResponse(String status, String message, T data) {
+    public static <T> BaseResponse<T> buildResponse(Integer status, String message, T data) {
         return BaseResponse.<T>builder()
                 .status(status)
                 .message(message)
@@ -33,7 +33,7 @@ public class BaseResponse<T> {
                 .build();
     }
 
-    public static <T> BaseResponse<T> buildResponse(String status, String message) {
+    public static <T> BaseResponse<T> buildResponse(Integer status, String message) {
         return BaseResponse.<T>builder()
                 .status(status)
                 .message(message)

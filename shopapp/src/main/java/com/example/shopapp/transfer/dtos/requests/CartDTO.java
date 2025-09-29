@@ -2,7 +2,6 @@ package com.example.shopapp.transfer.dtos.requests;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.annotation.Nullable;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,7 +17,6 @@ public class CartDTO {
     private Integer id ;
 
     @JsonProperty("user_id")
-    @NotNull
     private Integer userId ;
 
     @JsonProperty("cart_items")
