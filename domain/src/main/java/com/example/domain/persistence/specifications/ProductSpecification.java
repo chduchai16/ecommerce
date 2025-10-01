@@ -9,12 +9,21 @@ import org.springframework.data.jpa.domain.Specification;
 public class ProductSpecification {
 
     // id hàng hóa
-    public static  Specification<Product> hasId (Integer id) {
+    public static Specification<Product> hasId (Integer id) {
         return (root , query , cb) -> {
             if (id == null) {
                 return cb.conjunction();
             }
             return cb.equal(root.get("id"), id);
+        } ;
+    }
+
+    public static Specification<Product> hasIds (Integer[] ids) {
+        return (root , query , cb) -> {
+            if (ids == null) {
+                return cb.conjunction();
+            }
+            return root.get("id").in(ids);
         } ;
     }
 

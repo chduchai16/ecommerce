@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface IProductService {
     Product getProductById(int productId) throws Exception;
+    List<Product> getProductsByIds(Integer[] productIds) throws Exception;
     Product createProduct(Product product) throws Exception;
     Product updateProduct(Product product) throws Exception;
     void deleteProduct(int productId) throws Exception;

@@ -114,6 +114,30 @@ public class ProductController {
         }
     }
 
+    // lấy nhiều sản phẩm theo id
+    @PostMapping("/batch")
+    public ResponseEntity<?> getProductsWithProductIds(
+            @RequestBody Integer[] productIds
+    ) {
+        try {
+            List<Product> products = productService.getProductsByIds(productIds);
+            List<ProductResponse> productResponses = products
+                    .stream()
+                    .map(productMapper :: fromEntityToResponse)
+                    .toList() ;
+            BaseResponse baseResponse = BaseResponse.buildResponse(200, "Lấy thông tin sản phẩm thành công.", productResponses);
+            return ResponseEntity.ok(baseResponse);
+        } catch (EntityNotFoundException e) {
+            System.out.println("Lỗi lấy thông tin sản phẩm: " + e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse(404, e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(baseResponse);
+        } catch (Exception e) {
+            System.out.println("Lỗi lấy thông tin sản phẩm: " + e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse(500, "Lỗi máy chủ nội bộ: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
+        }
+    }
+
     // xem sản phẩm
     @GetMapping("/view/{id}")
     public ResponseEntity<?> viewProduct (@PathVariable("id") int productId){

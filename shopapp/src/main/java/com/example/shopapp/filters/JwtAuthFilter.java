@@ -37,6 +37,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         this.permitAllEndpoints = List.of(
                 Map.of("GET", apiPrefix + "/products"),
                 Map.of("GET", apiPrefix + "/products/"),
+                Map.of("POST", apiPrefix + "/products/batch"),
                 Map.of("GET", apiPrefix + "/categories"),
                 Map.of("POST", apiPrefix + "/auth/sign-in"),
                 Map.of("GET" , apiPrefix + "/media/images/"),

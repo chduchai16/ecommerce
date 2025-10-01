@@ -34,6 +34,20 @@ public class ProductServiceIMP implements IProductService {
     }
 
     @Override
+    public List<Product> getProductsByIds(Integer[] productIds) {
+        if (productIds == null || productIds.length == 0) {
+            return List.of();
+        }
+        Specification<Product> spec = Specification.where(ProductSpecification.hasIds(productIds));
+        List<Product> products = productRepository.findAll(spec);
+
+        if (products.size() != productIds.length) {
+            throw new EntityNotFoundException("Một số sản phẩm trong danh sách không tồn tại");
+        }
+        return products;
+    }
+
+    @Override
     public Page<Product> filterProducts(
             String name,
             String categoryName,

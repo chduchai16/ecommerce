@@ -53,6 +53,7 @@ public class WebSecurityFilter {
                         // products
                         .requestMatchers(HttpMethod.GET, apiPrefix + "/products**").permitAll()
                         .requestMatchers(HttpMethod.GET, apiPrefix + "/products/**").permitAll()
+                        .requestMatchers(HttpMethod.POST , apiPrefix + "/products/batch**").permitAll()
 
                         // seller được quản lý sản phẩm của họ, admin thì toàn quyền
                         .requestMatchers(HttpMethod.POST, apiPrefix + "/products**").hasAnyRole(SELLER, ADMIN)
