@@ -33,8 +33,8 @@ public class OrderResponse {
     @JsonProperty("shipping_method")
     private String shippingMethod ;
 
-    @JsonProperty("fullname")
-    private String fullName ;
+    @JsonProperty("customer_name")
+    private String customerName ;
 
     @JsonProperty("phone_number")
     private String phoneNumber ;

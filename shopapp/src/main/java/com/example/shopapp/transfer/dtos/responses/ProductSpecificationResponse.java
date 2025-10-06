@@ -13,9 +13,9 @@ import lombok.NoArgsConstructor;
 public class ProductSpecificationResponse {
     private Integer id;
 
-    @JsonProperty("spec_key")
+    @JsonProperty("key")
     private String key;
 
-    @JsonProperty("spec_value")
+    @JsonProperty("value")
     private String value;
 }

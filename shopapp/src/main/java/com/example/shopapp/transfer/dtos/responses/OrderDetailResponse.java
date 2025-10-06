@@ -17,7 +17,7 @@ public class OrderDetailResponse {
     @JsonProperty("order_id")
     private int orderId ;
 
-    @JsonProperty("product_response")
+    @JsonProperty("product")
     private ProductResponse productResponse ;
 
     private int quantity ;

@@ -117,26 +117,6 @@ public class UserController {
         }
     }
 
-    @GetMapping("/me/{phone_number}")
-    public ResponseEntity<?> getUserWithPhoneNumber (@PathVariable("phone_number") String phoneNumber) {
-        try{
-            User user = userService.getUserByPhoneNumber(phoneNumber) ;
-            UserResponse userResponse = userMapper.fromEntityToResponse(user) ;
-            BaseResponse baseResponse = BaseResponse.buildResponse(200 , "Lấy thông tin người dùng thành công." , userResponse) ;
-            return ResponseEntity.ok(baseResponse) ;
-        }
-        catch (EntityNotFoundException e ) {
-            System.out.println("Lỗi lấy thông tin người dùng: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse(404, e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(baseResponse);
-        }
-        catch (Exception e ) {
-            System.out.println("Lỗi lấy thông tin người dùng: " + e);
-            BaseResponse baseResponse = BaseResponse.buildResponse(500, "Lỗi máy chủ nội bộ: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
-        }
-    }
-
     @PostMapping("/create")
     public ResponseEntity<?> createNewUser(
             @RequestBody @Valid UserDTO userDTO,

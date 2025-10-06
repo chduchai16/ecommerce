@@ -1,6 +1,7 @@
 package com.example.shopapp.controllers;
 
 import com.example.domain.models.entities.Order;
+import com.example.domain.models.entities.User;
 import com.example.domain.services.IOrderService;
 import com.example.shopapp.pojos.PaginationInfo;
 import com.example.shopapp.transfer.dtos.requests.OrderDTO;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
@@ -139,6 +141,7 @@ public class OrderController {
     @PostMapping()
     public ResponseEntity<?> createOrder(
             @RequestBody @Valid OrderDTO orderDTO,
+            @AuthenticationPrincipal User user,
             BindingResult result
     ){
         try {
@@ -154,9 +157,10 @@ public class OrderController {
                 BaseResponse baseResponse = BaseResponse.buildResponse(400 , "Tạo đơn hàng thất bại.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse) ;
             }
+            orderDTO.setUserId(user.getId());
             Order order = orderService.createOrder(orderMapper.fromRequestToEntity(orderDTO));
-            OrderResponse orderResponse = orderMapper.fromEntityToResponse(order);
-            BaseResponse baseResponse = BaseResponse.buildResponse(200 , "Tạo đơn hàng thành công." , orderResponse);
+            Integer orderId = order.getId();
+            BaseResponse baseResponse = BaseResponse.buildResponse(200 , "Tạo đơn hàng thành công." , orderId);
             return ResponseEntity.ok(baseResponse);
         }
         catch (Exception e ) {
