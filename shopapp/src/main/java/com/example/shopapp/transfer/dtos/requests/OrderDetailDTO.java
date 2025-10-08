@@ -15,20 +15,19 @@ public class OrderDetailDTO {
     private Integer id ;
 
     @JsonProperty("order_id")
-    @NotNull(message = "Order id must not be null.")
     private Integer orderId ;
 
     @JsonProperty("product_id")
-    @NotNull(message = "Product id must not be null.")
+    @NotNull(message = "ID sản phẩm không được để trống")
     private Integer productId ;
 
     @JsonProperty("quantity")
-    @NotNull(message = "Quantity must not be null.")
-    @Min(value = 1 , message = "Quantity must not be < 1.")
+    @NotNull(message = "Số lượng không được để trống")
+    @Min(value = 1 , message = "Số lượng phải lớn hơn 0")
     private int quantity ;
 
     @JsonProperty("total")
-    @NotNull(message = "Total must not be null.")
-    @Min(value = 0 , message = "Total must not be < 0.")
+    @NotNull(message = "Tổng tiền không được để trống")
+    @Min(value = 0 , message = "Tổng tiền không được nhỏ hơn 0")
     private Float total;
 }

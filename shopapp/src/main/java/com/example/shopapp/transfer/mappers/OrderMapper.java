@@ -3,10 +3,8 @@ package com.example.shopapp.transfer.mappers;
 import com.example.domain.models.entities.Order;
 import com.example.domain.models.entities.OrderDetail;
 import com.example.domain.models.entities.User;
-import com.example.domain.persistence.repositories.CouponRepository;
 import com.example.domain.persistence.repositories.OrderDetailRepository;
 import com.example.domain.persistence.repositories.UserRepository;
-import com.example.shopapp.imp_services.CouponServiceIMP;
 import com.example.shopapp.transfer.dtos.requests.OrderDTO;
 import com.example.shopapp.transfer.dtos.responses.OrderDetailResponse;
 import com.example.shopapp.transfer.dtos.responses.OrderResponse;
@@ -25,7 +23,6 @@ public class OrderMapper {
     private final UserRepository userRepository ;
     private final OrderDetailRepository orderDetailRepository ;
     private final OrderDetailMapper orderDetailMapper ;
-    private final CouponRepository couponRepository ;
 
     private TypeMap<OrderDTO, Order> fromRequestToEntityTypeMap ;
     private TypeMap<Order , OrderResponse> fromEntityToResponseTypeMap ;
@@ -57,8 +54,15 @@ public class OrderMapper {
 
         }
         // map order detail
-        if(orderDTO.getOrderDetailIds() != null && !orderDTO.getOrderDetailIds().isEmpty()) {
-            List<OrderDetail> orderDetails = orderDetailRepository.findAllById(orderDTO.getOrderDetailIds());
+        if(orderDTO.getOrderDetailDTOS() != null && !orderDTO.getOrderDetailDTOS().isEmpty()){
+            List<OrderDetail> orderDetails = orderDTO.getOrderDetailDTOS()
+                    .stream()
+                    .map(orderDetailDTO -> {
+                        OrderDetail orderDetail = orderDetailMapper.fromRequestToEntity(orderDetailDTO);
+                        orderDetail.setOrder(order);
+                        return orderDetail ;
+                    })
+                    .toList() ;
             order.setOrderDetails(orderDetails);
         }
 

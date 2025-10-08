@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class RoleDTO {
     private Integer id ;
 
-    @NotNull(message = "Role id must not be null")
-    @NotBlank(message = "Role name must not be blank")
+    @NotNull(message = "ID vai trò không được để trống")
+    @NotBlank(message = "Tên vai trò không được để trống")
     private String name ;
 }

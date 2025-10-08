@@ -16,11 +16,11 @@ public class ProductSpecificationDTO {
     @JsonProperty("product_id")
     private Integer productId;
 
-    @NotBlank(message = "Specification key must not be blank")
+    @NotBlank(message = "Khóa thông số không được để trống")
     @JsonProperty("spec_key")
     private String key;
 
-    @NotBlank(message = "Specification value must not be blank")
+    @NotBlank(message = "Giá trị thông số không được để trống")
     @JsonProperty("spec_value")
     private String value;
 }

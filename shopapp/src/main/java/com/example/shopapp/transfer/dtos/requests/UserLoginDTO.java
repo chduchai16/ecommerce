@@ -12,9 +12,9 @@ import lombok.NoArgsConstructor;
 public class UserLoginDTO {
 
     @JsonProperty("phone_number")
-    @NotNull(message = "Phone number must not be null.")
+    @NotNull(message = "Số điện thoại không được để trống")
     String phoneNumber ;
 
-    @NotNull(message = "Password must not be null.")
+    @NotNull(message = "Mật khẩu không được để trống")
     String password ;
 }

@@ -16,7 +16,7 @@ public class ProductImageDTO {
     private Integer id ;
 
     @JsonProperty("product_id")
-    @NotNull(message = "Product id must not be null.")
+    @NotNull(message = "ID sản phẩm không được để trống")
     private Integer productId;
 
     @JsonProperty("image_name")

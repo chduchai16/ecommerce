@@ -137,7 +137,7 @@ public class OrderController {
         }
     }
 
-    // tạo mới đơn hàng (xem lại chỗ này)
+    // tạo mới đơn hàng
     @PostMapping()
     public ResponseEntity<?> createOrder(
             @RequestBody @Valid OrderDTO orderDTO,

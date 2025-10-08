@@ -15,7 +15,7 @@ public class CategoryDTO {
     @Nullable
     private Integer id ;
 
-    @NotNull
-    @NotBlank
+    @NotNull(message = "Tên danh mục không được để trống")
+    @NotBlank(message = "Tên danh mục không được để trống")
     private String name ;
 }

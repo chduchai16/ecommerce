@@ -18,13 +18,13 @@ public class ProductDTO {
     @Nullable
     private Integer id;
 
-    @NotNull(message = "Name must not be null.")
-    @Size(min = 5, max = 255, message = "Name must from 5 to 255 chars.")
+    @NotNull(message = "Tên sản phẩm không được để trống")
+    @Size(min = 5, max = 255, message = "Tên sản phẩm phải từ 5 đến 255 ký tự")
     private String name;
 
     private String description;
 
-    @Min(value = 0, message = "Product's price must not be < 0.")
+    @Min(value = 0, message = "Giá sản phẩm không được nhỏ hơn 0")
     private Float price;
 
     @JsonProperty("original_price")
