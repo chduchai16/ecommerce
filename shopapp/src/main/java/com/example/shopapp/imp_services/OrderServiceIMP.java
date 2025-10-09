@@ -1,11 +1,15 @@
 package com.example.shopapp.imp_services;
 
 
+import com.example.domain.models.entities.Cart;
 import com.example.domain.models.entities.Order;
+import com.example.domain.models.entities.User;
+import com.example.domain.persistence.repositories.CartRepository;
 import com.example.domain.persistence.repositories.OrderRepository;
 import com.example.domain.persistence.specifications.OrderSpecification;
 import com.example.domain.services.IOrderService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +23,7 @@ import java.util.Optional;
 public class OrderServiceIMP implements IOrderService {
 
     private final OrderRepository orderRepository ;
+    private final CartRepository cartRepository ;
 
     @Override
     public Order getOrderById(int orderId) throws Exception {
@@ -55,9 +60,22 @@ public class OrderServiceIMP implements IOrderService {
         return orderRepository.findAll(spec, pageable);
     }
 
+    @Transactional(rollbackOn = Exception.class)
     @Override
     public Order createOrder(Order order) throws Exception {
-        return orderRepository.save(order);
+        User user = order.getUser();
+        if (user == null || user.getId() == null) {
+            throw new Exception("User không được để trống khi tạo đơn hàng");
+        }
+
+        Cart cart = user.getCart();
+        if (cart == null) {
+            throw new Exception("User chưa có giỏ hàng");
+        }
+        Order savedOrder = orderRepository.save(order);
+        cart.getCartItems().clear();
+        cartRepository.save(cart);
+        return savedOrder;
     }
 
     @Override

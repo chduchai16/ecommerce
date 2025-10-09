@@ -20,8 +20,6 @@ public class OrderDTO {
     private Integer id ;
 
     @JsonProperty("user_id")
-    @NotNull(message = "ID người dùng không được để trống")
-    @Min(value = 1, message = "ID người dùng phải lớn hơn 0")
     private Integer userId ;
 
     @JsonProperty("total_price")

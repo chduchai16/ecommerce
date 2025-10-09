@@ -63,7 +63,7 @@ public class WebSecurityFilter {
 
                         // orders
                         .requestMatchers(HttpMethod.GET, apiPrefix + "/orders/user**").hasRole(CUSTOMER) // customer xem
-                        .requestMatchers(HttpMethod.POST, apiPrefix + "/orders/place**").hasRole(CUSTOMER) // customer
+                        .requestMatchers(HttpMethod.POST, apiPrefix + "/orders**").hasRole(CUSTOMER) // customer
                         .requestMatchers(HttpMethod.PUT, apiPrefix + "/orders**").hasAnyRole(CUSTOMER, SELLER, ADMIN)
                         .requestMatchers(HttpMethod.GET, apiPrefix + "/orders/seller**").hasRole(SELLER) // seller xem
 

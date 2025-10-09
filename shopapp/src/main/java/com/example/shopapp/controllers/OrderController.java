@@ -141,8 +141,8 @@ public class OrderController {
     @PostMapping()
     public ResponseEntity<?> createOrder(
             @RequestBody @Valid OrderDTO orderDTO,
-            @AuthenticationPrincipal User user,
-            BindingResult result
+            BindingResult result,
+            @AuthenticationPrincipal User user
     ){
         try {
             if (result.hasErrors()){
@@ -154,13 +154,13 @@ public class OrderController {
                             .append("\n");
                 }
                 System.out.println("Lỗi dữ liệu đơn hàng: " + errorsBuilder);
-                BaseResponse baseResponse = BaseResponse.buildResponse(400 , "Tạo đơn hàng thất bại.");
+                BaseResponse baseResponse = BaseResponse.buildResponse(400 , "Tạo đơn hàng thất bại: " + errorsBuilder.toString());
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse) ;
             }
             orderDTO.setUserId(user.getId());
             Order order = orderService.createOrder(orderMapper.fromRequestToEntity(orderDTO));
-            Integer orderId = order.getId();
-            BaseResponse baseResponse = BaseResponse.buildResponse(200 , "Tạo đơn hàng thành công." , orderId);
+            OrderResponse orderResponse = orderMapper.fromEntityToResponse(order) ;
+            BaseResponse baseResponse = BaseResponse.buildResponse(200 , "Tạo đơn hàng thành công." , orderResponse);
             return ResponseEntity.ok(baseResponse);
         }
         catch (Exception e ) {
