@@ -170,34 +170,6 @@ public class OrderController {
         }
     }
 
-    // xem lại sau
-//    // đặt hàng
-//    @PostMapping("/place")
-//    public ResponseEntity<?> placeOrder (
-//            @RequestBody @Valid OrderDTO orderDTO,
-//            BindingResult result
-//    ){
-//        try {
-//            if(result.hasErrors()){
-//                StringBuilder stringBuilder = new StringBuilder();
-//                for(FieldError fieldError : result.getFieldErrors()){
-//                    stringBuilder.append(fieldError).append("\n");
-//                }
-//                BaseResponse baseResponse = BaseResponse.buildResponse("400" , "Invalid data") ;
-//                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse) ;
-//            }
-//            Order order = orderService.placeOrder(orderDTO) ;
-//            OrderResponse orderResponse = OrderResponse.convertFromOrder(order);
-//            BaseResponse baseResponse = BaseResponse.buildResponse("200","Place order successfully", orderResponse) ;
-//            return ResponseEntity.status(HttpStatus.OK).body(baseResponse) ;
-//
-//        } catch (Exception exception) {
-//            System.out.println("Error placing order: " + exception.getMessage());
-//            BaseResponse baseResponse = BaseResponse.buildResponse("500" , "Place order failed: " + exception.getMessage()) ;
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse) ;
-//        }
-//    }
-
     // cạp nhật đơn hàng
     @PutMapping()
     public ResponseEntity<?> updateOrder(
