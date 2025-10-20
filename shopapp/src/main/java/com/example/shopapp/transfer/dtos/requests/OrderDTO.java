@@ -20,21 +20,19 @@ public class OrderDTO {
     private Integer id ;
 
     @JsonProperty("user_id")
-    @NotNull(message = "User id must not be null.")
-    @Min(value = 1, message = "User id must not be < 1.")
     private Integer userId ;
 
     @JsonProperty("total_price")
-    @NotNull(message = "Total price must not be null.")
-    @Min(value = 0, message = "Total price must not be < 0.")
+    @NotNull(message = "Tổng giá không được để trống")
+    @Min(value = 0, message = "Tổng giá không được nhỏ hơn 0")
     private Float totalPrice ;
 
     @JsonProperty("status")
     private String status ;
 
     @JsonProperty("shipping_address")
-    @NotNull(message = "Shipping address must not be null.")
-    @Size(min = 5 , max = 255 , message = "Shipping address must be from 5 to 255 chars")
+    @NotNull(message = "Địa chỉ giao hàng không được để trống")
+    @Size(min = 5 , max = 255 , message = "Địa chỉ giao hàng phải từ 5 đến 255 ký tự")
     private String shippingAddress;
 
     @JsonProperty("payment_method")
@@ -44,11 +42,11 @@ public class OrderDTO {
     private String shippingMethod ;
 
     @JsonProperty("customer_name")
-    @NotNull(message = "customer name must not be null.")
+    @NotNull(message = "Tên khách hàng không được để trống")
     private String customerName ;
 
     @JsonProperty("phone_number")
-    @NotNull(message = "Phone number must not be null.")
+    @NotNull(message = "Số điện thoại không được để trống")
     private String phoneNumber ;
 
     @JsonProperty("email")
@@ -59,6 +57,8 @@ public class OrderDTO {
     @JsonProperty("coupon_code")
     private String couponCode ;
 
-    @JsonProperty("order_detail_ids")
-    private List<Integer> orderDetailIds ;
+    @JsonProperty("order_details")
+    @NotNull(message = "Đơn hàng phải có ít nhất một chi tiết")
+    @Size(min = 1 , message = "Đơn hàng phải có ít nhất một chi tiết")
+    private List<OrderDetailDTO> orderDetailDTOS ;
 }

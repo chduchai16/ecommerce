@@ -18,23 +18,23 @@ public class UserDTO {
     private Integer id;
 
     @JsonProperty("fullname")
-    @NotNull(message = "Full name must not be null.")
+    @NotNull(message = "Họ tên không được để trống")
     private String fullName;
 
     @JsonProperty("phone_number")
-    @NotNull(message = "Phone number must not be null.")
-    @NotBlank(message = "Phone number must not be blank.")
+    @NotNull(message = "Số điện thoại không được để trống")
+    @NotBlank(message = "Số điện thoại không được để trống")
     private String phoneNumber;
 
     private String email;
 
-    @NotNull(message = "Password must not be null.")
-    @NotBlank(message = "Password must not bt blank")
+    @NotNull(message = "Mật khẩu không được để trống")
+    @NotBlank(message = "Mật khẩu không được để trống")
     private String password;
 
     @JsonProperty("retype_password")
-    @NotNull(message = "Retype password must not be null.")
-    @NotBlank(message = "Retype password must not be blank.")
+    @NotNull(message = "Xác nhận mật khẩu không được để trống")
+    @NotBlank(message = "Xác nhận mật khẩu không được để trống")
     private String retypePassword;
 
     private String address;
@@ -42,11 +42,11 @@ public class UserDTO {
     @JsonProperty("date_of_birth")
     private LocalDate dateOfBirth;
 
-    @NotNull(message = "Gender must not be null")
+    @NotNull(message = "Giới tính không được để trống")
     private String gender;
 
     @JsonProperty("role_id")
-    @NotNull(message = "Role id must not be null.")
+    @NotNull(message = "ID vai trò không được để trống")
     private int roleId;
 
     @JsonProperty("is_active")

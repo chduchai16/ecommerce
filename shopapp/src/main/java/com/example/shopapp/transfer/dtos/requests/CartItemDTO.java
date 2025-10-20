@@ -19,13 +19,13 @@ public class CartItemDTO {
     private Integer id ;
 
     @JsonProperty("product_id")
-    @NotNull
+    @NotNull(message = "ID sản phẩm không được để trống")
     private Integer productId ;
 
     @JsonProperty("cart_id")
     private Integer cartId ;
 
-    @NotNull
-    @Min(value = 1, message = "quantity must be > 0")
+    @NotNull(message = "Số lượng không được để trống")
+    @Min(value = 1, message = "Số lượng phải lớn hơn 0")
     private Integer quantity;
 }

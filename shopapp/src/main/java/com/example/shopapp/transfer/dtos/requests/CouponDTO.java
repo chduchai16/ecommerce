@@ -19,8 +19,8 @@ public class CouponDTO {
     @Nullable
     private Integer id ;
 
-    @NotNull(message = "Code must not be null.")
-    @NotBlank(message = "Code must not be blank.")
+    @NotNull(message = "Mã giảm giá không được để trống")
+    @NotBlank(message = "Mã giảm giá không được để trống")
     private String code ;
 
     @JsonProperty("discount_percent")
@@ -31,7 +31,7 @@ public class CouponDTO {
 
     @JsonProperty("expiration_date")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-M-d")
-    @NotNull
+    @NotNull(message = "Ngày hết hạn không được để trống")
     private LocalDate expirationDate;
 
     private String status ;

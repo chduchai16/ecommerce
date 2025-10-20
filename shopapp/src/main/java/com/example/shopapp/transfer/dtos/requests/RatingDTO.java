@@ -16,17 +16,17 @@ public class RatingDTO {
     @Nullable
     private Integer id ;
 
-    @NotNull(message = "Product id must not be null")
+    @NotNull(message = "ID sản phẩm không được để trống")
     @JsonProperty("product_id")
     private Integer productId;
 
     @JsonProperty("user_id")
-    @NotNull(message = "Product id must not be null")
+    @NotNull(message = "ID người dùng không được để trống")
     private Integer userId;
 
-    @NotNull
-    @Max(value = 5,message = "Rating must be < 6")
-    @Min(value = 1,message = "Rating must be > 0")
+    @NotNull(message = "Điểm đánh giá không được để trống")
+    @Max(value = 5,message = "Điểm đánh giá phải nhỏ hơn 6")
+    @Min(value = 1,message = "Điểm đánh giá phải lớn hơn 0")
     private int rate ;
 
     private String comment ;
