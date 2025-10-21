@@ -20,7 +20,7 @@ public class Order extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "order_number", unique = true)
+    @Column(name = "order_number")
     private String orderNumber;
 
     @ManyToOne

@@ -57,7 +57,6 @@ public class User extends BaseEntity implements UserDetails {
     @Column(name = "status")
     private Integer status;
 
-    // Seller-specific fields (nullable for regular users)
     @Column(name = "shop_name", columnDefinition = "NVARCHAR(255)")
     private String shopName;
 
