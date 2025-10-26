@@ -45,7 +45,7 @@ public class AuthController {
                 BaseResponse baseResponse = BaseResponse.buildResponse(400, "Dữ liệu không hợp lệ.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse);
             }
-            String token = authService.signIn(userLoginDTO.getPhoneNumber(), userLoginDTO.getPassword());
+            String token = authService.signIn(userLoginDTO.getPhoneNumber(), userLoginDTO.getPassword() , userLoginDTO.getRole() , userLoginDTO.getRemember());
             BaseResponse baseResponse = BaseResponse.buildResponse(200, "Đăng nhập thành công.", token);
             return ResponseEntity.ok(baseResponse);
         } catch (Exception e) {

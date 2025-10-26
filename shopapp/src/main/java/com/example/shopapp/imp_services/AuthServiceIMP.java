@@ -30,18 +30,26 @@ public class AuthServiceIMP implements IAuthService {
     private final RoleRepository roleRepository ;
 
     @Override
-    public String signIn(String phoneNumber , String password) throws Exception {
+    public String signIn(String phoneNumber , String password, Integer role ,  Boolean remember) throws Exception {
         Specification<User> spec = Specification.where(UserSpecification.hasPhoneNumberExact(phoneNumber));
         Optional<User> user = userRepository.findOne(spec) ;
+
         if(user.isEmpty()) {
             throw new BadCredentialsException("Số điện thoại hoặc mật khẩu không đúng") ;
         }
+
         User existingUser = user.get() ;
         if(existingUser.getRole() == null) {
             throw new EntityNotFoundException("Người dùng này chưa được phân quyền, vui lòng liên hệ quản trị viên") ;
         }
+
+        // Admin có thể đăng nhập với bất kỳ vai trò nào, các vai trò khác phải khớp
+        if(!existingUser.getRole().getName().equals("admin") && existingUser.getRole().getId() != role) {
+            throw new BadCredentialsException("Tài khoản này không có quyền đăng nhập với vai trò hiện tại") ;
+        }
+
         if (passwordEncoder.matches(password , existingUser.getPassword())){
-            return jwtConfiguration.generateToken(existingUser) ;
+            return jwtConfiguration.generateToken(existingUser, remember) ;
         }
         else {
             throw new BadCredentialsException("Số điện thoại hoặc mật khẩu không đúng") ;
