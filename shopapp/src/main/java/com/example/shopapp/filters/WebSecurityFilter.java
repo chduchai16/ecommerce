@@ -92,9 +92,8 @@ public class WebSecurityFilter {
 
                         // media
                         .requestMatchers(HttpMethod.GET, apiPrefix + "/media/image/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, apiPrefix + "/media/uploads/products/**")
-                        .hasAnyRole(SELLER, ADMIN)
-
+                        .requestMatchers(HttpMethod.POST, apiPrefix + "/media/uploads/products/**").hasAnyRole(ADMIN , SELLER)
+                        .requestMatchers(HttpMethod.POST , apiPrefix + "/media/uploads/users/**").hasAnyRole(CUSTOMER)
                         // swagger
                         .requestMatchers(
                                 "/swagger-ui.html",

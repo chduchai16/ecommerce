@@ -15,6 +15,7 @@ E:\Java\ecommerce\domain\src\main\java\com\example\domain\models\entities\Role.j
 E:\Java\ecommerce\domain\src\main\java\com\example\domain\models\entities\User.java
 E:\Java\ecommerce\domain\src\main\java\com\example\domain\models\enums\CouponStatus.java
 E:\Java\ecommerce\domain\src\main\java\com\example\domain\models\enums\OrderStatus.java
+E:\Java\ecommerce\domain\src\main\java\com\example\domain\models\enums\PaymentStatus.java
 E:\Java\ecommerce\domain\src\main\java\com\example\domain\models\enums\ProductStatus.java
 E:\Java\ecommerce\domain\src\main\java\com\example\domain\models\enums\UserStatus.java
 E:\Java\ecommerce\domain\src\main\java\com\example\domain\persistence\repositories\CartItemRepository.java

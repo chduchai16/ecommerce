@@ -37,6 +37,9 @@ public class User extends BaseEntity implements UserDetails {
     @Column(name = "password", length = 100)
     private String password;
 
+    @Column(name = "avatar", columnDefinition = "NVARCHAR(500)")
+    private String avatar;
+
     @Column(name = "address", columnDefinition = "NVARCHAR(255)")
     private String address;
 
