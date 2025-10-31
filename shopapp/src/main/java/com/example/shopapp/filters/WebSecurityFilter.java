@@ -42,6 +42,7 @@ public class WebSecurityFilter {
                         .requestMatchers(HttpMethod.GET, apiPrefix + "/users/**").hasRole(ADMIN)
                         .requestMatchers(HttpMethod.POST, apiPrefix + "/users/**").hasRole(ADMIN)
                         .requestMatchers(HttpMethod.PUT, apiPrefix + "/users**").hasRole(ADMIN)
+                        .requestMatchers(HttpMethod.PUT , apiPrefix + "/users/change-password**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, apiPrefix + "/users/**").hasRole(ADMIN)
 
                         // categories (ai cũng xem được, chỉ admin quản lý)
