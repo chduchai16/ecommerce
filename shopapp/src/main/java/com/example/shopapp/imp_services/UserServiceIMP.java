@@ -118,6 +118,13 @@ public class UserServiceIMP implements IUserService {
         return userRepository.save(existingUser);
     }
 
+    @Override
+    public void changeUserPassword(User user) throws Exception {
+        String encodedPassword = passwordEncoder.encode(user.getPassword());
+        user.setPassword(encodedPassword);
+        userRepository.save(user);
+    }
+
 
     @Override
     public void deleteUser(int userId){

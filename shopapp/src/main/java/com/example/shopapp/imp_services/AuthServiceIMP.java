@@ -34,6 +34,10 @@ public class AuthServiceIMP implements IAuthService {
         Specification<User> spec = Specification.where(UserSpecification.hasPhoneNumberExact(phoneNumber));
         Optional<User> user = userRepository.findOne(spec) ;
 
+        if(remember == null) {
+            remember = false ;
+        }
+
         if(user.isEmpty()) {
             throw new BadCredentialsException("Số điện thoại hoặc mật khẩu không đúng") ;
         }

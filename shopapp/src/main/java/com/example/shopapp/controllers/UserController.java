@@ -4,6 +4,7 @@ import com.example.domain.models.entities.User;
 import com.example.domain.services.IUserService;
 import com.example.shopapp.pojos.PaginationInfo;
 import com.example.shopapp.transfer.dtos.requests.UserDTO;
+import com.example.shopapp.transfer.dtos.requests.UserPasswordDTO;
 import com.example.shopapp.transfer.dtos.responses.BaseResponse;
 import com.example.shopapp.transfer.dtos.responses.PagedResponse;
 import com.example.shopapp.transfer.dtos.responses.UserResponse;
@@ -18,6 +19,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -190,5 +192,32 @@ public class UserController {
         }
     }
 
+    @PutMapping("/change-password")
+    public ResponseEntity<?> changePassword(
+            @AuthenticationPrincipal User user,
+            @RequestBody UserPasswordDTO userPasswordDTO
+    ){
+        try {
+            userPasswordDTO.setId(user.getId());
+            User userExists = userMapper.fromPasswordRequestToEntity(userPasswordDTO) ;
+            userService.changeUserPassword(userExists);
+            BaseResponse baseResponse = new BaseResponse(200 , "Đổi mật khẩu thành công." , null);
+            return ResponseEntity.ok(baseResponse) ;
+        }
+        catch (EntityNotFoundException e) {
+            System.out.println("Lỗi đổi mật khẩu: " + e);
+            BaseResponse baseResponse = BaseResponse.buildResponse(404, e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(baseResponse);
+        }
+        catch (IllegalArgumentException e) {
+            System.out.println("Lỗi đổi mật khẩu: " + e);
+            BaseResponse baseResponse = BaseResponse.buildResponse(400, e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse);
 
+        } catch (Exception e) {
+            System.out.println("Lỗi đổi mật khẩu: " + e);
+            BaseResponse baseResponse = BaseResponse.buildResponse(500, "Lỗi máy chủ nội bộ: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
+        }
+    }
 }
