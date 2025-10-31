@@ -22,14 +22,17 @@ public class JwtConfiguration {
     private String SECRET ;
 
     // Tạo token với số điện thoại
-    public String generateToken(User user) {
+    public String generateToken(User user , Boolean remember) {
+
+        long expirationTime = remember ? 1000L * 60 * 60 * 24 * 7 : 1000L * 60 * 60 * 3 ; // 7 ngày hoặc 3 giờ
+
         Map<String, Object> claims = new HashMap<>();
         claims.put("role",user.getRole().getName()) ;
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(user.getPhoneNumber())
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7)) // Hết hạn sau 7 ngày
+                .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
                 .signWith(getSignKey(), SignatureAlgorithm.HS256)
                 .compact();
     }

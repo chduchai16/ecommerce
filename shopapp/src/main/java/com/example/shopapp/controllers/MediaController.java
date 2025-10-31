@@ -7,14 +7,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,42 +26,9 @@ public class MediaController {
             @PathVariable("name") String fileName
     ){
         try {
-            File file = new File("product_images/" + fileName);
-
-            // Kiểm tra nếu tệp không tồn tại
-            if (!file.exists()) {
-                return ResponseEntity.notFound().build();
-            }
-
-            // Lấy phần mở rộng của tệp từ tên ảnh
-            String extension = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
-
-            // Xác định Content-Type dựa trên phần mở rộng
-            String contentType;
-            switch (extension) {
-                case "jpg":
-                case "jpeg":
-                    contentType = MediaType.IMAGE_JPEG_VALUE;
-                    break;
-                case "png":
-                    contentType = MediaType.IMAGE_PNG_VALUE;
-                    break;
-                case "webp":
-                    contentType = "image/webp";
-                    break;
-                case "gif":
-                    contentType = MediaType.IMAGE_GIF_VALUE;
-                    break;
-                default:
-                    return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).build();
-            }
-
-            // Đọc dữ liệu nhị phân của ảnh
-            InputStream imageStream = new FileInputStream(file);
-            byte[] imageBytes = imageStream.readAllBytes();
-            imageStream.close();
-
-            // Trả về ảnh với Content-Type phù hợp
+            // Sử dụng FileHelper để đọc bytes và xác định content type
+            byte[] imageBytes = fileHelper.readImageBytes("product_images", fileName);
+            String contentType = fileHelper.detectImageContentType(fileName);
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_TYPE, contentType)
                     .body(imageBytes);
@@ -74,6 +36,22 @@ public class MediaController {
         catch (Exception e) {
             System.out.println("Xem ảnh thất bại: " + e.getMessage());
             BaseResponse baseResponse = BaseResponse.buildResponse(500 , "Tệp không tồn tại.") ;
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
+        }
+    }
+
+    // đọc avatar người dùng từ thư mục user_avatars
+    @GetMapping("/images/users/{name}")
+    public ResponseEntity<?> viewUserAvatar(@PathVariable("name") String fileName) {
+        try {
+            byte[] imageBytes = fileHelper.readImageBytes("user_avatars", fileName);
+            String contentType = fileHelper.detectImageContentType(fileName);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_TYPE, contentType)
+                    .body(imageBytes);
+        } catch (Exception e) {
+            System.out.println("Xem avatar thất bại: " + e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse(500, "Tệp không tồn tại.");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
@@ -97,6 +75,21 @@ public class MediaController {
             System.out.println("Lỗi tải lên ảnh sản phẩm: " + e.getMessage());
             BaseResponse baseResponse = BaseResponse.buildResponse(500 , "Lỗi máy chủ nội bộ: " +e.getMessage()) ;
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse) ;
+        }
+    }
+
+    // đăng avatar cho người dùng
+    @PostMapping("/uploads/users/{id}")
+    public ResponseEntity<?> uploadUserAvatar(@PathVariable("id") int userId,
+                                              @RequestParam("file") MultipartFile file) {
+        try {
+            String avatarUrl = fileHelper.saveUserAvatar(userId, file);
+            BaseResponse baseResponse = BaseResponse.buildResponse(200, "Tải lên avatar thành công.", avatarUrl);
+            return ResponseEntity.ok(baseResponse);
+        } catch (Exception e) {
+            System.out.println("Lỗi tải lên avatar: " + e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse(500, "Lỗi máy chủ nội bộ: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }
 }

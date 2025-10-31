@@ -37,6 +37,9 @@ public class User extends BaseEntity implements UserDetails {
     @Column(name = "password", length = 100)
     private String password;
 
+    @Column(name = "avatar", columnDefinition = "NVARCHAR(500)")
+    private String avatar;
+
     @Column(name = "address", columnDefinition = "NVARCHAR(255)")
     private String address;
 
@@ -57,7 +60,6 @@ public class User extends BaseEntity implements UserDetails {
     @Column(name = "status")
     private Integer status;
 
-    // Seller-specific fields (nullable for regular users)
     @Column(name = "shop_name", columnDefinition = "NVARCHAR(255)")
     private String shopName;
 

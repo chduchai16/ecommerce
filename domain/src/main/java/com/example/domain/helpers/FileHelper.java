@@ -3,14 +3,16 @@ package com.example.domain.helpers;
 
 import com.example.domain.models.entities.Product;
 import com.example.domain.models.entities.ProductImage;
+import com.example.domain.models.entities.User;
 import com.example.domain.persistence.repositories.ProductImageRepository;
 import com.example.domain.persistence.repositories.ProductRepository;
+import com.example.domain.persistence.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -24,7 +26,10 @@ public class FileHelper {
 
     private final ProductImageRepository productImageRepository ;
 
-    private final String uploadDir = "product_images/";
+    private final UserRepository userRepository;
+
+    private final String productDir = "product_images/";
+    private final String avatarDir = "user_avatars/";
 
     private static int MAXIMAGESPERPRODUCT = 5 ;
 
@@ -46,7 +51,7 @@ public class FileHelper {
 
         String[] imageUrls = new String[imageFiles.length];
 
-        File directory = new File(uploadDir);
+        File directory = new File(productDir);
         if (!directory.exists()) {
             directory.mkdirs();
         }
@@ -61,7 +66,7 @@ public class FileHelper {
             String fileExtension = getFileExtension(imageFiles[i].getOriginalFilename());
             String fileName = productId + "_" + UUID.randomUUID() + fileExtension;
 
-            Path filePath = Paths.get(uploadDir + fileName);
+            Path filePath = Paths.get(productDir + fileName);
             try {
                 Files.write(filePath, imageFiles[i].getBytes());
             } catch (IOException e) {
@@ -83,6 +88,70 @@ public class FileHelper {
         return imageUrls;
     }
 
+    // Lưu avatar cho user: (KHÔNG scale, lưu nguyên file upload)
+    public String saveUserAvatar(int userId, MultipartFile file) throws Exception {
+        User user = userRepository.findById(userId).orElseThrow(() -> new Exception("Người dùng không tồn tại."));
+
+        String mimeType = file.getContentType();
+        if (mimeType == null || !mimeType.startsWith("image/")) {
+            throw new Exception("Tệp không phải ảnh: " + file.getOriginalFilename());
+        }
+
+        // Tạo thư mục nếu chưa có
+        File dir = new File(avatarDir);
+        if (!dir.exists()) dir.mkdirs();
+
+        String ext = getFileExtension(file.getOriginalFilename());
+        if (ext.isEmpty()) ext = ".png";
+        String fileName = userId + "_" + UUID.randomUUID() + ext;
+        Path outPath = Paths.get(avatarDir + fileName);
+
+        try {
+            Files.write(outPath, file.getBytes());
+        } catch (IOException e) {
+            throw new Exception("Lỗi khi lưu avatar: " + fileName, e);
+        }
+
+        // Cập nhật user
+        user.setAvatar(fileName);
+        userRepository.save(user);
+
+        // Trả về tên thư mục + tên file (theo yêu cầu)
+        return "user_avatars/" + fileName;
+    }
+
+    // Đọc file ảnh từ thư mục (trả về byte[]), ném Exception nếu không tìm thấy
+    public byte[] readImageBytes(String dir, String fileName) throws Exception {
+        Path path = Paths.get(dir, fileName);
+        File file = path.toFile();
+        if (!file.exists()) {
+            throw new Exception("Tệp không tồn tại: " + path.toString());
+        }
+        try {
+            return Files.readAllBytes(path);
+        } catch (IOException e) {
+            throw new Exception("Lỗi khi đọc tệp: " + path.toString(), e);
+        }
+    }
+
+    // Xác định Content-Type dựa trên phần mở rộng của file
+    public String detectImageContentType(String fileName) throws Exception {
+        String extension = getFileExtension(fileName).replaceFirst("\\.", "").toLowerCase();
+        switch (extension) {
+            case "jpg":
+            case "jpeg":
+                return org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
+            case "png":
+                return org.springframework.http.MediaType.IMAGE_PNG_VALUE;
+            case "webp":
+                return "image/webp";
+            case "gif":
+                return org.springframework.http.MediaType.IMAGE_GIF_VALUE;
+            default:
+                throw new Exception("Unsupported media type: " + extension);
+        }
+    }
+
     private String getFileExtension(String fileName) {
         if (fileName != null && fileName.lastIndexOf(".") != -1) {
             return fileName.substring(fileName.lastIndexOf(".")).toLowerCase();
@@ -90,4 +159,4 @@ public class FileHelper {
         return "";
     }
 
-}
+ }

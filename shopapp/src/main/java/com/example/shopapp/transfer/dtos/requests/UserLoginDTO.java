@@ -17,4 +17,9 @@ public class UserLoginDTO {
 
     @NotNull(message = "Mật khẩu không được để trống")
     String password ;
+
+    Boolean remember ;
+
+    @NotNull(message = "Vai trò không được để trống")
+    Integer role ;
 }
