@@ -1,74 +1,63 @@
 version: '3.8'
 
 services:
-  # SQL Server Database
+  # =========================
+  # SQL Server
+  # =========================
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: ecommerce-sqlserver
     environment:
-      ACCEPT_EULA: "Y"
-      SA_PASSWORD: "Chuduchai@1901"
-      MSSQL_PID: "Developer"
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Chuduchai@1901
     ports:
       - "1433:1433"
     volumes:
-      - sqlserver_data:/var/opt/mssql
+      - sql_data:/var/opt/mssql
     networks:
       - ecommerce-net
     healthcheck:
-      test: /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Chuduchai@1901 -Q "SELECT 1" || exit 1
+      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'Chuduchai@1901' -Q 'SELECT 1'"]
+      interval: 10s
       retries: 10
-      start_period: 30s
+      timeout: 5s
+      start_period: 20s
 
-  # Database Initializer - Creates user and database
-  db-init:
-    image: mcr.microsoft.com/mssql/server:2022-latest
-    container_name: ecommerce-db-init
+  # =========================
+  # Init SQL Database
+  # =========================
+  sql-init:
+    image: mcr.microsoft.com/mssql-tools
     depends_on:
-      sqlserver:
-        condition: service_healthy
+      - sqlserver
+    volumes:
+      - ./init.sql:/init.sql
+    entrypoint: /bin/bash
+    command: >
+      -c "sleep 10 &&
+      /opt/mssql-tools/bin/sqlcmd -S sqlserver -U SA -P 'Chuduchai@1901' -i /init.sql"
     networks:
       - ecommerce-net
-    command: >
-      bash -c "
-      echo 'Waiting for SQL Server...' &&
-      sleep 10s &&
-      echo 'Creating database and user...' &&
-      /opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P Chuduchai@1901 -Q \"CREATE DATABASE ecommerce;\" &&
-      /opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P Chuduchai@1901 -Q \"USE ecommerce; CREATE LOGIN chuduchai1901 WITH PASSWORD = 'chuduchai1901'; CREATE USER chuduchai1901 FOR LOGIN chuduchai1901; ALTER ROLE db_owner ADD MEMBER chuduchai1901;\" &&
-      echo 'Database initialized successfully!'
-      "
-    restart: "no"
 
-  # Spring Boot Application
+  # =========================
+  # Spring Boot App
+  # =========================
   shopapp:
-    image: cdhai1901/ecommerce-api:1.0
-    container_name: ecommerce-app
+    build:
+      context: .
+      dockerfile: shopapp/Dockerfile
+    container_name: ecommerce-shopapp
+    depends_on:
+      - sqlserver
     ports:
       - "8080:8080"
     environment:
-      # Spring Boot environment variables
-      SPRING_DATASOURCE_URL: "jdbc:sqlserver://sqlserver:1433;databaseName=ecommerce;encrypt=false;trustServerCertificate=true"
-      SPRING_DATASOURCE_USERNAME: "chuduchai1901"
-      SPRING_DATASOURCE_PASSWORD: "chuduchai1901"
-      SPRING_DATASOURCE_DRIVER_CLASS_NAME: "com.microsoft.sqlserver.jdbc.SQLServerDriver"
-      SPRING_JPA_HIBERNATE_DDL_AUTO: "update"
-      SPRING_JPA_SHOW_SQL: "true"
-      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: "org.hibernate.dialect.SQLServer2012Dialect"
-      SERVER_PORT: "8080"
-    depends_on:
-      sqlserver:
-        condition: service_healthy
-      db-init:
-        condition: service_completed_successfully
+      - SPRING_PROFILES_ACTIVE=docker
     networks:
       - ecommerce-net
-    restart: unless-stopped
+
+volumes:
+  sql_data:
 
 networks:
   ecommerce-net:
-    driver: bridge
-
-volumes:
-  sqlserver_data:
-    driver: local

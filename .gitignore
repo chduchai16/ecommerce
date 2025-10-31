@@ -1,0 +1,2 @@
+# Ignore host-mounted SQL Server data directory
+/data/sqlserver/
