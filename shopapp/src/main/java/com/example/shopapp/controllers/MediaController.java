@@ -2,12 +2,14 @@ package com.example.shopapp.controllers;
 
 
 import com.example.domain.helpers.FileHelper;
+import com.example.domain.models.entities.User;
 import com.example.shopapp.transfer.dtos.responses.BaseResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -79,10 +81,13 @@ public class MediaController {
     }
 
     // đăng avatar cho người dùng
-    @PostMapping("/uploads/users/{id}")
-    public ResponseEntity<?> uploadUserAvatar(@PathVariable("id") int userId,
-                                              @RequestParam("file") MultipartFile file) {
+    @PostMapping("/uploads/users")
+    public ResponseEntity<?> uploadUserAvatar(
+            @AuthenticationPrincipal User user,
+            @RequestParam("file") MultipartFile file
+    ){
         try {
+            int userId = user.getId();
             String avatarUrl = fileHelper.saveUserAvatar(userId, file);
             BaseResponse baseResponse = BaseResponse.buildResponse(200, "Tải lên avatar thành công.", avatarUrl);
             return ResponseEntity.ok(baseResponse);

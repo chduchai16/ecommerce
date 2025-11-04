@@ -28,15 +28,6 @@ public class UserDTO {
 
     private String email;
 
-    @NotNull(message = "Mật khẩu không được để trống")
-    @NotBlank(message = "Mật khẩu không được để trống")
-    private String password;
-
-    @JsonProperty("retype_password")
-    @NotNull(message = "Xác nhận mật khẩu không được để trống")
-    @NotBlank(message = "Xác nhận mật khẩu không được để trống")
-    private String retypePassword;
-
     private String address;
 
     @JsonProperty("date_of_birth")
@@ -52,7 +43,6 @@ public class UserDTO {
     @JsonProperty("is_active")
     private int isActive;
 
-    // Seller-specific fields (optional, only for seller registration)
     @JsonProperty("shop_name")
     private String shopName;
 

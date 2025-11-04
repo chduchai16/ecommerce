@@ -88,7 +88,6 @@ public class FileHelper {
         return imageUrls;
     }
 
-    // Lưu avatar cho user: (KHÔNG scale, lưu nguyên file upload)
     public String saveUserAvatar(int userId, MultipartFile file) throws Exception {
         User user = userRepository.findById(userId).orElseThrow(() -> new Exception("Người dùng không tồn tại."));
 
@@ -116,8 +115,7 @@ public class FileHelper {
         user.setAvatar(fileName);
         userRepository.save(user);
 
-        // Trả về tên thư mục + tên file (theo yêu cầu)
-        return "user_avatars/" + fileName;
+        return fileName;
     }
 
     // Đọc file ảnh từ thư mục (trả về byte[]), ném Exception nếu không tìm thấy

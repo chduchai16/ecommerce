@@ -38,6 +38,9 @@ public class UserResponse {
     @JsonProperty("role_name")
     private String roleName ;
 
+    @JsonProperty("role_id")
+    private int roleId ;
+
     // Seller-specific fields (for users with seller role)
     @JsonProperty("shop_name")
     private String shopName;

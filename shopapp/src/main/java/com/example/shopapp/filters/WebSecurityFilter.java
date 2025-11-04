@@ -41,7 +41,7 @@ public class WebSecurityFilter {
                         .requestMatchers(HttpMethod.GET, apiPrefix + "/users/me").authenticated()
                         .requestMatchers(HttpMethod.GET, apiPrefix + "/users/**").hasRole(ADMIN)
                         .requestMatchers(HttpMethod.POST, apiPrefix + "/users/**").hasRole(ADMIN)
-                        .requestMatchers(HttpMethod.PUT, apiPrefix + "/users**").hasRole(ADMIN)
+                        .requestMatchers(HttpMethod.PUT, apiPrefix + "/users**").authenticated()
                         .requestMatchers(HttpMethod.PUT , apiPrefix + "/users/change-password**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, apiPrefix + "/users/**").hasRole(ADMIN)
 
@@ -92,9 +92,10 @@ public class WebSecurityFilter {
                         .requestMatchers(apiPrefix + "/roles/**").hasRole(ADMIN)
 
                         // media
-                        .requestMatchers(HttpMethod.GET, apiPrefix + "/media/image/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, apiPrefix + "/media/images/**").permitAll()
+                        .requestMatchers(HttpMethod.GET , apiPrefix + "/media/images/users/**").authenticated()
                         .requestMatchers(HttpMethod.POST, apiPrefix + "/media/uploads/products/**").hasAnyRole(ADMIN , SELLER)
-                        .requestMatchers(HttpMethod.POST , apiPrefix + "/media/uploads/users/**").hasAnyRole(CUSTOMER)
+                        .requestMatchers(HttpMethod.POST , apiPrefix + "/media/uploads/users**").authenticated()
                         // swagger
                         .requestMatchers(
                                 "/swagger-ui.html",

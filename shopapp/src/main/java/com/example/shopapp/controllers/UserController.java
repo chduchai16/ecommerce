@@ -137,7 +137,7 @@ public class UserController {
                 BaseResponse baseResponse = BaseResponse.buildResponse(400, "Dữ liệu không hợp lệ.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse);
             }
-            User user = userService.createUser(userMapper.fromRequestToEntity(userDTO , true));
+            User user = userService.createUser(userMapper.fromRequestToEntity(userDTO));
             UserResponse userResponse = userMapper.fromEntityToResponse(user);
             BaseResponse baseResponse = BaseResponse.buildResponse(200, "Tạo người dùng thành công.",userResponse);
             return ResponseEntity.ok(baseResponse);
@@ -170,7 +170,7 @@ public class UserController {
                 BaseResponse baseResponse = BaseResponse.buildResponse(400, "Dữ liệu không hợp lệ.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse);
             }
-            User user = userService.updateUser(userMapper.fromRequestToEntity(userDTO ,false)) ;
+            User user = userService.updateUser(userMapper.fromRequestToEntity(userDTO)) ;
             UserResponse userResponse = userMapper.fromEntityToResponse(user);
             BaseResponse baseResponse = new BaseResponse(200 , "Cập nhật thành công." , userResponse);
             return ResponseEntity.ok(baseResponse) ;

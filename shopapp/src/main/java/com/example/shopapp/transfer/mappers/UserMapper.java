@@ -28,7 +28,7 @@ public class UserMapper {
     private TypeMap<User, UserResponse> fromEntityToResponseTypeMap;
     private TypeMap<UserPasswordDTO , User> fromPasswordRequestToEntityTypeMap;
 
-    public User fromRequestToEntity(UserDTO userDTO, boolean includePassword) throws Exception {
+    public User fromRequestToEntity(UserDTO userDTO) throws Exception {
         if (userDTO == null) return null;
 
         if(this.fromRequestToEntityTypeMap == null) {
@@ -37,26 +37,14 @@ public class UserMapper {
             this.fromRequestToEntityTypeMap.addMappings(mapper -> {
                 mapper.skip(User::setRole);
                 mapper.skip(User::setCart);
-                if (!includePassword) {
-                    mapper.skip(User::setPassword);
-                }
+                mapper.skip(User::setPassword);
             });
             this.fromRequestToEntityTypeMap.implicitMappings();
         }
-
-        if (includePassword) {
-            if (!userDTO.getPassword().equals(userDTO.getRetypePassword())) {
-                throw new Exception("Mật khẩu nhập lại không khớp");
-            }
-        }
-
         User user = this.fromRequestToEntityTypeMap.map(userDTO) ;
-        Role role = roleRepository.findById(userDTO.getRoleId())
-                .orElseThrow(() -> new EntityNotFoundException("Vai trò không tồn tại"));
-        user.setRole(role);
-        if (includePassword) {
-            user.setPassword(userDTO.getPassword());
-        }
+       Role role = roleRepository.findById(userDTO.getRoleId())
+               .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy vai trò với ID: " + userDTO.getRoleId()));
+       user.setRole(role);
         return user;
     }
 
@@ -78,6 +66,7 @@ public class UserMapper {
         // map role
         if (user.getRole() != null) {
             userResponse.setRoleName(user.getRole().getName());
+            userResponse.setRoleId(user.getRole().getId());
         }
 
         // map cart id
