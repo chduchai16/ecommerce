@@ -106,11 +106,12 @@ public class OrderController {
     // lấy danh sách phân trang order của user theo id
     @GetMapping("/user")
     public ResponseEntity<?> getOrdersOfUser (
-            @RequestParam("id") int userId,
+            @AuthenticationPrincipal User user ,
             @RequestParam(value = "page" , defaultValue = "0") int page ,
             @RequestParam(value = "limit" , defaultValue = "5") int limit
     ){
         try {
+            int userId = user.getId() ;
             PageRequest pageRequest = PageRequest.of(page, limit, Sort.by(Sort.Direction.DESC, "createdAt"));
             Page<Order> orders = orderService.getOrdersByUserId(userId, pageRequest) ;
             List<OrderResponse> orderResponses = orders.getContent()

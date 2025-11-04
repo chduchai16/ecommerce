@@ -59,8 +59,10 @@ public class OrderDetailMapper {
             fromEntityToResponseTypeMap = modelMapper.createTypeMap(OrderDetail.class , OrderDetailResponse.class);
             fromEntityToResponseTypeMap.getMappings().clear();
             fromEntityToResponseTypeMap.addMappings(mapper -> {
-                mapper.skip(OrderDetailResponse :: setProductResponse);
+                mapper.skip(OrderDetailResponse :: setProductImage);
+                mapper.skip(OrderDetailResponse :: setProductName);
                 mapper.skip(OrderDetailResponse :: setOrderId);
+                mapper.skip(OrderDetailResponse :: setPrice);
             });
             fromEntityToResponseTypeMap.implicitMappings();
         }
@@ -68,14 +70,15 @@ public class OrderDetailMapper {
         OrderDetailResponse orderDetailResponse = fromEntityToResponseTypeMap.map(orderDetail);
         // map product response
         if(orderDetail.getProduct() != null) {
-            orderDetailResponse.setProductResponse(productMapper.fromEntityToResponse(orderDetail.getProduct()));
+            orderDetailResponse.setProductName(orderDetail.getProduct().getName());
+            orderDetailResponse.setProductImage(orderDetail.getProduct().getThumbnail());
+            orderDetailResponse.setPrice(orderDetail.getProduct().getPrice());
         }
 
         // map order id
         if(orderDetail.getOrder() != null) {
             orderDetailResponse.setOrderId(orderDetail.getOrder().getId());
         }
-
         return orderDetailResponse ;
     }
 }

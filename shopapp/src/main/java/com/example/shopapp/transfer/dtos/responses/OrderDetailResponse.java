@@ -17,8 +17,13 @@ public class OrderDetailResponse {
     @JsonProperty("order_id")
     private int orderId ;
 
-    @JsonProperty("product")
-    private ProductResponse productResponse ;
+    @JsonProperty("product_name")
+    private String productName ;
+
+    private Float price ;
+
+    @JsonProperty("product_image")
+    private String productImage;
 
     private int quantity ;
 
