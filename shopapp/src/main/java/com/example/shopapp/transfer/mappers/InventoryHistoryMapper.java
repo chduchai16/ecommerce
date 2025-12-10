@@ -1,6 +1,6 @@
 package com.example.shopapp.transfer.mappers;
 
-import com.example.domain.models.entities.InventoryHistory;
+import com.example.shopapp.models.entities.InventoryHistory;
 import com.example.shopapp.transfer.dtos.responses.InventoryHistoryResponse;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;

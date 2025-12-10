@@ -1,8 +1,8 @@
 package com.example.shopapp.transfer.mappers;
 
-import com.example.domain.models.entities.Product;
-import com.example.domain.models.entities.ProductSpecification;
-import com.example.domain.persistence.repositories.ProductRepository;
+import com.example.shopapp.models.entities.Product;
+import com.example.shopapp.models.entities.ProductSpecification;
+import com.example.shopapp.repositories.ProductRepository;
 import com.example.shopapp.transfer.dtos.requests.ProductSpecificationDTO;
 import com.example.shopapp.transfer.dtos.responses.ProductSpecificationResponse;
 import jakarta.persistence.EntityNotFoundException;

@@ -1,10 +1,10 @@
 package com.example.shopapp.transfer.mappers;
 
-import com.example.domain.models.entities.Product;
-import com.example.domain.models.entities.Rating;
-import com.example.domain.models.entities.User;
-import com.example.domain.persistence.repositories.ProductRepository;
-import com.example.domain.persistence.repositories.UserRepository;
+import com.example.shopapp.models.entities.Product;
+import com.example.shopapp.models.entities.Rating;
+import com.example.shopapp.models.entities.User;
+import com.example.shopapp.repositories.ProductRepository;
+import com.example.shopapp.repositories.UserRepository;
 import com.example.shopapp.transfer.dtos.requests.RatingDTO;
 import com.example.shopapp.transfer.dtos.responses.RatingResponse;
 import jakarta.persistence.EntityNotFoundException;

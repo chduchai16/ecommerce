@@ -1,10 +1,10 @@
 package com.example.shopapp.transfer.mappers;
 
-import com.example.domain.models.entities.*;
-import com.example.domain.persistence.repositories.CartItemRepository;
-import com.example.domain.persistence.repositories.CategoryRepository;
-import com.example.domain.persistence.repositories.ProductImageRepository;
-import com.example.domain.persistence.repositories.UserRepository;
+import com.example.shopapp.models.entities.*;
+import com.example.shopapp.repositories.CartItemRepository;
+import com.example.shopapp.repositories.CategoryRepository;
+import com.example.shopapp.repositories.ProductImageRepository;
+import com.example.shopapp.repositories.UserRepository;
 import com.example.shopapp.transfer.dtos.requests.ProductDTO;
 import com.example.shopapp.transfer.dtos.responses.ProductImageResponse;
 import com.example.shopapp.transfer.dtos.responses.ProductResponse;

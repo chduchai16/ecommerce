@@ -1,6 +1,6 @@
 package com.example.shopapp.configurations;
 
-import com.example.domain.models.entities.User;
+import com.example.shopapp.models.entities.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

@@ -1,6 +1,6 @@
 package com.example.shopapp.transfer.mappers;
 
-import com.example.domain.models.entities.Category;
+import com.example.shopapp.models.entities.Category;
 import com.example.shopapp.transfer.dtos.requests.CategoryDTO;
 import com.example.shopapp.transfer.dtos.responses.CategoryResponse;
 import lombok.RequiredArgsConstructor;

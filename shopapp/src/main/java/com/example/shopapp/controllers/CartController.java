@@ -1,10 +1,10 @@
 package com.example.shopapp.controllers;
 
-import com.example.domain.models.entities.Cart;
-import com.example.domain.models.entities.CartItem;
-import com.example.domain.models.entities.User;
-import com.example.domain.services.ICartItemService;
-import com.example.domain.services.ICartService;
+import com.example.shopapp.models.entities.Cart;
+import com.example.shopapp.models.entities.CartItem;
+import com.example.shopapp.models.entities.User;
+import com.example.shopapp.services.ICartItemService;
+import com.example.shopapp.services.ICartService;
 import com.example.shopapp.transfer.dtos.requests.CartDTO;
 import com.example.shopapp.transfer.dtos.requests.CartItemDTO;
 import com.example.shopapp.transfer.dtos.responses.BaseResponse;
