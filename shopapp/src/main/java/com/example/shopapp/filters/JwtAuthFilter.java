@@ -1,8 +1,8 @@
 package com.example.shopapp.filters;
 
 import com.example.shopapp.configurations.JwtConfiguration;
-import com.example.domain.models.entities.User;
-import com.example.domain.services.IUserService;
+import com.example.shopapp.models.entities.User;
+import com.example.shopapp.services.IUserService;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

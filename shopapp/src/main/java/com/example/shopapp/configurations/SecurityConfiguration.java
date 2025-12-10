@@ -1,8 +1,7 @@
 package com.example.shopapp.configurations;
 
-import com.example.domain.persistence.repositories.UserRepository;
-import com.example.domain.persistence.specifications.UserSpecification;
-import com.example.domain.services.IUserService;
+import com.example.shopapp.repositories.UserRepository;
+import com.example.shopapp.specifications.UserSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,12 +28,12 @@ public class SecurityConfiguration {
     public UserDetailsService userDetailsService() {
         return phoneNumber -> {
             try {
-                Specification<com.example.domain.models.entities.User> spec = Specification.where(UserSpecification.hasPhoneNumberExact(phoneNumber));
-                Optional<com.example.domain.models.entities.User> userOptional = userRepository.findOne(spec);
+                Specification<com.example.shopapp.models.entities.User> spec = Specification.where(UserSpecification.hasPhoneNumberExact(phoneNumber));
+                Optional<com.example.shopapp.models.entities.User> userOptional = userRepository.findOne(spec);
                 if (userOptional.isEmpty()) {
                     throw new RuntimeException("Người dùng không tồn tại");
                 }
-                com.example.domain.models.entities.User user = userOptional.get();
+                com.example.shopapp.models.entities.User user = userOptional.get();
                 return User.withUsername(user.getPhoneNumber())
                         .password(user.getPassword())
                         .roles(user.getRole().getName()) // Role phải đúng định dạng ROLE_USER hoặc ROLE_ADMIN

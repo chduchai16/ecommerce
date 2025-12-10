@@ -1,8 +1,8 @@
 package com.example.shopapp.controllers;
 
-import com.example.domain.models.entities.Order;
-import com.example.domain.models.entities.User;
-import com.example.domain.services.IOrderService;
+import com.example.shopapp.models.entities.Order;
+import com.example.shopapp.models.entities.User;
+import com.example.shopapp.services.IOrderService;
 import com.example.shopapp.pojos.PaginationInfo;
 import com.example.shopapp.transfer.dtos.requests.OrderDTO;
 import com.example.shopapp.transfer.dtos.responses.BaseResponse;

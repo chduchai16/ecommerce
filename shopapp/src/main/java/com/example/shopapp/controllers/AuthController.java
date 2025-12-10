@@ -1,7 +1,7 @@
 package com.example.shopapp.controllers;
 
-import com.example.domain.models.entities.User;
-import com.example.domain.services.IAuthService;
+import com.example.shopapp.models.entities.User;
+import com.example.shopapp.services.IAuthService;
 import com.example.shopapp.transfer.dtos.requests.UserDTO;
 import com.example.shopapp.transfer.dtos.requests.UserLoginDTO;
 import com.example.shopapp.transfer.dtos.responses.BaseResponse;

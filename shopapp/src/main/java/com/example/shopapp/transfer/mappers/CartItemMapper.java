@@ -1,10 +1,10 @@
 package com.example.shopapp.transfer.mappers;
 
-import com.example.domain.models.entities.Cart;
-import com.example.domain.models.entities.CartItem;
-import com.example.domain.models.entities.Product;
-import com.example.domain.persistence.repositories.CartRepository;
-import com.example.domain.persistence.repositories.ProductRepository;
+import com.example.shopapp.models.entities.Cart;
+import com.example.shopapp.models.entities.CartItem;
+import com.example.shopapp.models.entities.Product;
+import com.example.shopapp.repositories.CartRepository;
+import com.example.shopapp.repositories.ProductRepository;
 import com.example.shopapp.transfer.dtos.requests.CartItemDTO;
 import com.example.shopapp.transfer.dtos.responses.CartItemResponse;
 import com.example.shopapp.transfer.dtos.responses.ProductResponse;

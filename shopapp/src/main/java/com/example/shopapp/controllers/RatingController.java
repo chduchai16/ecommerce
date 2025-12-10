@@ -1,8 +1,8 @@
 package com.example.shopapp.controllers;
 
-import com.example.domain.models.entities.Rating;
-import com.example.domain.services.IProductService;
-import com.example.domain.services.IRatingService;
+import com.example.shopapp.models.entities.Rating;
+import com.example.shopapp.services.IProductService;
+import com.example.shopapp.services.IRatingService;
 import com.example.shopapp.pojos.PaginationInfo;
 import com.example.shopapp.transfer.dtos.requests.RatingDTO;
 import com.example.shopapp.transfer.dtos.responses.BaseResponse;

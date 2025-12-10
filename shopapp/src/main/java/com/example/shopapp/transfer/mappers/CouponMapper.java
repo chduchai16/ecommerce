@@ -1,6 +1,6 @@
 package com.example.shopapp.transfer.mappers;
 
-import com.example.domain.models.entities.Coupon;
+import com.example.shopapp.models.entities.Coupon;
 import com.example.shopapp.transfer.dtos.requests.CouponDTO;
 import com.example.shopapp.transfer.dtos.responses.CouponResponse;
 import lombok.RequiredArgsConstructor;
