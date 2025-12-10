@@ -303,27 +303,4 @@ public class InventoryController {
         }
     }
 
-    /**
-     * Lấy doanh thu của seller
-     */
-    @GetMapping("/seller/revenue")
-    public ResponseEntity<?> getSellerRevenue(
-            @AuthenticationPrincipal User currentUser
-    ) {
-        try {
-            if (currentUser == null) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body(BaseResponse.buildResponse(401, "Lỗi", "Vui lòng đăng nhập"));
-            }
-
-            Integer sellerId = currentUser.getId();
-            var revenue = inventoryService.getSellerRevenue(sellerId);
-
-            return ResponseEntity.ok(BaseResponse.buildResponse(200, "Thành công", revenue));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(BaseResponse.buildResponse(500, "Lỗi", e.getMessage()));
 }
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-
-                    .body(BaseResponse.buildResponse(500, "Lỗi", e.getMessage()));

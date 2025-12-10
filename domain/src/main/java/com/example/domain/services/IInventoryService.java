@@ -58,3 +58,5 @@ public interface IInventoryService {
 
     Boolean isWarningStock(Integer productId) throws Exception;
 
+}
+
