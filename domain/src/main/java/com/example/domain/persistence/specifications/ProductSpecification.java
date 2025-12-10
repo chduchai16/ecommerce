@@ -134,5 +134,11 @@ public class ProductSpecification {
             return cb.equal(root.get("status") , status) ;
         } ;
     }
+
+    // user id 
+    public static Specification<Product> hasSellerId(Integer sellerId) {
+        return (root, query, criteriaBuilder) ->
+                criteriaBuilder.equal(root.get("seller").get("id"), sellerId);
+    }
 }
 

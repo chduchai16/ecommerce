@@ -61,6 +61,7 @@ public class OrderDetailMapper {
             fromEntityToResponseTypeMap.addMappings(mapper -> {
                 mapper.skip(OrderDetailResponse :: setProductImage);
                 mapper.skip(OrderDetailResponse :: setProductName);
+                mapper.skip(OrderDetailResponse :: setProductId);
                 mapper.skip(OrderDetailResponse :: setOrderId);
                 mapper.skip(OrderDetailResponse :: setPrice);
             });
@@ -72,6 +73,7 @@ public class OrderDetailMapper {
         if(orderDetail.getProduct() != null) {
             orderDetailResponse.setProductName(orderDetail.getProduct().getName());
             orderDetailResponse.setProductImage(orderDetail.getProduct().getThumbnail());
+            orderDetailResponse.setProductId(orderDetail.getProduct().getId());
             orderDetailResponse.setPrice(orderDetail.getProduct().getPrice());
         }
 

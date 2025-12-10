@@ -69,6 +69,11 @@ public class AuthServiceIMP implements IAuthService {
         if(optionalUser.isPresent()) {
             throw new DataIntegrityViolationException("Số điện thoại này đã tồn tại.") ;
         }
+
+        if(user.getPassword() == null || user.getPassword().isEmpty()) {
+            throw new BadCredentialsException("Mật khẩu không được để trống") ;
+        }
+
         String encodedPassword = passwordEncoder.encode(user.getPassword()) ;
         user.setPassword(encodedPassword);
         Specification<Role> roleSpec = Specification.where(RoleSpecification.hasId(user.getRole().getId()));

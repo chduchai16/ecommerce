@@ -51,19 +51,21 @@ public class WebSecurityFilter {
                         .requestMatchers(HttpMethod.PUT, apiPrefix + "/categories**").hasRole(ADMIN)
                         .requestMatchers(HttpMethod.DELETE, apiPrefix + "/categories/**").hasRole(ADMIN)
 
-                        // products
-                        .requestMatchers(HttpMethod.GET, apiPrefix + "/products**").permitAll()
-                        .requestMatchers(HttpMethod.GET, apiPrefix + "/products/**").permitAll()
-                        .requestMatchers(HttpMethod.POST , apiPrefix + "/products/batch**").permitAll()
-
-                        // seller được quản lý sản phẩm của họ, admin thì toàn quyền
+                        // products - seller routes
+                        .requestMatchers(HttpMethod.GET , apiPrefix + "/products/seller/my-products**").permitAll()
                         .requestMatchers(HttpMethod.POST, apiPrefix + "/products**").hasAnyRole(SELLER, ADMIN)
                         .requestMatchers(HttpMethod.POST, apiPrefix + "/products/many").hasAnyRole(SELLER, ADMIN)
                         .requestMatchers(HttpMethod.PUT, apiPrefix + "/products**").hasAnyRole(SELLER, ADMIN)
                         .requestMatchers(HttpMethod.DELETE, apiPrefix + "/products/**").hasAnyRole(SELLER, ADMIN)
 
+                        // products - public routes
+                        .requestMatchers(HttpMethod.GET, apiPrefix + "/products**").permitAll()
+                        .requestMatchers(HttpMethod.GET, apiPrefix + "/products/**").permitAll()
+                        .requestMatchers(HttpMethod.POST , apiPrefix + "/products/batch**").permitAll()
+
                         // orders
                         .requestMatchers(HttpMethod.GET, apiPrefix + "/orders/user**").hasRole(CUSTOMER) // customer xem
+                        .requestMatchers(HttpMethod.GET, apiPrefix + "/seller/my-orders**").hasAnyRole(SELLER) // seller
                         .requestMatchers(HttpMethod.POST, apiPrefix + "/orders**").hasRole(CUSTOMER) // customer
                         .requestMatchers(HttpMethod.PUT, apiPrefix + "/orders**").hasAnyRole(CUSTOMER, SELLER, ADMIN)
                         .requestMatchers(HttpMethod.GET, apiPrefix + "/orders/seller**").hasRole(SELLER) // seller xem
@@ -87,6 +89,17 @@ public class WebSecurityFilter {
                         .requestMatchers(HttpMethod.POST, apiPrefix + "/coupons**").hasRole(ADMIN)
                         .requestMatchers(HttpMethod.PUT, apiPrefix + "/coupons**").hasRole(ADMIN)
                         .requestMatchers(HttpMethod.DELETE, apiPrefix + "/coupons/**").hasRole(ADMIN)
+
+                        // inventory management
+                        .requestMatchers(HttpMethod.GET, apiPrefix + "/inventory/seller/my-products**").hasRole(SELLER)
+                        .requestMatchers(HttpMethod.GET, apiPrefix + "/inventory/seller/stats**").hasRole(SELLER)
+                        .requestMatchers(HttpMethod.GET, apiPrefix + "/inventory/seller/history**").hasRole(SELLER)
+                        .requestMatchers(HttpMethod.GET, apiPrefix + "/inventory/seller/import-history**").hasRole(SELLER)
+                        .requestMatchers(HttpMethod.POST, apiPrefix + "/inventory/import**").hasRole(SELLER)
+                        .requestMatchers(HttpMethod.POST, apiPrefix + "/inventory/export**").hasRole(SELLER)
+                        .requestMatchers(HttpMethod.PUT, apiPrefix + "/inventory/adjust**").hasRole(SELLER)
+                        .requestMatchers(HttpMethod.GET, apiPrefix + "/inventory/product/*/history**").permitAll()
+                        .requestMatchers(HttpMethod.GET, apiPrefix + "/inventory/warning/**").authenticated()
 
                         // roles (chỉ admin)
                         .requestMatchers(apiPrefix + "/roles/**").hasRole(ADMIN)

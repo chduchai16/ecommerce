@@ -4,6 +4,7 @@ import com.example.domain.models.entities.OrderDetail;
 import org.springframework.data.jpa.domain.Specification;
 
 public class OrderDetailSpecification {
+
     public static Specification<OrderDetail> hasOrderId(Integer orderId) {
         return (root, query, criteriaBuilder) -> {
             if (orderId == null) {
@@ -23,4 +24,12 @@ public class OrderDetailSpecification {
     }
 
 
+    public static Specification<OrderDetail> hasProductId(Integer productId) {
+        return (root, query, criteriaBuilder) -> {
+            if (productId == null) {
+                return criteriaBuilder.conjunction();
+            }
+            return criteriaBuilder.equal(root.get("product").get("id"), productId);
+        };
+    }
 }

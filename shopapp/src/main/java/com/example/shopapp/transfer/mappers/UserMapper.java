@@ -37,7 +37,6 @@ public class UserMapper {
             this.fromRequestToEntityTypeMap.addMappings(mapper -> {
                 mapper.skip(User::setRole);
                 mapper.skip(User::setCart);
-                mapper.skip(User::setPassword);
             });
             this.fromRequestToEntityTypeMap.implicitMappings();
         }
@@ -45,6 +44,7 @@ public class UserMapper {
        Role role = roleRepository.findById(userDTO.getRoleId())
                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy vai trò với ID: " + userDTO.getRoleId()));
        user.setRole(role);
+       user.setPassword(userDTO.getPassword());
         return user;
     }
 

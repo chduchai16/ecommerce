@@ -58,4 +58,8 @@ public class UserDTO {
     @JsonProperty("tax_code")
     private String taxCode;
 
+    private String password ;
+    @JsonProperty("retype_password")
+    private String retypePassword ;
+
 }

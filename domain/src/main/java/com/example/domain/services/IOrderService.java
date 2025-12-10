@@ -2,6 +2,7 @@ package com.example.domain.services;
 
 import com.example.domain.models.entities.Order;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 public interface IOrderService {
@@ -11,4 +12,11 @@ public interface IOrderService {
     Order updateOrder(Order order) throws Exception;
     void deleteOrder(int orderId) throws Exception;
     Page<Order> getOrdersByUserId(int userId , Pageable pageable) ;
+    Page<Order> filterOrdersBySeller(Integer sellerId,
+                                     Float minTotalAmount,
+                                     Float maxTotalAmount,
+                                     Integer status,
+                                     String shippingAddress,
+                                     String customerName,
+                                     PageRequest pageRequest);
 }

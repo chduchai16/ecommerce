@@ -27,6 +27,7 @@ public interface IProductService {
             String description,
             Long minViews,
             Integer status ,
+            Integer sellerId,
             Pageable pageable
     );
 }

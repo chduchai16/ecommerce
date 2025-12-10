@@ -1,6 +1,7 @@
 package com.example.domain.persistence.specifications;
 
 import com.example.domain.models.entities.Order;
+import jakarta.persistence.criteria.JoinType;
 import org.springframework.data.jpa.domain.Specification;
 
 public class OrderSpecification {
@@ -67,6 +68,15 @@ public class OrderSpecification {
                 return criteriaBuilder.conjunction();
             }
             return criteriaBuilder.like(criteriaBuilder.lower(root.get("customerName")), "%" + customerName.toLowerCase() + "%");
+        };
+    }
+
+    public static Specification<Order> hasSellerId(Integer sellerId) {
+        return (root, query, criteriaBuilder) -> {
+            // Join từ Order -> OrderDetail -> Product -> seller_id
+            var orderDetailJoin = root.join("orderDetails", JoinType.INNER);
+            var productJoin = orderDetailJoin.join("product", JoinType.INNER);
+            return criteriaBuilder.equal(productJoin.get("seller").get("id"), sellerId);
         };
     }
 

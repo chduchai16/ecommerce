@@ -60,6 +60,7 @@ public class ProductServiceIMP implements IProductService {
             String description,
             Long minViews,
             Integer status ,
+            Integer sellerId,
             Pageable pageable
     ) {
         Specification<Product> spec = Specification.where(ProductSpecification.hasName(name))
@@ -71,7 +72,8 @@ public class ProductServiceIMP implements IProductService {
                 .and(ProductSpecification.hasAverageRatingGreaterThan(minRating))
                 .and(ProductSpecification.hasDescription(description))
                 .and(ProductSpecification.hasMoreViewsThan(minViews))
-                .and(ProductSpecification.hasStatus(status));
+                .and(ProductSpecification.hasStatus(status))
+                .and(ProductSpecification.hasSellerId(sellerId)) ;
         return productRepository.findAll(spec, pageable);
     }
 

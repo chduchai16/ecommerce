@@ -114,6 +114,6 @@ public class User extends BaseEntity implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return status != null && status == 0;
+        return true;
     }
 }

@@ -12,6 +12,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -100,5 +101,40 @@ public class OrderServiceIMP implements IOrderService {
             throw new EntityNotFoundException("Không tìm thấy đơn hàng này");
         }
         orderRepository.deleteById(orderId);
+    }
+
+    public Page<Order> filterOrdersBySeller(
+            Integer sellerId,
+            Float minTotalAmount,
+            Float maxTotalAmount,
+            Integer status,
+            String shippingAddress,
+            String customerName,
+            PageRequest pageRequest
+    ) {
+        // Lấy tất cả Order, sau đó filter trong memory
+        // HOẶC dùng @Query custom để filter trong database
+
+        Specification<Order> spec = Specification.where(
+                OrderSpecification.hasSellerId(sellerId)
+        );
+
+        if (minTotalAmount != null) {
+            spec = spec.and(OrderSpecification.minTotalAmount(minTotalAmount));
+        }
+        if (maxTotalAmount != null) {
+            spec = spec.and(OrderSpecification.maxTotalAmount(maxTotalAmount));
+        }
+        if (status != null) {
+            spec = spec.and(OrderSpecification.hasStatus(status));
+        }
+        if (shippingAddress != null && !shippingAddress.isEmpty()) {
+            spec = spec.and(OrderSpecification.hasShippingAddress(shippingAddress));
+        }
+        if (customerName != null && !customerName.isEmpty()) {
+            spec = spec.and(OrderSpecification.hasCustomerName(customerName));
+        }
+
+        return orderRepository.findAll(spec, pageRequest);
     }
 }
