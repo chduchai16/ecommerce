@@ -1,7 +1,7 @@
 package com.example.shopapp.controllers;
 
-import com.example.domain.models.entities.Coupon;
-import com.example.domain.services.ICouponService;
+import com.example.shopapp.models.entities.Coupon;
+import com.example.shopapp.services.ICouponService;
 import com.example.shopapp.pojos.PaginationInfo;
 import com.example.shopapp.transfer.dtos.requests.CouponDTO;
 import com.example.shopapp.transfer.dtos.responses.BaseResponse;

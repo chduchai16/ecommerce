@@ -62,4 +62,7 @@ public class ProductDTO {
 
     private Long views;
 
+
+    private int status;
+
 }

@@ -1,10 +1,10 @@
 package com.example.shopapp.transfer.mappers;
 
-import com.example.domain.models.entities.Order;
-import com.example.domain.models.entities.OrderDetail;
-import com.example.domain.models.entities.User;
-import com.example.domain.persistence.repositories.OrderDetailRepository;
-import com.example.domain.persistence.repositories.UserRepository;
+import com.example.shopapp.models.entities.Order;
+import com.example.shopapp.models.entities.OrderDetail;
+import com.example.shopapp.models.entities.User;
+import com.example.shopapp.repositories.OrderDetailRepository;
+import com.example.shopapp.repositories.UserRepository;
 import com.example.shopapp.transfer.dtos.requests.OrderDTO;
 import com.example.shopapp.transfer.dtos.responses.OrderDetailResponse;
 import com.example.shopapp.transfer.dtos.responses.OrderResponse;

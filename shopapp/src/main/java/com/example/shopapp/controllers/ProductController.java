@@ -1,7 +1,8 @@
 package com.example.shopapp.controllers;
 
-import com.example.domain.models.entities.Product;
-import com.example.domain.services.IProductService;
+import com.example.shopapp.models.entities.Product;
+import com.example.shopapp.models.entities.User;
+import com.example.shopapp.services.IProductService;
 import com.example.shopapp.pojos.PaginationInfo;
 import com.example.shopapp.transfer.dtos.requests.ProductDTO;
 import com.example.shopapp.transfer.dtos.responses.BaseResponse;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
@@ -47,7 +49,8 @@ public class ProductController {
             @RequestParam(required = false , value = "min_rating") Float minRating,
             @RequestParam(required = false) String description,
             @RequestParam(required = false, value ="min_views") Long minViews,
-            @RequestParam(required = false) Integer status
+            @RequestParam(required = false) Integer status ,
+            @RequestParam(required = false , value = "seller_id") Integer sellerId
     ) {
         try {
             PageRequest pageRequest = PageRequest.of(page, limit, Sort.by("createdAt").descending());
@@ -65,6 +68,7 @@ public class ProductController {
                     description,
                     minViews,
                     status ,
+                    sellerId,
                     pageRequest
             );
             // Xáo trộn danh sách sản phẩm
@@ -73,6 +77,57 @@ public class ProductController {
 
             // Mapping sang response
             List<ProductResponse> productResponses = result.stream()
+                    .map(productMapper::fromEntityToResponse)
+                    .toList();
+
+            PaginationInfo paginationInfo = new PaginationInfo(
+                    products.getNumber(),
+                    products.getSize(),
+                    products.getTotalPages(),
+                    products.getTotalElements()
+            );
+
+            PagedResponse<ProductResponse> pagedResponse = new PagedResponse<>(productResponses, paginationInfo);
+            BaseResponse baseResponse = BaseResponse.buildResponse(200, "Lấy danh sách sản phẩm thành công.", pagedResponse);
+
+            return ResponseEntity.ok(baseResponse);
+
+        } catch (Exception e) {
+            System.err.println("Lỗi lấy danh sách sản phẩm: " + e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse(500, "Lỗi máy chủ nội bộ: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
+        }
+    }
+
+    @GetMapping("/seller/my-products")
+    public ResponseEntity<?> getMyProducts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int limit,
+            @RequestParam(defaultValue = "0" , value = "user_id") int userId ,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) Integer status
+    ) {
+        try {
+            PageRequest pageRequest = PageRequest.of(page, limit, Sort.by("createdAt").descending());
+
+            // Filter sản phẩm theo seller_id
+            Page<Product> products = productService.filterProducts(
+                    name,
+                    null,  // categoryName
+                    null,  // color
+                    null,  // brand
+                    null,  // minPrice
+                    null,  // maxPrice
+                    null,  // minStock
+                    null,  // minRating
+                    null,  // description
+                    null,  // minViews
+                    status,
+                    userId, // seller_id
+                    pageRequest
+            );
+
+            List<ProductResponse> productResponses = products.getContent().stream()
                     .map(productMapper::fromEntityToResponse)
                     .toList();
 
@@ -162,9 +217,14 @@ public class ProductController {
     @PostMapping()
     public ResponseEntity<?> createProduct(
             @RequestBody @Valid ProductDTO productDTO,
+            @AuthenticationPrincipal User user ,
             BindingResult result
     ) {
         try {
+            if(user == null){
+                BaseResponse baseResponse = BaseResponse.buildResponse(401 , "Chưa đăng nhập") ;
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(baseResponse) ;
+            }
             if (result.hasErrors()) {
                 StringBuilder errorsBuilder = new StringBuilder();
                 for (FieldError fieldError : result.getFieldErrors()) {
@@ -177,6 +237,7 @@ public class ProductController {
                BaseResponse baseResponse = BaseResponse.buildResponse(400, "Dữ liệu không hợp lệ.");
                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseResponse);
            }
+            productDTO.setSellerId(user.getId());
            Product product = productService.createProduct(productMapper.fromRequestToEntity(productDTO));
            ProductResponse productResponse = productMapper.fromEntityToResponse(product) ;
            BaseResponse baseResponse = BaseResponse.buildResponse(200, "Tạo sản phẩm thành công.", productResponse);

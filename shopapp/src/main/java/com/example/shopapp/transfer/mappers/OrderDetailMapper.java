@@ -1,10 +1,10 @@
 package com.example.shopapp.transfer.mappers;
 
-import com.example.domain.models.entities.Order;
-import com.example.domain.models.entities.OrderDetail;
-import com.example.domain.models.entities.Product;
-import com.example.domain.persistence.repositories.OrderRepository;
-import com.example.domain.persistence.repositories.ProductRepository;
+import com.example.shopapp.models.entities.Order;
+import com.example.shopapp.models.entities.OrderDetail;
+import com.example.shopapp.models.entities.Product;
+import com.example.shopapp.repositories.OrderRepository;
+import com.example.shopapp.repositories.ProductRepository;
 import com.example.shopapp.transfer.dtos.requests.OrderDetailDTO;
 import com.example.shopapp.transfer.dtos.responses.OrderDetailResponse;
 import jakarta.persistence.EntityNotFoundException;
@@ -61,6 +61,7 @@ public class OrderDetailMapper {
             fromEntityToResponseTypeMap.addMappings(mapper -> {
                 mapper.skip(OrderDetailResponse :: setProductImage);
                 mapper.skip(OrderDetailResponse :: setProductName);
+                mapper.skip(OrderDetailResponse :: setProductId);
                 mapper.skip(OrderDetailResponse :: setOrderId);
                 mapper.skip(OrderDetailResponse :: setPrice);
             });
@@ -72,6 +73,7 @@ public class OrderDetailMapper {
         if(orderDetail.getProduct() != null) {
             orderDetailResponse.setProductName(orderDetail.getProduct().getName());
             orderDetailResponse.setProductImage(orderDetail.getProduct().getThumbnail());
+            orderDetailResponse.setProductId(orderDetail.getProduct().getId());
             orderDetailResponse.setPrice(orderDetail.getProduct().getPrice());
         }
 

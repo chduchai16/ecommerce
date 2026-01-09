@@ -1,10 +1,10 @@
 package com.example.shopapp.transfer.mappers;
 
-import com.example.domain.models.entities.Role;
-import com.example.domain.models.entities.User;
-import com.example.domain.persistence.repositories.RoleRepository;
-import com.example.domain.persistence.repositories.UserRepository;
-import com.example.domain.persistence.specifications.UserSpecification;
+import com.example.shopapp.models.entities.Role;
+import com.example.shopapp.models.entities.User;
+import com.example.shopapp.repositories.RoleRepository;
+import com.example.shopapp.repositories.UserRepository;
+import com.example.shopapp.specifications.UserSpecification;
 import com.example.shopapp.transfer.dtos.requests.UserDTO;
 import com.example.shopapp.transfer.dtos.requests.UserPasswordDTO;
 import com.example.shopapp.transfer.dtos.responses.UserResponse;
@@ -37,7 +37,6 @@ public class UserMapper {
             this.fromRequestToEntityTypeMap.addMappings(mapper -> {
                 mapper.skip(User::setRole);
                 mapper.skip(User::setCart);
-                mapper.skip(User::setPassword);
             });
             this.fromRequestToEntityTypeMap.implicitMappings();
         }
@@ -45,6 +44,7 @@ public class UserMapper {
        Role role = roleRepository.findById(userDTO.getRoleId())
                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy vai trò với ID: " + userDTO.getRoleId()));
        user.setRole(role);
+       user.setPassword(userDTO.getPassword());
         return user;
     }
 

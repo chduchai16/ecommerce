@@ -1,7 +1,7 @@
 package com.example.shopapp.controllers;
 
-import com.example.domain.models.entities.Category;
-import com.example.domain.services.ICategoryService;
+import com.example.shopapp.models.entities.Category;
+import com.example.shopapp.services.ICategoryService;
 import com.example.shopapp.transfer.dtos.requests.CategoryDTO;
 import com.example.shopapp.transfer.dtos.responses.BaseResponse;
 import com.example.shopapp.transfer.dtos.responses.CategoryResponse;

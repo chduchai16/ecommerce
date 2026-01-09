@@ -1,7 +1,7 @@
 package com.example.shopapp.controllers;
 
-import com.example.domain.models.entities.Role;
-import com.example.domain.services.IRoleService;
+import com.example.shopapp.models.entities.Role;
+import com.example.shopapp.services.IRoleService;
 import com.example.shopapp.pojos.PaginationInfo;
 import com.example.shopapp.transfer.dtos.requests.RoleDTO;
 import com.example.shopapp.transfer.dtos.responses.BaseResponse;

@@ -1,6 +1,6 @@
 package com.example.shopapp.transfer.mappers;
 
-import com.example.domain.models.entities.Role;
+import com.example.shopapp.models.entities.Role;
 import com.example.shopapp.transfer.dtos.requests.RoleDTO;
 import com.example.shopapp.transfer.dtos.responses.RoleResponse;
 import lombok.RequiredArgsConstructor;

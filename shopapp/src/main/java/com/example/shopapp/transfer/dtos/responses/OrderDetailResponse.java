@@ -20,6 +20,9 @@ public class OrderDetailResponse {
     @JsonProperty("product_name")
     private String productName ;
 
+    @JsonProperty("product_id")
+    private int productId ;
+
     private Float price ;
 
     @JsonProperty("product_image")

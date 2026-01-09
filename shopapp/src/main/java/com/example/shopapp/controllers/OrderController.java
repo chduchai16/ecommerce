@@ -1,8 +1,8 @@
 package com.example.shopapp.controllers;
 
-import com.example.domain.models.entities.Order;
-import com.example.domain.models.entities.User;
-import com.example.domain.services.IOrderService;
+import com.example.shopapp.models.entities.Order;
+import com.example.shopapp.models.entities.User;
+import com.example.shopapp.services.IOrderService;
 import com.example.shopapp.pojos.PaginationInfo;
 import com.example.shopapp.transfer.dtos.requests.OrderDTO;
 import com.example.shopapp.transfer.dtos.responses.BaseResponse;
@@ -99,6 +99,58 @@ public class OrderController {
         catch (Exception e){
             System.out.println("Lỗi lấy danh sách đơn hàng: " + e.getMessage());
             BaseResponse baseResponse = BaseResponse.buildResponse(500 , "Lỗi máy chủ nội bộ: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
+        }
+    }
+
+    @GetMapping("/seller/my-orders")
+    public ResponseEntity<?> getSellerOrders(
+            @AuthenticationPrincipal User user,
+            @RequestParam(value = "minTotalAmount", required = false) Float minTotalAmount,
+            @RequestParam(value = "maxTotalAmount", required = false) Float maxTotalAmount,
+            @RequestParam(value = "status", required = false) Integer status,
+            @RequestParam(value = "shippingAddress", required = false) String shippingAddress,
+            @RequestParam(value = "customerName", required = false) String customerName,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "limit", defaultValue = "12") int limit
+    ) {
+        try {
+            PageRequest pageRequest = PageRequest.of(page, limit);
+
+            // Lấy các Order mà có OrderDetail với product.seller_id == user.id
+            Page<Order> orders = orderService.filterOrdersBySeller(
+                    user.getId(),  // seller_id từ token
+                    minTotalAmount,
+                    maxTotalAmount,
+                    status,
+                    shippingAddress,
+                    customerName,
+                    pageRequest
+            );
+
+            List<OrderResponse> orderResponses = orders.getContent()
+                    .stream()
+                    .map(orderMapper::fromEntityToResponse)
+                    .toList();
+
+            PaginationInfo paginationInfo = new PaginationInfo(
+                    orders.getNumber(),
+                    orders.getSize(),
+                    orders.getTotalPages(),
+                    orders.getTotalElements()
+            );
+
+            PagedResponse pagedOrdersResponse = new PagedResponse(orderResponses, paginationInfo);
+
+            BaseResponse baseResponse = BaseResponse.buildResponse(
+                    200,
+                    "Lấy danh sách đơn hàng của seller thành công.",
+                    pagedOrdersResponse
+            );
+            return ResponseEntity.ok(baseResponse);
+        } catch (Exception e) {
+            System.out.println("Lỗi lấy danh sách đơn hàng: " + e.getMessage());
+            BaseResponse baseResponse = BaseResponse.buildResponse(500, "Lỗi máy chủ nội bộ: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(baseResponse);
         }
     }

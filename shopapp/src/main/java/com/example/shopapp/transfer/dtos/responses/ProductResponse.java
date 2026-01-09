@@ -48,6 +48,7 @@ public class ProductResponse {
 
     private String thumbnail;
     private Long views;
+    private int status ;
 
     @JsonProperty("product_images")
     List<ProductImageResponse> productImageResponses;

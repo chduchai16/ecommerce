@@ -8,12 +8,13 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="shopapp" />
-        <module name="domain" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="app" target="17" />
       <module name="build-app" target="17" />
+      <module name="domain" target="17" />
+      <module name="ecommerce" target="1.5" />
       <module name="erp" target="17" />
       <module name="exona_tech" target="17" />
       <module name="media" target="17" />

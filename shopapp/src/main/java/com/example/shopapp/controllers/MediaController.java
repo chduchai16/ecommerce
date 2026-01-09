@@ -1,8 +1,8 @@
 package com.example.shopapp.controllers;
 
 
-import com.example.domain.helpers.FileHelper;
-import com.example.domain.models.entities.User;
+import com.example.shopapp.helpers.FileHelper;
+import com.example.shopapp.models.entities.User;
 import com.example.shopapp.transfer.dtos.responses.BaseResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
