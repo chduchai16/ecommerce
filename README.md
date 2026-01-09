@@ -154,11 +154,6 @@ Base URL: `http://localhost:8080/api`
    ```bash
    mvn spring-boot:run
    ```
-
-6. **Truy cập ứng dụng**
-   - API: http://localhost:8080/api
-   - Swagger UI: http://localhost:8080/swagger-ui.html
-
 ## Cấu hình
 
 ### Database
